@@ -11,6 +11,7 @@
 .globl tss, tss_desc_ptr, ldt, ldt_desc_ptr
 .globl gdt_ptr, gdt_desc_ptr
 .globl idt_desc_ptr, idt
+.globl kc
 
 .align 4
 
@@ -68,6 +69,7 @@ _gdt:
     # |----------------------------------------------------------------------|
 
 gdt_ptr:
+kc_ptr:
     # Set up an entry for kernel CS
     .quad 0x00CF9A000000FFFF
 
@@ -111,5 +113,8 @@ _idt:
     .endr
 
 idt_bottom:
+
+kc:
+    .long kc_ptr - gdt
 
 

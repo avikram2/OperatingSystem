@@ -41,8 +41,24 @@ int idt_test(){
 			result = FAIL;
 		}
 	}
-
+  
 	return result;
+}
+
+/* IDT Exceptions Test  - Example
+ * 
+ * Triggers an exception for user to verify
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: Show exception on screen
+ * Coverage: IDT definition
+ * Files: idt.h/c
+ */
+int idt_exceptions_test(){
+	TEST_HEADER;
+
+        asm volatile("int $5");
+	return PASS;
 }
 
 // add more tests here
@@ -56,5 +72,6 @@ int idt_test(){
 /* Test suite entry point */
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
+	TEST_OUTPUT("idt_exceptions_test", idt_exceptions_test());
 	// launch your tests here
 }
