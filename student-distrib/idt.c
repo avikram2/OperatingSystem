@@ -1,9 +1,10 @@
-/* kernel.c - the C part of the kernel
+/* idt.c - Implements the functions to load the idt table
  * vim:ts=4 noexpandtab
  */
 
 #include "idt.h"
 
+/* Sets the idt entry for each index in the idt table */
 void load_idt()
 {
     printf("loading idt\n");
@@ -31,6 +32,7 @@ void load_idt()
     set_exception_irq(21,control_protection_exception);
 }
 
+/* Sets up the correct values for the given idt index(irq) and sets it to point to the given handler function */
 void set_exception_irq(int irq, void * handler)
 {
     idt[irq].size = 1;
@@ -39,134 +41,9 @@ void set_exception_irq(int irq, void * handler)
     idt[irq].present = 1;
     idt[irq].reserved4 = 0;
     idt[irq].reserved3 = 1;
-    idt[irq].reserved3 = 0xFFFF;
-    idt[irq].reserved2 = 0xFFFF;
-    idt[irq].reserved1 = 0xFFFF;
+    idt[irq].reserved3 = 1;
+    idt[irq].reserved2 = 1;
+    idt[irq].reserved1 = 1;
     SET_IDT_ENTRY(idt[irq],handler);
 }
 
-void divide_exception()
-{
-    clear();
-    printf("Exception: You tried to divide by zero!\n");
-}
-
-void debug_exception()
-{
-    clear();
-    printf("Exception: Debug condition!\n");
-}
-
-void nmi_exception()
-{
-    clear();
-    printf("Exception: NMI triggered!\n");
-}
-
-void breakpoint_exception()
-{
-    clear();
-    printf("Exception: Breakpoint called!\n");
-}
-
-void overflow_exception()
-{
-    clear();
-    printf("Exception: Overflow!\n");
-}
-
-void bound_range_exception()
-{
-    clear();
-    printf("Exception: You went outside of an array's bounds!\n");
-}
-
-void invalid_opcode_exception()
-{
-    clear();
-    printf("Exception: You tried to use an invalid opcode!\n");
-}
-
-void device_not_available_exception()
-{
-    clear();
-    printf("Exception: Device not available!\n");
-}
-
-void double_fault_exception()
-{
-    clear();
-    printf("Exception: Double fault exception!\n");
-}
-
-void coprocessor_segment_overrun_exception()
-{
-    clear();
-    printf("Exception: Coprocessor segment overrun!\n");
-}
-
-void invalid_tss_exception()
-{
-    clear();
-    printf("Exception: TSS error!\n");
-}
-
-void segment_not_present_exception()
-{
-    clear();
-    printf("Exception: Segment not present!\n");
-}
-
-void stack_fault_exception()
-{
-    clear();
-    printf("Exception: Stack fault!\n");
-}
-
-void general_protection_exception()
-{
-    clear();
-    printf("Exception: General protection!\n");
-}
-
-void page_fault_exception()
-{
-    clear();
-    printf("Exception: Page fault!\n");
-}
-
-void floating_point_exception()
-{
-    clear();
-    printf("Exception: Floating point!\n");
-}
-
-void alignment_check_exception()
-{
-    clear();
-    printf("Exception: Alignment check!\n");
-}
-
-void machine_check_exception()
-{
-    clear();
-    printf("Exception: Machine check!\n");
-}
-
-void simd_floating_point_exception()
-{
-    clear();
-    printf("Exception: SIMD floating point!\n");
-}
-
-void virtualization_exception()
-{
-    clear();
-    printf("Exception: Virtualizationo!\n");
-}
-
-void control_protection_exception()
-{
-    clear();
-    printf("Exception: Control protection!\n");
-}

@@ -45,7 +45,7 @@ int idt_test(){
 	return result;
 }
 
-/* IDT Exceptions Test  - Example
+/* IDT Exceptions Test
  * 
  * Triggers an exception for user to verify
  * Inputs: None
@@ -56,8 +56,13 @@ int idt_test(){
  */
 int idt_exceptions_test(){
 	TEST_HEADER;
+        
+	asm volatile("int $0");
+        
+	asm volatile("int $5");
+        
+	asm volatile("int $9");
 
-        asm volatile("int $5");
 	return PASS;
 }
 
