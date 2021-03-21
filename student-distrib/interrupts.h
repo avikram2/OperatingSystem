@@ -15,6 +15,9 @@
 #define NUM_COLS    80 //macros for RTC handler
 #define NUM_ROWS    25
 #define VIDEO       0xB8000
+#define REGISTER_C  0x0C
+#define RTC_PORT    0x70
+#define CMOS_PORT   0x71
 
 //interrupt handler for the keyboard
 extern void interrupt_keyboard_handler();
