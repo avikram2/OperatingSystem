@@ -12,6 +12,10 @@
 #define MASTER_8259_PORT    0x20
 #define SLAVE_8259_PORT     0xA0
 
+//data ports for each PIC
+#define PIC1_DATA    0x21
+#define PIC2_DATA    0xA1
+
 /* Initialization control words to init each PIC.
  * See the Intel manuals for details on the meaning
  * of each word */
@@ -26,6 +30,9 @@
  * the interrupt number and sent out to the PIC
  * to declare the interrupt finished */
 #define EOI                 0x60
+
+
+static const uint8_t irq_mask = 0xFF; //mask all interrupts lines
 
 /* Externally-visible functions */
 
