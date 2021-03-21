@@ -9,7 +9,6 @@ static char scan_code_array[SCAN_CODE_SIZE] = {
 void interrupt_keyboard_handler(){
     cli();
     unsigned int scancode;
-    do {
     scancode = inb(DATA_PORT);
     if (scancode >= SCAN_CODE_SIZE){
         send_eoi(KEYBOARD_IRQ_1);
@@ -23,7 +22,6 @@ void interrupt_keyboard_handler(){
 
     send_eoi(KEYBOARD_IRQ_1);
     sti();
-    } while(1);
 }
 
 

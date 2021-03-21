@@ -32,8 +32,6 @@
 #define EOI                 0x60
 
 
-#ifndef ASM
-
 static const uint8_t irq_mask = 0xFF; //mask all interrupts lines
 
 /* Externally-visible functions */
@@ -47,6 +45,5 @@ void disable_irq(uint32_t irq_num);
 /* Send end-of-interrupt signal for the specified IRQ */
 void send_eoi(uint32_t irq_num);
 
-#endif
 
 #endif /* _I8259_H */

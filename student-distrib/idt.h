@@ -8,7 +8,7 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "exceptions.h"
-#include "interrupt_linkage.h"
+#include "interrupts.h"
 
 
 #ifndef ASM

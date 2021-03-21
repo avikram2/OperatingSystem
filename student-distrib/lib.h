@@ -7,8 +7,6 @@
 
 #include "types.h"
 
-#ifndef ASM
-
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);
@@ -155,8 +153,6 @@ do {                                    \
             : "memory", "cc"            \
     );                                  \
 } while (0)
-
-#endif
 
 
 #endif /* _LIB_H */

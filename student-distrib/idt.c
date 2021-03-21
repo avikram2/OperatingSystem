@@ -32,7 +32,7 @@ void load_idt()
     set_exception_irq(21,control_protection_exception);
 
     //set keyboard and rtc interrupts
-    set_interrupt_irq(0x21, keyboard_wrapper);
+    set_interrupt_irq(0x21, interrupt_keyboard_handler);
     //set_interrupt_irq(0x28, rtc_wrapper);
     
     //set up skeleton system call support
