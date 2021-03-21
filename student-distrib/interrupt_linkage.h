@@ -1,7 +1,6 @@
 #ifndef _INTERRUPT_LINKAGE_H
 #define _INTERRUPT_LINKAGE_H
 
-#include "interrupts.h"
 
 #ifndef ASM
 
