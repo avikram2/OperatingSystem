@@ -33,7 +33,7 @@ void load_idt()
 
     //set keyboard and rtc interrupts
     set_interrupt_irq(0x21, interrupt_keyboard_handler);
-    //set_interrupt_irq(0x28, rtc_wrapper);
+    set_interrupt_irq(0x28, rtc_handler);
     
     //set up skeleton system call support
     set_system_call(0x80, system_call_skeleton);    
