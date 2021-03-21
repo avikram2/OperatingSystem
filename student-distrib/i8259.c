@@ -43,7 +43,7 @@ void i8259_init(void) {
 /* Enable (unmask) the specified IRQ */
 void enable_irq(uint32_t irq_num) {
 
-    if ((irq_num & 8) && (irq_num < 16)){ //belongs to the slave
+    if ((irq_num >= 8) && (irq_num < 16)){ //belongs to the slave
 
         uint32_t mask = ~(1 << (irq_num-8));
         slave_mask = (slave_mask&mask);
@@ -63,7 +63,7 @@ void enable_irq(uint32_t irq_num) {
 /* Disable (mask) the specified IRQ */
 void disable_irq(uint32_t irq_num) {
 
-    if ((irq_num & 8) && (irq_num < 16)){ //belongs to the slave
+    if ((irq_num >= 8) && (irq_num < 16)){ //belongs to the slave
         uint32_t mask = (1 << (irq_num-8));
         slave_mask = (slave_mask|mask);
         outb(slave_mask, PIC2_DATA);
@@ -83,14 +83,14 @@ void send_eoi(uint32_t irq_num) {
 
 
     uint8_t eoisignal = EOI;
-    if ((irq_num & 8)&& (irq_num < 16)){ //belongs to the slave
+    if ((irq_num >= 8)&& (irq_num < 16)){ //belongs to the slave
     uint8_t eoi_slave = eoisignal + (uint8_t)(irq_num&7);
-    outb(eoi_slave, PIC2_DATA);
-    outb(eoisignal + ICW3_SLAVE, PIC1_DATA);
+    outb(eoi_slave, SLAVE_8259_PORT);
+    outb(eoisignal + ICW3_SLAVE, MASTER_8259_PORT);
     }
 
     else if (irq_num < 8){
         uint8_t eoi_master = eoisignal + (uint8_t)(irq_num);
-        outb(eoi_master, PIC1_DATA);
+        outb(eoi_master, MASTER_8259_PORT);
     }
 }
