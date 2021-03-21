@@ -10,12 +10,12 @@
 #define DATA_PORT 0x60 //port to read data from PS2 device
 #define KEYBOARD_IRQ_1 1 //irq number for keyboard
 
+#ifndef ASM
+
 //interrupt handler for the keyboard
 extern void interrupt_keyboard_handler();
 
-
-//interrupt handler for the RTC
-extern void interrupt_RTC_handler();
+#endif
 
 
 

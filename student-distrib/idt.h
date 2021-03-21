@@ -11,6 +11,8 @@
 #include "interrupt_linkage.h"
 
 
+#ifndef ASM
+
 /*Loads each idt entry to it's corresponding handler*/
 extern void load_idt();
 
@@ -28,4 +30,7 @@ void set_system_call(int irq, void *handler);
 //preliminary skeleton for handling a system call
 void system_call_skeleton();
 
+#endif
+
 #endif //_IDT_H
+

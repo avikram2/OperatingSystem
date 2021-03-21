@@ -25,10 +25,3 @@ void interrupt_keyboard_handler(){
 }
 
 
-void interrupt_RTC_handler(){
-    int32_t i;
-    for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-        video_mem[i << 1]++;
-    }
-}
-
