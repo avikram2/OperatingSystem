@@ -1,3 +1,6 @@
+#define ASM     1
+
+
 #include "interrupt_linkage.h"
 
 
