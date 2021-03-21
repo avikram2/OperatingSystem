@@ -6,6 +6,6 @@ idt.o: idt.c idt.h x86_desc.h types.h lib.h exceptions.h interrupt_linkage.h
 kernel.o: kernel.c multiboot.h types.h x86_desc.h lib.h i8259.h debug.h \
   tests.h idt.h exceptions.h
 lib.o: lib.c lib.h types.h
-interrupt_linkage.o interrupt_linkage.S interrupt_linkage.h lib.h interrupts.h
-interrupts.o interrupts.c interrupts.h lib.h i8259.h
+interrupt_linkage.o: interrupt_linkage.S interrupt_linkage.h lib.h interrupts.h
+interrupts.o: interrupts.c interrupts.h lib.h i8259.h
 tests.o: tests.c tests.h x86_desc.h types.h lib.h
