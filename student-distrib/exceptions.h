@@ -1,6 +1,10 @@
 /* exceptions.h - Defines the idt exception handlers
  * vim:ts=4 noexpandtab
  */
+
+#ifndef _EXCEPTIONS_H
+#define _EXCEPTIONS_H
+
 #include "lib.h"
 
 #define FREEZE_LOOP_LENGTH 1000000000
@@ -46,3 +50,5 @@ void simd_floating_point_exception();
 void virtualization_exception();
 
 void control_protection_exception();
+
+#endif //_EXCEPTIONS_H
