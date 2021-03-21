@@ -8,10 +8,10 @@
 
 
 //assembly linkage function for keyboard interrupt
-extern void keyboard_wrapper();
+void keyboard_wrapper();
 
 //assembly linkage for RTC interrupt
-extern void rtc_wrapper();
+void rtc_wrapper();
 
 #endif //ASM
 
