@@ -8,10 +8,10 @@
 .align   4
  
 keyboard_wrapper:
-    pushad
+    pushal
     cld /* C code following the sysV ABI requires DF to be clear on function entry */
     call interrupt_keyboard_handler
-    popad
+    popal
     iret
 
 
