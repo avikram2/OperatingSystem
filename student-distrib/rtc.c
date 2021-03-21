@@ -8,12 +8,10 @@
  */
 void init_rtc(){
     //From OSDev
-    cli();
     outb(REG_B, REG_SELECT);      //Select register B (0xB), and disable NMI (0x80)
-    char prev = inb(DATA_PORT); //Read the current value of register B
+    char prev = inb(DATA_PORT);   //Read the current value of register B
     outb(REG_B, REG_SELECT);      //Set the index again (a read will reset the index to register D)
     outb(prev | 0x40, DATA_PORT); //
-    sti();
     enable_irq(8); //enable RTC interrupts
     return;
 }

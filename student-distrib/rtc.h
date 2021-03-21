@@ -10,7 +10,6 @@
 #define REG_B           0x8B
 
 
-
 extern void init_rtc();
 
 #endif
