@@ -34,6 +34,9 @@ void load_idt()
     //set keyboard and rtc interrupts
     set_interrupt_irq(0x21, keyboard_wrapper);
     set_interrupt_irq(0x28, rtc_wrapper);
+    
+    //set up skeleton system call support
+    set_system_call(0x80, system_call_skeleton);    
 }
 
 /* Sets up the correct values for the given idt index(irq) and sets it to point to the given handler function */
@@ -63,5 +66,25 @@ void set_interrupt_irq(int irq, void * handler){
     idt[irq].reserved2 = 1;
     idt[irq].reserved1 = 1;
     SET_IDT_ENTRY(idt[irq], handler);
+}
+
+void set_system_call(int irq, void *handler){
+     idt[irq].size = 1;
+    idt[irq].dpl = 0;
+    idt[irq].seg_selector = 16;
+    idt[irq].present = 1;
+    idt[irq].reserved4 = 0;
+    idt[irq].reserved3 = 1;
+    idt[irq].reserved3 = 1;
+    idt[irq].reserved2 = 1;
+    idt[irq].reserved1 = 1;
+    SET_IDT_ENTRY(idt[irq], handler);
+}
+
+
+void system_call_skeleton(){
+    clear();
+    //system call executed
+    printf("System Call");
 }
 
