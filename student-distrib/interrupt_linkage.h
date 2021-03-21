@@ -7,7 +7,7 @@
 
 
 //assembly linkage function for keyboard interrupt
-void keyboard_wrapper();
+extern void keyboard_wrapper();
 
 #endif //ASM
 
