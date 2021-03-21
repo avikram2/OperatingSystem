@@ -11,7 +11,7 @@
 #define KEYBOARD_IRQ_1 1 //irq number for keyboard
 
 //interrupt handler for the keyboard
-void interrupt_keyboard_handler();
+extern void interrupt_keyboard_handler();
 
 
 
