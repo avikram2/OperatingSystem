@@ -41,19 +41,19 @@ void i8259_init(void) {
 /* Enable (unmask) the specified IRQ */
 void enable_irq(uint32_t irq_num) {
 
-    if (irq_num & 8){ //belongs to the slave
+    if (((irq_num & 8) == 1) && (irq_num < 16)){ //belongs to the slave
 
         uint32_t mask = ~(1 << (irq_num-8));
-        uint32_t new_mask = (irq_mask&mask);
+        uint8_t new_mask = (irq_mask&mask);
         uint32_t enable_slave_mask = ~(1 << (2));
-        uint32_t enable_slave = (enable_slave_mask & irq_mask);
+        uint8_t enable_slave = (enable_slave_mask & irq_mask);
         outb(enable_slave, PIC1_DATA);
         outb(new_mask, PIC2_DATA);
     }
 
-    else { //belongs to master
+    else if (irq_num < 8){ //belongs to master
         uint32_t mask = ~(1 << (irq_num));
-        uint32_t new_mask = (irq_mask&mask);
+        uint8_t new_mask = (irq_mask&mask);
         outb(new_mask, PIC1_DATA);
     }
 }
