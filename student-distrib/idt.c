@@ -4,11 +4,13 @@
 
 #include "idt.h"
 
-/* Sets the idt entry for each index in the idt table */
+/* load_idt
+Sets the idt entry for each index in the idt table */
 void load_idt()
 {
     printf("loading idt\n");
 
+    //set up exception handlers into idt
     set_exception_irq(0,divide_exception);
     set_exception_irq(1,debug_exception);
     set_exception_irq(2,nmi_exception);
@@ -33,30 +35,51 @@ void load_idt()
 
     //set keyboard and rtc interrupts
     set_interrupt_irq(0x21, interrupt_keyboard_handler);
-    //set_interrupt_irq(0x28, rtc_handler);
-    //set_interrupt_irq(0x28, test_interrupts);
+    set_interrupt_irq(0x28, rtc_handler);
+    
     
     //set up skeleton system call support
     set_system_call(0x80, system_call_skeleton);    
 }
 
-/* Sets up the correct values for the given idt index(irq) and sets it to point to the given handler function */
+/* set_exception_irq
+Sets up the correct values for the given idt index(irq) and sets it to point to the given handler function */
 void set_exception_irq(int irq, void * handler)
 {
-    idt[irq].size = 1;
-    idt[irq].dpl = 0;
-    idt[irq].seg_selector = 16;
-    idt[irq].present = 1;
-    idt[irq].reserved4 = 0;
-    idt[irq].reserved3 = 1;
-    idt[irq].reserved3 = 1;
-    idt[irq].reserved2 = 1;
-    idt[irq].reserved1 = 1;
-    SET_IDT_ENTRY(idt[irq],handler);
+    init_idt_entry(irq); //init values
+    SET_IDT_ENTRY(idt[irq],handler); //set entry
 }
 
-
+// set_interrupt_irq
+// initialize the entry in the idt and set the entry into the idt as the interrupt handler function
 void set_interrupt_irq(int irq, void * handler){
+    init_idt_entry(irq); //initialize values
+    SET_IDT_ENTRY(idt[irq], handler); //set entry
+}
+
+//set system_call
+//initialize the entry of the system call and set the entry into the idt as the system call handler
+void set_system_call(int irq, void *handler){
+    init_idt_entry(irq); //init values
+    SET_IDT_ENTRY(idt[irq], handler); //set entry
+}
+
+
+/*
+system_call_skeleton
+handler for a system call
+For Checkpoint 1, it is sufficient to acknowledge that a system call has occurred
+effect: prints system call to screen to acknowledge system call invoked
+*/
+void system_call_skeleton(){
+    clear(); //clear screen
+    //system call executed
+    printf("System Call"); //print to screen
+}
+
+// init_idt_entry
+// initializes the fields of the idt entry with the proper values
+void init_idt_entry(int irq){
     idt[irq].size = 1;
     idt[irq].dpl = 0;
     idt[irq].seg_selector = 16;
@@ -65,27 +88,5 @@ void set_interrupt_irq(int irq, void * handler){
     idt[irq].reserved3 = 1;
     idt[irq].reserved3 = 1;
     idt[irq].reserved2 = 1;
-    idt[irq].reserved1 = 1;
-    SET_IDT_ENTRY(idt[irq], handler);
+    idt[irq].reserved1 = 1; //init fields and reserved fields with the correct inputs
 }
-
-void set_system_call(int irq, void *handler){
-     idt[irq].size = 1;
-    idt[irq].dpl = 0;
-    idt[irq].seg_selector = 16;
-    idt[irq].present = 1;
-    idt[irq].reserved4 = 0;
-    idt[irq].reserved3 = 1;
-    idt[irq].reserved3 = 1;
-    idt[irq].reserved2 = 1;
-    idt[irq].reserved1 = 1;
-    SET_IDT_ENTRY(idt[irq], handler);
-}
-
-
-void system_call_skeleton(){
-    clear();
-    //system call executed
-    printf("System Call");
-}
-

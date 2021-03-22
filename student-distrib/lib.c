@@ -475,7 +475,7 @@ void test_interrupts(void) {
     }
 
     outb(REGISTER_C, RTC_PORT);
-    inb(CMOS_PORT); // reading register C to ensure interrupts happen again
+    inb(CMOS_PORT); // reading value from register C to ensure RTC interrupts happen again
 
-    send_eoi(RTC_IRQ_NUM);
+    send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line 
 }

@@ -30,6 +30,10 @@ void set_system_call(int irq, void *handler);
 //preliminary skeleton for handling a system call
 void system_call_skeleton();
 
+//initialize the entry in the idt with the proper fields
+void init_idt_entry(int irq);
+
+
 #endif
 
 #endif //_IDT_H

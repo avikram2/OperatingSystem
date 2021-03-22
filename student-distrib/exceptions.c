@@ -4,7 +4,7 @@
 
 #include "idt.h"
 
-
+//divide exception: handler to acknowledge divide by 0
 void divide_exception()
 {
     clear();
@@ -15,6 +15,7 @@ void divide_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//debug exception handler
 void debug_exception()
 {
     clear();
@@ -25,6 +26,7 @@ void debug_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//NMI exception handler 
 void nmi_exception()
 {
     clear();
@@ -35,6 +37,7 @@ void nmi_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//breakpoint exception handler 
 void breakpoint_exception()
 {
     clear();
@@ -45,6 +48,7 @@ void breakpoint_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//overflow exception handler
 void overflow_exception()
 {
     clear();
@@ -55,6 +59,7 @@ void overflow_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//bounds range exception handler
 void bound_range_exception()
 {
     clear();
@@ -65,6 +70,7 @@ void bound_range_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//invalid opcode exception handler 
 void invalid_opcode_exception()
 {
     clear();
@@ -75,6 +81,7 @@ void invalid_opcode_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//device not available exception handler
 void device_not_available_exception()
 {
     clear();
@@ -85,6 +92,7 @@ void device_not_available_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//double fault exception handler
 void double_fault_exception()
 {
     clear();
@@ -95,6 +103,7 @@ void double_fault_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//coprocessor_segment_overrun_exception handler
 void coprocessor_segment_overrun_exception()
 {
     clear();
@@ -105,6 +114,7 @@ void coprocessor_segment_overrun_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//invalid tss exception handler
 void invalid_tss_exception()
 {
     clear();
@@ -115,6 +125,7 @@ void invalid_tss_exception()
     while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
+//segment not present exception handler
 void segment_not_present_exception()
 {
     clear();

@@ -67,28 +67,28 @@ int idt_exceptions_test(){
 	return PASS;
 }
 
-/* RTC Test
- * 
- * Sets the RTC handler to the test handler
- * Inputs: None
- * Outputs: PASS
- * Side Effects: Oscillates characters on the screen
- * Coverage: RTC InterruptHandler definition
- * Files: idt.h/c, rtc.h/c
- */
-int rtc_interrupt_test(){
-	TEST_HEADER;
-   	set_interrupt_irq(0x28, test_interrupts);
-    	enable_irq(RTC_IRQ_NUM); //enable RTC interrupts
+// /* RTC Test
+//  * 
+//  * Sets the RTC handler to the test handler
+//  * Inputs: None
+//  * Outputs: PASS
+//  * Side Effects: Oscillates characters on the screen
+//  * Coverage: RTC InterruptHandler definition
+//  * Files: idt.h/c, rtc.h/c
+//  */
+// int rtc_interrupt_test(){
+// 	TEST_HEADER;
+//    	set_interrupt_irq(0x28, test_interrupts);
+//     	enable_irq(RTC_IRQ_NUM); //enable RTC interrupts
 
 
-   	int i = 0;
-    	while(i < FREEZE_LOOP_LENGTH){ i++; }
-    	disable_irq(RTC_IRQ_NUM); //enable RTC interrupts
+//    	int i = 0;
+//     	while(i < FREEZE_LOOP_LENGTH){ i++; }
+//     	disable_irq(RTC_IRQ_NUM); //enable RTC interrupts
 
-	clear();
-	return PASS;
-}
+// 	clear();
+// 	return PASS;
+// }
 
 // add more tests here
 

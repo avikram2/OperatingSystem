@@ -7,7 +7,9 @@
 
 #include "lib.h"
 
-#define FREEZE_LOOP_LENGTH 1000000000
+#define FREEZE_LOOP_LENGTH 1000000000 //length of loop in exception handler 
+
+
 /* The various exception handlers for the idt to call */
 void divide_exception();
 
