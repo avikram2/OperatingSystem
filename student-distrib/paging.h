@@ -5,9 +5,9 @@
 
 void enable_paging();
 
+void blank_table(uint32_t* table);
 
 void loadPageDirectory(unsigned int* addr);
-
 
 void enablePaging();
 
