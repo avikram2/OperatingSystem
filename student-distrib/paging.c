@@ -4,7 +4,7 @@
 
  
 unsigned int PAGE_SIZE = 1024;
- 
+
 //might need to  be static
 uint32_t page_directory[1024] __attribute__((aligned(4096)));
 uint32_t first_page_table[1024] __attribute__((aligned(4096)));
@@ -13,13 +13,18 @@ uint32_t kernel_page_table[1024] __attribute__((aligned(4096)));
 
 
 unsigned int KERNEL_PHYS_ADDR = 0x400000;
+unsigned int VIDEO_ADDR = 0xB8000;
 
 
 // format of Attributes: comments
 // Attributes: "# - description (bit name)"
 void enable_paging()
 {
-	unsigned int kernel_offset = KERNEL_PHYS_ADDR << 22;
+	unsigned int kernel_offset = KERNEL_PHYS_ADDR << 12;
+	unsigned int video_mem_idx = VIDEO_ADDR/0x1000;
+	uint32_t video_offset = VIDEO_ADDR << 12;
+	
+	
 	
 	int i;
 	for(i = 0; i < PAGE_SIZE; i++)
@@ -40,12 +45,14 @@ void enable_paging()
 	}
 
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 0 - not present (P)
-	page_directory[1] = ((uint32_t)kernel_page_table) | 0x83;
+	page_directory[1] = ((unsigned int)kernel_page_table) | 0x83;
 	
 	
 	//TO DO: video memory
 	blank_table(first_page_table);
-	
+	// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
+	first_page_table[video_mem_idx] = video_offset | 3;
+	page_directory[0] = ((unsigned int)first_page_table) | 3;
 	
 	
 	loadPageDirectory(page_directory);
