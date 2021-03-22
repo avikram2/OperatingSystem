@@ -9,7 +9,7 @@ static char* video_mem = (char *)VIDEO;
 void interrupt_keyboard_handler(){
     cli();
     unsigned int scancode;
-    scancode = inb(DATA_PORT);
+    scancode = inb(DATA_PORT_KEYBOARD);
     if (scancode >= SCAN_CODE_SIZE){
         send_eoi(KEYBOARD_IRQ_1);
         sti();
@@ -26,16 +26,17 @@ void interrupt_keyboard_handler(){
 
 
 void rtc_handler(){
-    cli();
+    //cli();
     int32_t i;
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-        video_mem[i << 1]++;
+        //video_mem[i << 1]++;
     }
 
     outb(REGISTER_C, RTC_PORT);
     inb(CMOS_PORT); // reading register C to ensure interrupts happen again
 
     send_eoi(RTC_IRQ_NUM);
-    sti();
+    //sti();
 }
+
 

@@ -1,6 +1,7 @@
 #include "tests.h"
 #include "x86_desc.h"
 #include "lib.h"
+#include "idt.h"
 
 #define PASS 1
 #define FAIL 0
@@ -66,6 +67,29 @@ int idt_exceptions_test(){
 	return PASS;
 }
 
+/* RTC Test
+ * 
+ * Sets the RTC handler to the test handler
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: Oscillates characters on the screen
+ * Coverage: RTC InterruptHandler definition
+ * Files: idt.h/c, rtc.h/c
+ */
+int rtc_interrupt_test(){
+	TEST_HEADER;
+   	set_interrupt_irq(0x28, test_interrupts);
+    	enable_irq(RTC_IRQ_NUM); //enable RTC interrupts
+
+
+   	int i = 0;
+    	while(i < FREEZE_LOOP_LENGTH){ i++; }
+    	disable_irq(RTC_IRQ_NUM); //enable RTC interrupts
+
+	clear();
+	return PASS;
+}
+
 // add more tests here
 
 /* Checkpoint 2 tests */
@@ -78,5 +102,6 @@ int idt_exceptions_test(){
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	TEST_OUTPUT("idt_exceptions_test", idt_exceptions_test());
+	TEST_OUTPUT("rtc_interrupt_test", rtc_interrupt_test());
 	// launch your tests here
 }

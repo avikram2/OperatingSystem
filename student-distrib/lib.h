@@ -6,7 +6,7 @@
 #define _LIB_H
 
 #include "types.h"
-
+#include "interrupts.h"
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);
@@ -29,6 +29,7 @@ int8_t* strncpy(int8_t* dest, const int8_t*src, uint32_t n);
 int32_t bad_userspace_addr(const void* addr, int32_t len);
 int32_t safe_strncpy(int8_t* dest, const int8_t* src, int32_t n);
 
+extern void test_interrupts(void);
 /* Port read functions */
 /* Inb reads a byte and returns its value as a zero-extended 32-bit
  * unsigned int */

@@ -21,7 +21,7 @@ void set_exception_irq(int irq, void * handler);
 
 
 //Sets up corresponding entry in idt table and points it to the handler
-void set_interrupt_irq(int irq, void * handler);
+extern void set_interrupt_irq(int irq, void * handler);
 
 //Sets up corresponding entry in idt table and points it to the handler
 void set_system_call(int irq, void *handler);

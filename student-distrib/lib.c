@@ -473,4 +473,9 @@ void test_interrupts(void) {
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
         video_mem[i << 1]++;
     }
+
+    outb(REGISTER_C, RTC_PORT);
+    inb(CMOS_PORT); // reading register C to ensure interrupts happen again
+
+    send_eoi(RTC_IRQ_NUM);
 }
