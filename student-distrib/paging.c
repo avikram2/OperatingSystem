@@ -61,7 +61,10 @@ void loadPageDirectory(uint32_t* addr) {
 
 void enablePaging() {
     asm volatile ("                  \n\
-            movl	%%cr0, %%eax       \n\
+            movl	%%cr4, %%eax	  \n\
+			orl 	$0x00000010, %%eax \n\
+			movl	%%eax, %%cr4		\n\
+			movl	%%cr0, %%eax       \n\
 			orl 	$0x80000000, %%eax     \n\
 			movl 	%%eax, %%cr0       \n\
             "
