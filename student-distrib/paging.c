@@ -5,8 +5,8 @@
  
  
 //might need to  be static
-static uint32_t page_directory[1024] __attribute__((aligned(4096)));
-static uint32_t first_page_table[1024] __attribute__((aligned(4096)));
+uint32_t page_directory[1024] __attribute__((aligned(4096)));
+uint32_t first_page_table[1024] __attribute__((aligned(4096)));
 
 
 
@@ -50,24 +50,23 @@ void enable_paging()
 
 
 //asm will need to be checked
-void loadPageDirectory(unsigned int* addr) {
+void loadPageDirectory(uint32_t* addr) {
     asm volatile ("                 \n\
             movl    %0, %%cr3       \n\
             "
             :
             : "r" (addr)
-            : "edx", "memory", "cc"
     );
 }
 
 void enablePaging() {
     asm volatile ("                  \n\
-            mov		%%cr0, %%eax       \n\
-			or 		$0x80000000, %%eax       \n\
-			mov 	%%eax, %%cr0       \n\
+            movl	%%cr0, %%eax       \n\
+			orl 	$0x80000000, %%eax     \n\
+			movl 	%%eax, %%cr0       \n\
             "
+			:
             :
-            :
-            : "eax"
+			: "%eax"
     );
 }
