@@ -8,5 +8,5 @@
 //inputs/outputs: none
 //effect: keyboard IRQ line (1) enabled
 void keyboard_init(){
-    enable_IRQ(KEYBOARD_IRQ_LINE); //enable keyboard interrupts 
+    enable_irq(KEYBOARD_IRQ_LINE); //enable keyboard interrupts 
 }

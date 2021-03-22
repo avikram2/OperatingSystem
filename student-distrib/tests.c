@@ -102,6 +102,6 @@ int idt_exceptions_test(){
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	TEST_OUTPUT("idt_exceptions_test", idt_exceptions_test());
-	TEST_OUTPUT("rtc_interrupt_test", rtc_interrupt_test());
+	//TEST_OUTPUT("rtc_interrupt_test", rtc_interrupt_test());
 	// launch your tests here
 }
