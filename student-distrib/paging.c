@@ -3,17 +3,18 @@
 
 
  
-uint32_t page_directory[1024] __attribute__((aligned(4096)));
-uint32_t first_page_table[1024] __attribute__((aligned(4096)));
+ 
+//might need to  be static
+static uint32_t page_directory[1024] __attribute__((aligned(4096)));
+static uint32_t first_page_table[1024] __attribute__((aligned(4096)));
 
-extern void loadPageDirectory(unsigned int*);
-extern void enablePaging();
+
 
 unsigned int KERNEL_PHYS_ADDR = 0x400000;
 
 
 
-void init_paging()
+void enable_paging()
 {
 	unsigned int kernel_offset = KERNEL_PHYS_ADDR << 12;
 	
@@ -40,7 +41,33 @@ void init_paging()
 	}
 
 	page_directory[1] = ((unsigned int)first_page_table) | 3;
+	
+	loadPageDirectory(page_directory);
+	enablePaging();
 }
 
 
 
+
+//asm will need to be checked
+void loadPageDirectory(unsigned int* addr) {
+    asm volatile ("                 \n\
+            movl    %0, %%cr3       \n\
+            "
+            :
+            : "r" (addr)
+            : "edx", "memory", "cc"
+    );
+}
+
+void enablePaging() {
+    asm volatile ("                  \n\
+            mov		%%cr0, %%eax       \n\
+			or 		$0x80000000, %%eax       \n\
+			mov 	%%eax, %%cr0       \n\
+            "
+            :
+            :
+            : "eax"
+    );
+}

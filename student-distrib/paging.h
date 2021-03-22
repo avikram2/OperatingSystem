@@ -3,6 +3,12 @@
 
 #include "lib.h"
 
-void init_paging();
+void enable_paging();
+
+
+void loadPageDirectory(unsigned int* addr);
+
+
+void enablePaging();
 
 #endif /* PAGING_H */
