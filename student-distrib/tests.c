@@ -92,6 +92,42 @@ int idt_exceptions_test(){
 
 // add more tests here
 
+
+//dereferencing_NULLPTR_test
+//test to see if dereferencing a NULL pointer will raise the adaquete exception
+//Covers: Exception Handling, Paging
+int dereferencing_NULLPTR_test(){
+	TEST_HEADER;
+	int* x = NULL;
+	int y;
+	y = *x;
+	return PASS;
+}
+//page fault test
+//test to see if accessing a virtual memory location not mapped to a physical memory location will cause a page fault
+//Covers: paging, exceptions
+//files: exception.c, paging.c
+int page_fault_test(){
+	TEST_HEADER;
+	int *x;
+	x = (int*)(0x900000);
+	(*x) = 5;
+	return PASS;
+}
+
+//testing to see if accesses in video memory are permitted, in order to test if video memory paging set up properly
+//covers paging, video memory pagin
+//files: paging.c
+int video_memory_access_test(){
+	TEST_HEADER;
+	int *x;
+	int y;
+	x = (int*)(0xb8005);
+	y = (*x);
+	return PASS;
+}
+
+
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -102,6 +138,9 @@ int idt_exceptions_test(){
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	TEST_OUTPUT("idt_exceptions_test", idt_exceptions_test());
-	//TEST_OUTPUT("rtc_interrupt_test", rtc_interrupt_test());
+	TEST_OUTPUT("dereferencing_NULLPTR_test", dereferencing_NULLPTR_test());
+	TEST_OUTPUT("page fault", page_fault_test());
+	TEST_OUTPUT("video memory access", video_memory_access_test());
+
 	// launch your tests here
 }
