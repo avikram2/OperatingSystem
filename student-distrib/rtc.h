@@ -2,7 +2,7 @@
 #define _RTC_H
 
 #include "types.h"
-
+#include "lib.h"
 
 #define REG_SELECT      0x70
 #define DATA_PORT       0x71
