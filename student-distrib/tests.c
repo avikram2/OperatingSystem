@@ -135,8 +135,8 @@ int rtc_test(){
 	int count = 0;
 	int rtc_instance;
 	rtc_open(&rtc_instance);
-	rtc_write(rtc_instance, 2);
-	for(count = 0;count<20;count++)
+	rtc_write(rtc_instance, 512);
+	for(count = 0;count<5120;count++)
 	{
 		rtc_read(rtc_instance);
 	}

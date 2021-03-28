@@ -16,7 +16,7 @@ int rtc_open(int* rtc_index)
 {	
 	int first_open = 0;
 	
-	//set_rtc_rate(15);
+	set_rtc_rate(TEN_ZERO_TWENTY_FOUR_HZ_RATE);
 
 	//searches through the instance for the first not in use
 	for(first_open = 0;first_open < MAX_RTC_DRIVERS;first_open++)

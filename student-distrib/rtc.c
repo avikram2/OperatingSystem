@@ -31,6 +31,6 @@ void set_rtc_rate(int rate)
 	rate &= LOWER_4_BITS_MASK;			//The rate must be less than 15
 	outb(REG_A,REG_SELECT);		// set index to register A, disable NMI
 	char prev_a_value = inb(DATA_PORT);	// get initial value of register A
-	outb(REG_B, REG_SELECT);		// reset index to A
+	outb(REG_A, REG_SELECT);		// reset index to A
 	outb((prev_a_value & UPPER_4_BITS_MASK) | rate,DATA_PORT); //write only our rate to A. Note, rate is the bottom 4 bits.
 }
