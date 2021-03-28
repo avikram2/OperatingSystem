@@ -14,6 +14,17 @@
 #define RTC_LINE_IRQ    8    //irq line number for rtc
 
 
-//initialize the rtc and enable extern void init_rtc();
+//initialize the rtc and enable rtc interrupts
+extern void init_rtc();
+//change rtc frequency function
+extern void set_freq(int freq);
+
+extern int32_t rtc_read();
+
+extern int32_t rtc_write();
+
+extern int32_t rtc_open();
+
+extern int32_t rtc_close();
 
 #endif
