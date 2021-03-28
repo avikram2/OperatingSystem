@@ -36,7 +36,9 @@ void interrupt_keyboard_handler(){
 //input/output: none 
 //effect: invokes test interrupts to test RTC interrupt
 void rtc_handler(){
-    test_interrupts(); //call test_interrupts
+    //test_interrupts(); //call test_interrupts
+	interrupted_flag = 0;
+	//printf("rtc\n");
 }
 
 

@@ -2,6 +2,7 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "idt.h"
+#include "rtc_driver.h"
 
 #define PASS 1
 #define FAIL 0
@@ -116,7 +117,7 @@ int page_fault_test(){
 }
 
 //testing to see if accesses in video memory are permitted, in order to test if video memory paging set up properly
-//covers paging, video memory pagin
+//covers paging, video memory paging
 //files: paging.c
 int video_memory_access_test(){
 	TEST_HEADER;
@@ -125,6 +126,18 @@ int video_memory_access_test(){
 	x = (int*)(0xb8005);
 	y = (*x);
 	return PASS;
+}
+
+//testing to see if accesses in video memory are permitted, in order to test if video memory paging set up properly
+//covers paging, video memory paging
+//files: paging.c
+int rtc_test(){
+	rtc_open();
+	//rtc_write(2);
+	rtc_read();
+	rtc_read();
+	rtc_read();
+	rtc_read();
 }
 
 
@@ -136,11 +149,12 @@ int video_memory_access_test(){
 
 /* Test suite entry point */
 void launch_tests(){
-	TEST_OUTPUT("idt_test", idt_test());
-	TEST_OUTPUT("idt_exceptions_test", idt_exceptions_test());
-	TEST_OUTPUT("dereferencing_NULLPTR_test", dereferencing_NULLPTR_test());
-	TEST_OUTPUT("page fault", page_fault_test());
-	TEST_OUTPUT("video memory access", video_memory_access_test());
+	//TEST_OUTPUT("idt_test", idt_test());
+	//TEST_OUTPUT("idt_exceptions_test", idt_exceptions_test());
+	//TEST_OUTPUT("dereferencing_NULLPTR_test", dereferencing_NULLPTR_test());
+	//TEST_OUTPUT("page fault", page_fault_test());
+	//TEST_OUTPUT("video memory access", video_memory_access_test());
+	TEST_OUTPUT("rtc_test", rtc_test());
 
 	// launch your tests here
 }
