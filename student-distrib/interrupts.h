@@ -19,12 +19,14 @@
 #define RTC_PORT    0x70 
 #define CMOS_PORT   0x71 //register A,B,C port in RTC
 
+#ifndef ASM
+
 //interrupt handler for the keyboard
 extern void interrupt_keyboard_handler();
 
 //rtc interrupt handler
 extern void rtc_handler();
 
-
+#endif
 
 #endif
