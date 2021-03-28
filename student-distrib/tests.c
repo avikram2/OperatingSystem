@@ -132,12 +132,16 @@ int video_memory_access_test(){
 //covers paging, video memory paging
 //files: paging.c
 int rtc_test(){
-	rtc_open();
-	//rtc_write(2);
-	rtc_read();
-	rtc_read();
-	rtc_read();
-	rtc_read();
+	int count = 0;
+	int rtc_instance;
+	rtc_open(&rtc_instance);
+	rtc_write(rtc_instance, 2);
+	for(count = 0;count<20;count++)
+	{
+		rtc_read(rtc_instance);
+	}
+	rtc_close(rtc_instance);
+	return PASS;
 }
 
 

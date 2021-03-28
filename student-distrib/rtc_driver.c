@@ -4,52 +4,100 @@
 
 #include "rtc_driver.h"
 
-//static uint32_t interrupted_flag = 0;
+rtc_driver_instance_t rtc_drivers_instances[MAX_RTC_DRIVERS];
 
-void rtc_open()
-{
-	interrupted_flag = 0;
-	set_rtc_rate(2);
-	//return 0;
+/*  Description: Opens an rtc driver and finds the first open instance for the calling process to use
+ *  Input: A pointer to an integer
+ *  Output: 0 if successful and -1 if not(no open instances)
+ *  Effect: Sets the first open instance to in_use and puts the index of that instance in the given pointer
+ * 		Also sets the rtc interrupt rate to 1024Hz
+ */
+int rtc_open(int* rtc_index)
+{	
+	int first_open = 0;
+	
+	//set_rtc_rate(15);
+
+	//searches through the instance for the first not in use
+	for(first_open = 0;first_open < MAX_RTC_DRIVERS;first_open++)
+	{
+		if(rtc_drivers_instances[first_open].in_use == 0)
+		{
+			//puts this instance to use and gives the caller the instance index
+			rtc_drivers_instances[first_open].in_use = 1;
+			if(rtc_index != 0)
+			{
+				*rtc_index = first_open;
+			}
+			return 0;
+
+		}
+	}
+	return -1;
 }
 
-void rtc_read()
+/*  Description: Waits for the next interrupt for this instance, then returns
+ *  Input: An rtc driver instance index
+ *  Output: 0 if successful and -1 if not(invalid instance index)
+ *  Effect: None
+ */
+int rtc_read(int rtc_index)
 {
-	interrupted_flag = 1;
-	while(interrupted_flag == 1)
+	//check if the rtc index is valid
+	if(rtc_index >= MAX_RTC_DRIVERS || rtc_drivers_instances[rtc_index].in_use == 0)
+	{		
+		return -1;
+	}
+
+	//Raise this instance's flag, then wait for the interrupt handler to trigger it 
+	rtc_drivers_instances[rtc_index].flag = 1;
+	while(rtc_drivers_instances[rtc_index].flag == 1)
 	{
 
 	}
-	//return 0;
+	return 0;
 
 }
 
-void rtc_write(uint32_t rate)
+/*  Description: Sets the interrupt frequency for this instance
+ *  Input: An rtc driver instance index and a frequency interrupt rate
+ *  Output: 0 if successful and -1 if not(invalid instance index/invalid frequency)
+ *  Effect: None
+ */
+int rtc_write(int rtc_index, int rate)
 {
-	/*if((rate & (rate-1)) != 0 || rate > 1024)
+	//check if the rtc instance index is valid
+	if(rtc_index >= MAX_RTC_DRIVERS || rtc_drivers_instances[rtc_index].in_use == 0)
+	{		
+		return -1;
+	}
+	//check if the rate is valid(not zero, less then or equal to 1024, power of 2
+	if((rate & (rate-1)) != 0 || rate > MAX_RTC_FREQUENCY || rate == 0)
 	{
 		return -1;
-	}*/
-	set_rtc_rate(rate);
-	//return 0;
+	}
+
+	//sets the amount of ticks the interrupt handler should wait between each interrupt for this instance
+	rtc_drivers_instances[rtc_index].wait_ticks = MAX_RTC_FREQUENCY / rate;
+
+	return 0;
 }
 
-void rtc_close()
+/*  Description: Closes the given rtc index
+ *  Input: An rtc driver instance index
+ *  Output: 0 if successful and -1 if not(invalid instance index)
+ *  Effect: None
+ */
+int rtc_close(int rtc_index)
 {
-	interrupted_flag = 0;
-	set_rtc_rate(2);
-	//return 0;
+	//check if the rtc instance index is valid
+	if(rtc_index >= MAX_RTC_DRIVERS || rtc_drivers_instances[rtc_index].in_use == 0)
+	{		
+		return -1;
+	}
+	//Sets this instance to not in use
+	rtc_drivers_instances[rtc_index].in_use = 0;
+	return 0;
 }
 
-void set_rtc_rate(uint32_t rate2)
-{
-	cli();
-	uint32_t rate = 15;
-	rate &= 0x0F;			// rate must be above 2 and not over 15
-outb(0x8A,0x70);		// set index to register A, disable NMI
-char prev=inb(0x71);	// get initial value of register A
-outb(0x8A, 0x70);		// reset index to A
-outb((prev & 0xF0) | rate,0x71); //write only our rate to A. Note, rate is the bottom 4 bits.
-	sti();
-}
 

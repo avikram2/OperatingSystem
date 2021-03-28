@@ -7,6 +7,7 @@ static char scan_code_array[SCAN_CODE_SIZE] = {
 
 //static char* video_mem = (char *)VIDEO;
 
+static int rtc_counter = 0;
 
 // interrupt keyboard handler:
 // will handle input from the keyboard when interrupt is generated and echo them to the screen
@@ -31,14 +32,39 @@ void interrupt_keyboard_handler(){
     sti(); //send eoi and enable interrupts
 }
 
-//RTC interrupt handler. For checkpoint one, sufficient to call test_interrupts function.
-// Reading from Register C to allow further interrupts also in test_interrupts function
+//RTC interrupt handler. Checks through each rtc driver instance and triggers it if it needs
+//to be triggered
 //input/output: none 
-//effect: invokes test interrupts to test RTC interrupt
+//effect: triggers rtc driver interrupts if needed
 void rtc_handler(){
-    //test_interrupts(); //call test_interrupts
-	interrupted_flag = 0;
-	//printf("rtc\n");
+
+	int count = 0;
+	
+	//cli();
+
+	//increment the rtc ticks counter
+	rtc_counter++;
+	//To prevent an eventual overflow, this value only needs to count up to 1024
+	if(rtc_counter >= MAX_RTC_FREQUENCY)
+	{
+		rtc_counter = rtc_counter % MAX_RTC_FREQUENCY;
+	}
+	
+	//iterate through each rtc driver instance and check if it should be triggered
+	for(count = 0; count < MAX_RTC_DRIVERS;count++)
+	{
+		if(rtc_drivers_instances[count].wait_ticks != 0 && rtc_counter % rtc_drivers_instances[count].wait_ticks == 0)
+		{
+			rtc_drivers_instances[count].flag = 0;
+		}
+	}
+
+    	outb(REGISTER_C, RTC_PORT);
+    	inb(CMOS_PORT); // reading value from register C to ensure RTC interrupts happen again
+
+    	send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line 
+
+	//sti();
 }
 
 
