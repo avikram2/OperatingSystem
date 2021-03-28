@@ -32,10 +32,10 @@
  * to declare the interrupt finished */
 #define EOI                 0x60
 
+#ifndef ASM
 
 static const uint8_t irq_mask = 0xFF; //mask all interrupts lines
 
-#ifndef ASM
 
 /* Externally-visible functions */
 

@@ -24,4 +24,4 @@ rtc_wrapper:
     call rtc_handler
     popal
     popfl
-    iret   
+    iret
