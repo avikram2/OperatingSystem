@@ -112,3 +112,7 @@ dkms.conf
 *.qcow
 source/
 
+# MP specific 
+*.dep
+*.img
+bootimg
