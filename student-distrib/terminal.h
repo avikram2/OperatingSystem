@@ -5,7 +5,9 @@
 #include "types.h"
 #include "lib.h"
 
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 128 //the maximum size of the buffer, in characters
+
+#define NULLCHAR '\0' //representation of the nullcharacter
 
 #ifndef ASM
 
