@@ -24,6 +24,8 @@
 #define RIGHT_SHIFT 0x36 //Right Shift scancode
 #define LEFT_ALT    0x38 //LALT scancode
 #define CAPS_LOCK   0x3A //Caps scancode
+#define SPACE       0x39 //Space scancode
+
 
 #define NUM_COLS    80 //macros for RTC handler
 #define NUM_ROWS    25
