@@ -82,9 +82,9 @@ void interrupt_keyboard_handler(){
 	if (keyboard_buffer_index <= (BUFFER_SIZE-1)){ //if the enter is in the range of the buffer
 		keyboard_buffer[keyboard_buffer_index] = '\n'; //add to buffer
 		keyboard_buffer_index+=1; //increment keyboard index after newline character
-		terminal_write(0,buffer, keyboard_buffer_index); //call terminal_write to display characters
+		keyboard_buffer_index = 0;
 	}
-	}
+	
 	else {
 	putc(scan_code_default[scancode-1]); //write out newline to screen
 	update_cursor(get_cursor_x(), get_cursor_y()); //update cursor position
