@@ -84,7 +84,7 @@ void interrupt_keyboard_handler(){
 		keyboard_buffer_index+=1; //increment keyboard index after newline character
 		keyboard_buffer_index = 0;
 	}
-	
+	}
 	else {
 	putc(scan_code_default[scancode-1]); //write out newline to screen
 	update_cursor(get_cursor_x(), get_cursor_y()); //update cursor position
