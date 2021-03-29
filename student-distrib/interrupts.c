@@ -23,6 +23,8 @@ static int caps_flag = 0; //variable for tracking caps state
 
 static int rtc_counter = 0; //ticks counter for RTC 
 
+static int ctrl_flag = 0; //track if control is pressed
+
 // interrupt keyboard handler:
 // will handle input from the keyboard when interrupt is generated and echo them to the screen
 //inputs: none
@@ -49,6 +51,11 @@ void interrupt_keyboard_handler(){
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
+	  case LEFT_CRTL:
+        ctrl_flag = ((scancode&BREAK_MASK)==0);
+        send_eoi(KEYBOARD_IRQ_1);
+        sti();
+        return;
     }
 
     if (scancode >= SCAN_CODE_SIZE || scancode == 0){ //if scancode is outside array, then end interrupt
@@ -56,6 +63,12 @@ void interrupt_keyboard_handler(){
         sti();
         return;
     }
+
+	else if(ctrl_flag&&(scancode=="l")){ //Ctrl-L handle
+      clear(); //clear the screen
+	  update_cursor(ORIGIN_CURSOR,ORIGIN_CURSOR); //send the cursor back to the beginning of the screen
+	}
+
     else {
       if (shift_flag) { //check for shift held down
         if (caps_flag) { //check for caps lock

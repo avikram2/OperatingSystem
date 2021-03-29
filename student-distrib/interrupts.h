@@ -11,6 +11,8 @@
 
 #define RTC_IRQ_NUM 8 //irq number for rtc 
 
+#define ORIGIN_CURSOR 0 //mask to update cursor back to the beginning of the screen
+
 #define BREAK_MASK  0x80 //Bit mask for chekcing for break scancodes
 #define SCAN_MASK   0x7F //Bit mask for looking at just the index of the code
 
