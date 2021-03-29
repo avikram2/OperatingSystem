@@ -67,8 +67,9 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 //output: how many characters written to screen
 int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes){
 
-    if (nbytes <= 0 || nbytes > BUFFER_SIZE){
-        for (i = 0; i < BUFFER_SIZE; i++)
+    if (nbytes <= 0 || nbytes > BUFFER_SIZE){ //if the number of bytes is negative or too big, return 
+        int i;
+        for (i = 0; i < BUFFER_SIZE; i++) //for each buffer element
     buf[i] = NULLCHAR; //reset the buffer to nullcharacters
     return 0;
     }
