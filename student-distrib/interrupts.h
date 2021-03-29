@@ -26,7 +26,7 @@
 #define CAPS_LOCK   0x3A //Caps scancode pressed
 #define SPACE       0x39 //Space scancode
 #define ESCAPE      0x01 //escape key scancode
-#define NULL        0x00 //null (zero) macro
+#define ZERO_CODE        0x00 //null (zero) macro
 #define CAPS_LOCK_RELEASE 0xBA
 
 #define NUM_COLS    80 //macros for RTC handler

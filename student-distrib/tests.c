@@ -161,7 +161,6 @@ int terminal_driver_test(){
 	terminal_write(0, string, strlen(string));
 	uint8_t buffer_test[BUFFER_SIZE];
 	int retval = terminal_read(0, buffer_test, BUFFER_SIZE-1);
-	int i= 0;
 	string = "Hi, ";
 	terminal_write(0, string, strlen(string));
 	terminal_write(0, buffer_test, retval);
