@@ -153,16 +153,17 @@ int terminal_driver_test(){
 	clear();
 	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
 	int8_t* string = "Hello, what is your name \n";
+	uint8_t *unsigned_str = "Hello, what is your name \n";
 	// uint8_t * nullbuf = "\0\0\0\0\0a";
 	// int j;
 	// for (j = 0; j < 6; ++j){
 	// 	putc(nullbuf[j])
 	// }
 	terminal_write(0, string, strlen(string));
-	int8_t buffer_test[BUFFER_SIZE];
-	int retval = terminal_read(0, buffer_test, BUFFER_SIZE-1);
+	uint8_t buffer_test[BUFFER_SIZE];
+	int32_t retval = terminal_read(0, buffer_test, BUFFER_SIZE-1);
 	string = "Hi, ";
-	terminal_write(0, string, strlen(string));
+	terminal_write(0, unsigned_str, (int32_t)(strlen(string)));
 	terminal_write(0, buffer_test, retval);
 	terminal_close(0);
 	return PASS;
