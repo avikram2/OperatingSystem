@@ -7,11 +7,13 @@
 
 #define BUFFER_SIZE 128
 
-uint8_t keyboard_buffer[BUFFER_SIZE];
+#ifndef ASM
 
-uint8_t buffer[BUFFER_SIZE];
+extern uint8_t keyboard_buffer[BUFFER_SIZE];
 
-uint32_t keyboard_buffer_index = 0; //tracks current index of keyboard buffer
+extern uint8_t buffer[BUFFER_SIZE];
+
+extern uint32_t keyboard_buffer_index = 0; //tracks current index of keyboard buffer
 
 // uint8_t buf[BUFFER_SIZE];
 
@@ -27,5 +29,6 @@ extern int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes);
 //output from terminal buf onto screen
 extern int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes);
 
+#endif /* ASM */
 
 #endif //TERMINAL_H
