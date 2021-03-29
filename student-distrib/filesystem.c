@@ -64,7 +64,7 @@ int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry){
 */
 uint32_t read_inode_data_len(uint32_t inode_idx){
 	
-	if(inode_idx >= file_sys->num_dentries)
+	if(inode_idx >= file_sys->num_inodes)
 		return -1;
 	
 	inode_t* inode = (inode_t*)((uint32_t)file_sys + (inode_idx + 1) * SIZE_BLOCK);
@@ -148,7 +148,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 *			0 on reaching file end
 *
 */
-int32_t file_read(const uint8_t* fname, uint8_t* buf, int32_t nbytes){
+int32_t file_read(int32_t fname, uint8_t* buf, int32_t nbytes){
 
 	dentry_t* dentry;
 	if(read_dentry_by_name(fname, dentry) == -1)
@@ -164,17 +164,14 @@ int32_t file_read(const uint8_t* fname, uint8_t* buf, int32_t nbytes){
 *			0 on reaching file end
 *
 */
-int32_t directory_read(){
+int32_t directory_read(int32_t fname, uint8_t* buf, int32_t nbytes){
     
 	dentry_t* dentry;
-	
-	uint8_t* fname = dentry->filename;
-    uint8_t buf[FS_BUF_LENGTH];
 	uint32_t cnt, idx = 0;
 
 	while(-1 != read_dentry_by_index(idx, dentry)){
 		
-		printf("%s\n", (char*)dentry->filename);
+		printf("%s   size:%d\n", (char*)dentry->filename, read_inode_data_len(dentry->inode_idx));
 		idx++;
 		
 	}
@@ -203,12 +200,12 @@ int32_t file_open(const uint8_t* fname){
 }
 
 //file_close: yet to do anything
-int32_t file_close(const uint8_t* fname){
+int32_t file_close(int32_t fd){
 	return 0;
 }
 
 //file_write: not supported
-int32_t file_write(const uint8_t* fname, uint8_t* buf, int32_t nbytes){
+int32_t file_write(const uint8_t* fname, const uint8_t* buf, int32_t nbytes){
 	return -1;
 }
 
@@ -218,11 +215,11 @@ int32_t directory_open(const uint8_t* fname){
 }
 
 //directory_close: yet to do anything
-int32_t directory_close(const uint8_t* fname){
+int32_t directory_close(int32_t fd){
 	return 0;
 }
 
 //directory_write: not supported
-int32_t directory_write(const uint8_t* fname, uint8_t* buf, int32_t nbytes){
+int32_t directory_write(const uint8_t* fname, const uint8_t* buf, int32_t nbytes){
 	return -1;
 }

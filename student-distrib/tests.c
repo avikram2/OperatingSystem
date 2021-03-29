@@ -221,7 +221,9 @@ int file_read_test(){
 }
 
 int directory_read_test(){
-	if(directory_read() == -1)
+	uint8_t buf[FS_BUF_LENGTH];
+	uint8_t fname[MAX_NAME_LENGTH] = ".";
+	if(directory_read(fname, buf, FS_BUF_LENGTH - 1) == -1)
 		return FAIL;
 	return PASS;
 }
