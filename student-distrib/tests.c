@@ -3,6 +3,7 @@
 #include "lib.h"
 #include "idt.h"
 #include "rtc_driver.h"
+#include "terminal.h"
 
 #define PASS 1
 #define FAIL 0
@@ -131,12 +132,19 @@ int video_memory_access_test(){
 //testing to see if accesses in video memory are permitted, in order to test if video memory paging set up properly
 //covers paging, video memory paging
 //files: paging.c
+
+
+/* Checkpoint 2 tests */
+//RTC Test, to test the RTC_DRIVER
+//covers the RTC Driver test, such as open, write, read and close functions
+//file: rtc_driver.c/h
 int rtc_test(){
-	int count = 0;
+	TEST_HEADER;
+	int count = 0; //init count
 	int rtc_instance;
 	rtc_open(&rtc_instance);
 	rtc_write(rtc_instance, 2);
-	for(count = 0;count<20;count++)
+	for(count = 0;count<20;count++) //run for twenty times
 	{
 		rtc_read(rtc_instance);
 	}
@@ -144,8 +152,18 @@ int rtc_test(){
 	return PASS;
 }
 
+int terminal_driver_test(){
+	TEST_HEADER;
 
-/* Checkpoint 2 tests */
+	terminal_open(NULL); //open terminal
+	printf("Hello, what is your name ?");
+	uint8_t buff[BUFFER_SIZE];
+	int retval = terminal_read(0, buff, BUFFER_SIZE);
+	printf("Hi, ");
+	terminal_write(0, buff, retval);
+}
+
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
