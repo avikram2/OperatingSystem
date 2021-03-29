@@ -1,4 +1,3 @@
-
 #ifndef _INTERRUPTS_H
 #define _INTERRUPTS_H
 
@@ -11,6 +10,17 @@
 #define KEYBOARD_IRQ_1 1 //irq number for keyboard
 
 #define RTC_IRQ_NUM 8 //irq number for rtc 
+
+#define BREAK_MASK  0x80 //Bit mask for chekcing for break scancodes
+#define SCAN_MASK   0x7F //Bit mask for looking at just the index of the code
+
+#define BACK_SPACE  0x0E //backspace scancode
+#define ENTER       0x1C //Enter scancode
+#define LEFT_CRTL   0x1D //LCTRL scancode
+#define LEFT_SHIFT  0x2A //Left Shift scancode
+#define RIGHT_SHIFT 0x36 //Right Shift scancode
+#define LEFT_ALT    0x38 //LALT scancode
+#define CAPS_LOCK   0x3A //Caps scancode
 
 #define NUM_COLS    80 //macros for RTC handler
 #define NUM_ROWS    25
