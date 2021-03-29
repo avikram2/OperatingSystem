@@ -33,6 +33,9 @@
 #define	FILE_DIRECTORY		1
 #define FILE_REGULAR		2
 
+//used for testing
+#define FS_BUF_LENGTH		40000
+
 
 
 typedef struct dentry_t{
@@ -67,5 +70,18 @@ int32_t read_dentry_by_index (uint32_t index, dentry_t* dentry);
 int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length);
 
 uint32_t read_inode_data_len (uint32_t inode_idx);
+
+
+/* File Operations */
+int32_t file_read(const uint8_t* fname, uint8_t* buf, int32_t nbytes);
+int32_t file_open(const uint8_t* fname);
+int32_t file_close(const uint8_t* fname);
+int32_t file_write(const uint8_t* fname, uint8_t* buf, int32_t nbytes);
+
+/* Directory Operations */
+int32_t directory_read();
+int32_t directory_open(const uint8_t* fname);
+int32_t directory_close(const uint8_t* fname);
+int32_t directory_write(const uint8_t* fname, uint8_t* buf, int32_t nbytes);
 
 #endif

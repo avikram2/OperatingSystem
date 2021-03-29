@@ -140,5 +140,57 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 	return num_bytes_read;
 }
 
+/* file_read: read data from a file
+*  inputs: fname - file name
+*			buf - buffer to pass character stream into
+*			nbytes - number of requested bits to read
+*  outputs: number of bytes read on success, -1 for failure,
+*			0 on reaching file end
+*
+*/
+int32_t file_read(const uint8_t* fname, uint8_t* buf, int32_t nbytes){
 
+	dentry_t* dentry;
+	if(read_dentry_by_name(fname, dentry) == -1)
+		return -1;
+	return read_data(dentry->inode_idx, 0, buf, nbytes);
+	
+}
 
+/* directory_read: read files from directory
+*  inputs: buf - buffer to pass character stream into
+*			nbytes - number of requested bits to read
+*  outputs: number of bytes read on success, -1 for failure,
+*			0 on reaching file end
+*
+*/
+int32_t directory_read(){
+    
+	dentry_t* dentry;
+	
+	uint8_t* fname = dentry->filename;
+    uint8_t buf[FS_BUF_LENGTH];
+	uint32_t cnt, idx = 0;
+
+	while(-1 != read_dentry_by_index(idx, dentry)){
+		
+		printf("%s\n", (char*)dentry->filename);
+		idx++;
+		
+	}
+
+	return 0;
+
+    // while (-1 != (cnt = file_read(fname, buf, FS_BUF_LENGTH-1))) {
+        // if (-1 == cnt) {
+	        // printf("directory entry read failed\n");
+	        // return cnt;
+	    // }
+		// printf("%s\n", buf);
+		// idx++;
+		// if(read_dentry_by_index(idx, dentry) == -1)
+			// return -1;
+		
+    // }
+	
+}

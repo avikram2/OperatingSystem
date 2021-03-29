@@ -165,7 +165,7 @@ int terminal_driver_test(){
 }
 
 int read_data_test(){
-	uint8_t buf[40000];
+	uint8_t buf[FS_BUF_LENGTH];
 	
 	//SET FILE NAME
 	uint8_t fname[MAX_NAME_LENGTH] = "frame1.txt";
@@ -178,7 +178,7 @@ int read_data_test(){
 	bytes_read = read_data(temp.inode_idx, 0, buf, file_len);
 	
 	
-	printf("Testing file_read %s\n", fname); // testing file_read
+	printf("file_read(%s)\n", fname); // testing file_read
 	
 	
 	//test read_dentry_by_name output
@@ -189,7 +189,7 @@ int read_data_test(){
 		printf("%c", temp.filename[i]);
 	}
 	printf("\n");
-	if(strncmp(fname, temp.filename, MAX_NAME_LENGTH) != 0)
+	if(strncmp((char*)fname, (char*)temp.filename, MAX_NAME_LENGTH) != 0)
 		return FAIL;
 	
 	printf("read_dentry_by_name(): PASS\n");
@@ -208,6 +208,24 @@ int read_data_test(){
 	return PASS;
 }
 
+int file_read_test(){
+	uint8_t buf[FS_BUF_LENGTH];
+	
+	//SET FILE NAME
+	uint8_t fname[MAX_NAME_LENGTH] = "frame1.txt";
+	file_read(fname, buf, FS_BUF_LENGTH - 1);
+	if(buf == NULL)
+		return FAIL;
+	printf("%s", buf);
+	return PASS;
+}
+
+int directory_read_test(){
+	directory_read();
+	return PASS;
+}
+
+
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -222,6 +240,8 @@ void launch_tests(){
 	//TEST_OUTPUT("page fault", page_fault_test());
 	//TEST_OUTPUT("video memory access", video_memory_access_test());
 	//TEST_OUTPUT("rtc_test", rtc_test());
-	TEST_OUTPUT("read_data test", read_data_test());
+	//TEST_OUTPUT("read_data test", read_data_test());
+	TEST_OUTPUT("read_data", file_read_test());
+	TEST_OUTPUT("read_data", directory_read_test());
 	// launch your tests here
 }
