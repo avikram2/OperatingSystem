@@ -1,6 +1,9 @@
 
 #include "interrupts.h"
 
+//macro for the scancode of letter L
+#define L_CODE 0x26 
+
 //array for scancode keyboard inputs and characters to print
 static char scan_code_default[SCAN_CODE_SIZE] = {
 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', ' ', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', '0', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '0', '0', '0', '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '0', '0', '/'};
@@ -51,7 +54,7 @@ void interrupt_keyboard_handler(){
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
-	  case LEFT_CRTL:
+	case LEFT_CRTL:
         ctrl_flag = ((scancode&BREAK_MASK)==0);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
@@ -63,8 +66,40 @@ void interrupt_keyboard_handler(){
         sti();
         return;
     }
+	else if(scancode == BACK_SPACE){ //check if backspace pressed
+	int x_curr = get_cursor_x();
+	int y_curr = get_cursor_y();
+	if (x_curr == 0 && y_curr != 0){ //need to go back to prev line 
+	x_curr = NUM_COLS-1; //last character in prev line
+	y_curr-=1; //back to prev line
+	update_cursor(x_curr, y_curr);
+	putc(' ');
+	x_curr-=1; //previous position
+	update_cursor(x_curr, y_curr);
+	}
+	else if (x_curr == 0 && y_curr == 0){
+	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
+	//dont need to do anything when the cursor is at the beginning
+	}
+	else {
+	update_cursor(x_curr-1, y_curr);
+	putc(' ');
+	x_curr -=1;
+	if (x_curr == 0 && y_curr != 0){
+	x_curr = NUM_COLS-1;
+	y_curr -=1;
+	update_cursor(x_curr, y_curr);
+	}
+	else if (x_curr == 0 && y_curr == 0){
+	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
+	}
+	else {
+	update_cursor(x_curr, y_curr);
+	}
 
-	else if(ctrl_flag&&(scancode=="l")){ //Ctrl-L handle
+	} 
+	}
+	else if(ctrl_flag&&(scancode==L_CODE)){ //Ctrl-L handle
       clear(); //clear the screen
 	  update_cursor(ORIGIN_CURSOR,ORIGIN_CURSOR); //send the cursor back to the beginning of the screen
 	}
@@ -80,7 +115,8 @@ void interrupt_keyboard_handler(){
         putc(scan_code_caps[scancode-1]); //put character onto screen from the array
       } else {
         putc(scan_code_default[scancode-1]); //put character onto screen from the array
-      }
+      	update_cursor(get_cursor_x(), get_cursor_y());
+	}
     }
 
     send_eoi(KEYBOARD_IRQ_1);

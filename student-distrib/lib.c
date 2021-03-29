@@ -206,13 +206,38 @@ int32_t puts(int8_t* s) {
 void putc(uint8_t c) {
     if(c == '\n' || c == '\r') {
         screen_y++;
-        screen_x = 0;
-    } else {
+        screen_x = 0; //first position of newline
+	if (screen_y >= NUM_ROWS){
+	//if newline is out of bounds
+	//implement scrolling
+	int second_line_offset = NUM_COLS*2;
+	//the offset to the second line is the number of elements
+	//in the first line * 2, since each character is 2 bytes
+	int number_of_bytes = (NUM_ROWS-1)*(NUM_COLS) + 
+(NUM_ROWS-1)*(NUM_COLS);
+//the number of bytes to be copied upwards.
+//1 is subtracted from NUM_ROWS because of first row not counting
+	memmove(video_mem, video_mem + second_line_offset,
+number_of_bytes);
+int i = 0;
+
+while (i < NUM_COLS){
+*(uint_8*)((video_mem + NUM_COLS * 2* (NUM_ROWS-1) + (i << 1))) = ' ';
+*(uint_8*)(video_mem+NUM_COLS*2*(NUM_ROWS-1) + (i << 1) + 1) = ATTRIB;
+++i;
+}
+
+
+	}
+    }else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
-        screen_x %= NUM_COLS;
-        screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+        screen_y = (screen_y + (screen_x / NUM_COLS));
+	screen_x % NUM_COLS;
+	if (screen_y >= NUM_ROWS){
+
+}
     }
 }
 
