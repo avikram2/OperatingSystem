@@ -152,10 +152,13 @@ int terminal_driver_test(){
 	terminal_open(NULL); //open terminal
 	clear();
 	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
-	printf("Hello, what is your name ?\n");
+	uint8_t* string = "Hello, what is your name";
+
+	terminal_write(0, string, strlen(string));
 	uint8_t buff[BUFFER_SIZE];
 	int retval = terminal_read(0, buff, BUFFER_SIZE-1);
-	printf("Hi, ");
+	string = "Hi, \n"
+	terminal_write(0, string, strlen(string));
 	terminal_write(0, buff, retval);
 	terminal_close(0);
 	return PASS;
