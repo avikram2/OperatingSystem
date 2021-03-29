@@ -33,6 +33,8 @@
 #define	FILE_DIRECTORY		1
 #define FILE_REGULAR		2
 
+
+
 typedef struct dentry_t{
 	uint8_t	 filename[MAX_NAME_LENGTH];
 	uint32_t type;
@@ -58,6 +60,7 @@ typedef struct inode_t{
 	uint32_t data_blocks[MAX_DATA_BLOCKS];
 }inode_t;
 
+extern boot_block_t* file_sys;
 
 int32_t read_dentry_by_name (const uint8_t* fname, dentry_t* dentry);
 int32_t read_dentry_by_index (uint32_t index, dentry_t* dentry);
