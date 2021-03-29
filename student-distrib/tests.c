@@ -152,14 +152,14 @@ int terminal_driver_test(){
 	terminal_open(NULL); //open terminal
 	clear();
 	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
-	uint8_t* string = "Hello, what is your name \n";
+	int8_t* string = "Hello, what is your name \n";
 	// uint8_t * nullbuf = "\0\0\0\0\0a";
 	// int j;
 	// for (j = 0; j < 6; ++j){
 	// 	putc(nullbuf[j])
 	// }
 	terminal_write(0, string, strlen(string));
-	uint8_t buffer_test[BUFFER_SIZE];
+	int8_t buffer_test[BUFFER_SIZE];
 	int retval = terminal_read(0, buffer_test, BUFFER_SIZE-1);
 	string = "Hi, ";
 	terminal_write(0, string, strlen(string));
@@ -195,7 +195,7 @@ void launch_tests(){
 	//TEST_OUTPUT("page fault", page_fault_test());
 	//TEST_OUTPUT("video memory access", video_memory_access_test());
 	//TEST_OUTPUT("rtc_test", rtc_test());
-	//TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
-	TEST_OUTPUT("echo_terminal_test", echo_terminal_test());
+	TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
+	//TEST_OUTPUT("echo_terminal_test", echo_terminal_test());
 	// launch your tests here
 }
