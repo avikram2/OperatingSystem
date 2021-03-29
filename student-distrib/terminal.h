@@ -13,7 +13,7 @@ uint8_t keyboard_buffer[BUFFER_SIZE];
 
 uint8_t buffer[BUFFER_SIZE];
 
-uint32_t keyboard_buffer_index = 0; //tracks current index of keyboard buffer
+extern uint32_t keyboard_buffer_index = 0; //tracks current index of keyboard buffer
 
 // uint8_t buf[BUFFER_SIZE];
 
