@@ -4,6 +4,7 @@
 #include "lib.h"
 #include "i8259.h"
 #include "rtc_driver.h"
+#include "terminal.h"
 
 #define SCAN_CODE_SIZE 0x35 //size of current array storing characters indexed by scancode
 #define DATA_PORT_KEYBOARD 0x60 //port to read data from PS2 device
