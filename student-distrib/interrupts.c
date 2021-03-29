@@ -60,6 +60,12 @@ void interrupt_keyboard_handler(){
         sti();
         return;
     }
+	if (scancode == CAPS_LOCK){
+		caps_flag = ENABLE; //caps pressed
+	}
+	else if (scancode == CAPS_LOCK_RELEASE){
+		caps_flag = DISABLE; //caps released
+	}
 
 	if (scancode == SPACE){ //if the SPACE BAR is pressed
 		putc(' '); //put space character
@@ -70,7 +76,7 @@ void interrupt_keyboard_handler(){
 		}
 	}
 
-    else if (scancode >= SCAN_CODE_SIZE || scancode == NULL || scancode == ESCAPE){ //if scancode is outside array, invalid, or escape key, then end interrupt
+    else if (scancode >= SCAN_CODE_SIZE || scancode == ZERO_CODE || scancode == ESCAPE){ //if scancode is outside array, invalid, or escape key, then end interrupt
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
