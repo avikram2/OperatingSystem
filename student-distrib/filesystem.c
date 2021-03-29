@@ -178,6 +178,8 @@ int32_t directory_read(){
 		idx++;
 		
 	}
+	if(idx != file_sys->num_dentries)
+		return -1;
 
 	return 0;
 
@@ -193,4 +195,34 @@ int32_t directory_read(){
 		
     // }
 	
+}
+
+//file_open: yet to do anything
+int32_t file_open(const uint8_t* fname){
+	return 0;
+}
+
+//file_close: yet to do anything
+int32_t file_close(const uint8_t* fname){
+	return 0;
+}
+
+//file_write: not supported
+int32_t file_write(const uint8_t* fname, uint8_t* buf, int32_t nbytes){
+	return -1;
+}
+
+//directory_open: yet to do anything
+int32_t directory_open(const uint8_t* fname){
+	return 0;
+}
+
+//directory_close: yet to do anything
+int32_t directory_close(const uint8_t* fname){
+	return 0;
+}
+
+//directory_write: not supported
+int32_t directory_write(const uint8_t* fname, uint8_t* buf, int32_t nbytes){
+	return -1;
 }

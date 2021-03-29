@@ -221,7 +221,8 @@ int file_read_test(){
 }
 
 int directory_read_test(){
-	directory_read();
+	if(directory_read() == -1)
+		return FAIL;
 	return PASS;
 }
 
