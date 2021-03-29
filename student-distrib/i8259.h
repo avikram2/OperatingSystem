@@ -7,6 +7,7 @@
 #define _I8259_H
 
 #include "types.h"
+#include "lib.h"
 
 /* Ports that each PIC sits on */
 #define MASTER_8259_PORT    0x20
@@ -31,8 +32,10 @@
  * to declare the interrupt finished */
 #define EOI                 0x60
 
+#ifndef ASM
 
 static const uint8_t irq_mask = 0xFF; //mask all interrupts lines
+
 
 /* Externally-visible functions */
 
@@ -45,5 +48,7 @@ void disable_irq(uint32_t irq_num);
 /* Send end-of-interrupt signal for the specified IRQ */
 void send_eoi(uint32_t irq_num);
 
+
+#endif //asm
 
 #endif /* _I8259_H */

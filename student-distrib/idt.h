@@ -5,11 +5,11 @@
 #ifndef _IDT_H
 #define _IDT_H
 
+
+#include "interrupt_linkage.h"
 #include "x86_desc.h"
 #include "lib.h"
 #include "exceptions.h"
-#include "interrupts.h"
-
 
 #ifndef ASM
 

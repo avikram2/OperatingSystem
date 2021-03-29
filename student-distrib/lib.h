@@ -8,6 +8,25 @@
 #include "types.h"
 #include "interrupts.h"
 
+//three masks for when writing to VGA registers
+#define VGA_CURSOR_MASK 0x0F
+#define VGA_MASK_2 0x0E
+#define CURSOR_BITMASK 0xFF
+
+#ifndef ASM
+
+//custom functions
+
+//update the x,y position of the cursor
+extern void update_cursor(int x, int y); 
+
+//get y coordinate of cursor
+extern int get_cursor_y();
+
+//get x coordinate of cursor
+extern int get_cursor_x();
+
+
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);
 int32_t puts(int8_t *s);
@@ -155,5 +174,7 @@ do {                                    \
     );                                  \
 } while (0)
 
+
+#endif //ASM
 
 #endif /* _LIB_H */

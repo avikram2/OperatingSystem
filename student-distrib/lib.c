@@ -8,9 +8,45 @@
 #define NUM_ROWS    25
 #define ATTRIB      0x7
 
+//macros for the vga ports to move the cursor
+#define VGA_PORT_1 0x3D4
+#define VGA_PORT_2 0x3D5
+
 static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
+
+//update_cursor(int x, int y)
+//function to update position of the cursor on the screen to a certain coordinate position
+//inputs: (x,y)
+//output: none
+//side effect: changes cursor to point to new
+void update_cursor(int x, int y){
+    screen_x  = x;
+    screen_y = y; //set screen position
+
+    uint16_t pos = y * NUM_COLS + x; //linearized position
+    outb(VGA_CURSOR_MASK, VGA_PORT_1);
+    outb((uint8_t)(pos & CURSOR_BITMASK), VGA_PORT_2);
+    outb(VGA_MASK_2, VGA_PORT_1);
+    outb((uint8_t)((pos >> 8) & CURSOR_BITMASK), VGA_PORT_2); //write VGA registers to get the visible cursor
+}
+
+//get_cursor_y
+//function to obtain the 'y' position of the cursor
+//inputs: none, outputs: the 'y' location of the cursor
+//side effect: returns y coordinate of the cursor
+int get_cursor_y(){
+    return screen_y;
+}
+
+//get_cursor_x
+//function to obtain the 'x' position of the cursor
+//inputs: none, outputs: the 'x' location of the cursor
+//side effect: returns x coordinate of the cursor
+int get_cursor_x(){
+    return screen_x;
+}
 
 /* void clear(void);
  * Inputs: void

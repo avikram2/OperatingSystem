@@ -157,7 +157,7 @@ void entry(unsigned long magic, unsigned long addr) {
      * without showing you any output */
     printf("Enabling Interrupts\n");
 	
-	enable_paging();
+	//enable_paging();
     sti();
 
 #ifdef RUN_TESTS
@@ -169,6 +169,3 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }
-
-
-

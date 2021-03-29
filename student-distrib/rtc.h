@@ -9,11 +9,18 @@
 #define REG_A           0x8A //select register, disable NMI 
 #define REG_B           0x8B
 
+#define LOWER_4_BITS_MASK   0x0F
+#define UPPER_4_BITS_MASK   0xF0
 
 #define RTC_LINE_IRQ    8    //irq line number for rtc
 
+#ifndef ASM
 
 //initialize the rtc and enable rtc interrupts
 extern void init_rtc();
 
-#endif
+//Sets the RTC interrupt frequency
+extern void set_rtc_rate(int rate);
+
+#endif /* ASM */
+#endif /* _RTC_H  */
