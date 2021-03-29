@@ -233,7 +233,7 @@ screen_y = NUM_ROWS-1;
 void putc(uint8_t c) {
     if(c == '\n' || c == '\r') {
         screen_y++;
-        screen_x = ORIGINAL_CURSOR; //first position of newline
+        screen_x = ORIGIN_CURSOR; //first position of newline
 	if (screen_y >= NUM_ROWS){ //if leaving the screen, then implement scrolling
 	scrolling();
 	}
