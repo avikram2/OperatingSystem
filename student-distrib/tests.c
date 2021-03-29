@@ -169,6 +169,19 @@ int terminal_driver_test(){
 	return PASS;
 }
 
+int echo_terminal_test(){
+	TEST_HEADER;
+	terminal_open(NULL);
+	clear();
+	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
+	while (1){
+		uint8_t buffer_test[BUFFER_SIZE];
+		int retval = terminal_read(0, buffer_test, BUFFER_SIZE);
+		terminal_write(0, buffer_test, retval);
+	}
+	return PASS;
+}
+
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -183,6 +196,7 @@ void launch_tests(){
 	//TEST_OUTPUT("page fault", page_fault_test());
 	//TEST_OUTPUT("video memory access", video_memory_access_test());
 	//TEST_OUTPUT("rtc_test", rtc_test());
-	TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
+	//TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
+	TEST_OUTPUT("echo_terminal_test", echo_terminal_test());
 	// launch your tests here
 }
