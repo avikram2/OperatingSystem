@@ -59,9 +59,10 @@ typedef struct inode_t{
 }inode_t;
 
 
-int32_t read_dentry_by_name (const uint8 t* fname, dentry_t* dentry);
+int32_t read_dentry_by_name (const uint8_t* fname, dentry_t* dentry);
 int32_t read_dentry_by_index (uint32_t index, dentry_t* dentry);
 int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length);
 
+uint32_t read_inode_data_len (uint32_t inode_idx);
 
 #endif
