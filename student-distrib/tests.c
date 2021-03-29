@@ -157,7 +157,7 @@ int terminal_driver_test(){
 	terminal_write(0, string, strlen(string));
 	uint8_t buff[BUFFER_SIZE];
 	int retval = terminal_read(0, buff, BUFFER_SIZE-1);
-	string = "Hi, \n"
+	string = "Hi, \n";
 	terminal_write(0, string, strlen(string));
 	terminal_write(0, buff, retval);
 	terminal_close(0);
