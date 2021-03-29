@@ -239,7 +239,7 @@ void putc(uint8_t c) {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++; //increment horiz position
         screen_y = (screen_y + (screen_x / NUM_COLS)); //if necessary new line
-	    screen_x % NUM_COLS; //adjust overflow of horiz position
+	    screen_x = screen_x % NUM_COLS; //adjust overflow of horiz position
 	if (screen_y >= NUM_ROWS){ //implement scrolling if necessary
         scrolling();
 }
