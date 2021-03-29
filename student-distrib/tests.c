@@ -151,7 +151,7 @@ int terminal_driver_test(){
 	TEST_HEADER;
 
 	terminal_open(NULL); //open terminal
-	printf("Hello, what is your name ?");
+	printf("Hello, what is your name ?\n");
 	uint8_t buff[BUFFER_SIZE];
 	int retval = terminal_read(0, buff, BUFFER_SIZE);
 	printf("Hi, ");
@@ -172,7 +172,7 @@ void launch_tests(){
 	//TEST_OUTPUT("dereferencing_NULLPTR_test", dereferencing_NULLPTR_test());
 	//TEST_OUTPUT("page fault", page_fault_test());
 	//TEST_OUTPUT("video memory access", video_memory_access_test());
-	TEST_OUTPUT("rtc_test", rtc_test());
-
+	//TEST_OUTPUT("rtc_test", rtc_test());
+	TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
 	// launch your tests here
 }
