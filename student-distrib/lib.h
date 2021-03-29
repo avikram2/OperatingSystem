@@ -26,6 +26,7 @@ extern int get_cursor_y();
 //get x coordinate of cursor
 extern int get_cursor_x();
 
+void scrolling(); //implements the scrolling feature when lines run out
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);

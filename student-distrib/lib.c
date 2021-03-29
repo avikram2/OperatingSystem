@@ -199,6 +199,29 @@ int32_t puts(int8_t* s) {
     return index;
 }
 
+void scrolling(){
+int second_line_offset = NUM_COLS*2;
+	//the offset to the second line is the number of elements
+	//in the first line * 2, since each character is 2 bytes
+int number_of_bytes = (NUM_ROWS-1)*(NUM_COLS) + (NUM_ROWS-1)*(NUM_COLS);
+//the number of bytes to be copied upwards.
+//1 is subtracted from NUM_ROWS because of first row not counting
+memmove(video_mem, video_mem + second_line_offset, number_of_bytes); //move memory
+int i = 0;
+
+while (i < NUM_COLS){
+*(uint8_t*)((video_mem + NUM_COLS * 2* (NUM_ROWS-1) + (i << 1))) = ' ';
+*(uint8_t*)(video_mem+NUM_COLS*2*(NUM_ROWS-1) + (i << 1) + 1) = ATTRIB;
+++i;
+}
+update_cursor(NUM_COLS-1, NUM_ROWS-2);
+screen_x = NUM_COLS-1;
+screen_y = NUM_ROWS-2;
+}
+
+
+
+
 /* void putc(uint8_t c);
  * Inputs: uint_8* c = character to print
  * Return Value: void
@@ -208,35 +231,17 @@ void putc(uint8_t c) {
         screen_y++;
         screen_x = 0; //first position of newline
 	if (screen_y >= NUM_ROWS){
-	//if newline is out of bounds
-	//implement scrolling
-	int second_line_offset = NUM_COLS*2;
-	//the offset to the second line is the number of elements
-	//in the first line * 2, since each character is 2 bytes
-	int number_of_bytes = (NUM_ROWS-1)*(NUM_COLS) + 
-(NUM_ROWS-1)*(NUM_COLS);
-//the number of bytes to be copied upwards.
-//1 is subtracted from NUM_ROWS because of first row not counting
-	memmove(video_mem, video_mem + second_line_offset,
-number_of_bytes);
-int i = 0;
-
-while (i < NUM_COLS){
-*(uint_8*)((video_mem + NUM_COLS * 2* (NUM_ROWS-1) + (i << 1))) = ' ';
-*(uint_8*)(video_mem+NUM_COLS*2*(NUM_ROWS-1) + (i << 1) + 1) = ATTRIB;
-++i;
-}
-
-
+	scrolling();
 	}
+
     }else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-        screen_x++;
-        screen_y = (screen_y + (screen_x / NUM_COLS));
-	screen_x % NUM_COLS;
-	if (screen_y >= NUM_ROWS){
-
+        screen_x++; //increment horiz position
+        screen_y = (screen_y + (screen_x / NUM_COLS)); //if necessary new line
+	    screen_x % NUM_COLS; //adjust overflow of horiz position
+	if (screen_y >= NUM_ROWS){ //implement scrolling if necessary
+        scrolling();
 }
     }
 }
