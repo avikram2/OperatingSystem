@@ -60,6 +60,12 @@ void interrupt_keyboard_handler(){
         sti();
         return;
     }
+	if (scancode == CAPS_LOCK){
+		caps_flag = ENABLE; //caps pressed
+	}
+	else if (scancode == CAPS_LOCK_RELEASE){
+		caps_flag = DISABLE; //caps released
+	}
 
 	if (scancode == SPACE){ //if the SPACE BAR is pressed
 		putc(' '); //put space character

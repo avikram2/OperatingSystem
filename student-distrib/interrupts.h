@@ -14,7 +14,7 @@
 
 #define ORIGIN_CURSOR 0 //mask to update cursor back to the beginning of the screen
 
-#define BREAK_MASK  0x80 //Bit mask for chekcing for break scancodes
+#define BREAK_MASK  0x80 //Bit mask for checking for break scancodes
 #define SCAN_MASK   0x7F //Bit mask for looking at just the index of the code
 
 #define BACK_SPACE  0x0E //backspace scancode
@@ -23,10 +23,11 @@
 #define LEFT_SHIFT  0x2A //Left Shift scancode
 #define RIGHT_SHIFT 0x36 //Right Shift scancode
 #define LEFT_ALT    0x38 //LALT scancode
-#define CAPS_LOCK   0x3A //Caps scancode
+#define CAPS_LOCK   0x3A //Caps scancode pressed
 #define SPACE       0x39 //Space scancode
 #define ESCAPE      0x01 //escape key scancode
 #define NULL        0x00 //null (zero) macro
+#define CAPS_LOCK_RELEASE 0xBA
 
 #define NUM_COLS    80 //macros for RTC handler
 #define NUM_ROWS    25
