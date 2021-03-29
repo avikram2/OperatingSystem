@@ -7,16 +7,16 @@
 
 #define BUFFER_SIZE 128
 
+#ifndef ASM
 
-extern uint8_t keyboard_buffer[BUFFER_SIZE];
+uint8_t keyboard_buffer[BUFFER_SIZE];
 
-extern uint8_t buffer[BUFFER_SIZE];
+uint8_t buffer[BUFFER_SIZE];
 
-extern uint32_t keyboard_buffer_index = 0; //tracks current index of keyboard buffer
+uint32_t keyboard_buffer_index = 0; //tracks current index of keyboard buffer
 
 // uint8_t buf[BUFFER_SIZE];
 
-#ifndef ASM
 //open the terminal, initialize
 extern int32_t terminal_open(const uint8_t* filename);
 
