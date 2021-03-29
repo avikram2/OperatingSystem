@@ -165,7 +165,7 @@ int terminal_driver_test(){
 }
 
 int read_data_test(){
-	uint8_t buf[BUFFER_SIZE];
+	uint8_t buf[40000];
 	
 	//SET FILE NAME
 	uint8_t fname[MAX_NAME_LENGTH] = "frame1.txt";
@@ -200,11 +200,11 @@ int read_data_test(){
 		return FAIL;
 	
 	
-	// Uncomment below to print file data
+	//Uncomment below to print file data
 	printf("file data: \n");
-	for (i = 0; i < 400; i++) {
-		printf("%c", buf[i]);
-	}
+	printf("%s", (char*)buf);
+	
+	while(1);
 	return PASS;
 }
 
