@@ -162,7 +162,7 @@ int terminal_driver_test(){
 	uint8_t buffer_test[BUFFER_SIZE];
 	int retval = terminal_read(0, buffer_test, BUFFER_SIZE);
 	int i= 0;
-	for (int i = 0; i < retval; ++i)
+	for (i = 0; i < retval; ++i)
 	putc(buffer_test[i]);
 	putc('d');
 	string = "Hi, ";
