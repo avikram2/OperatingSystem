@@ -6,9 +6,28 @@
 #define _LIB_H
 
 #include "types.h"
-#include "interrupts.h"
+
+//three masks for when writing to VGA registers
+#define VGA_CURSOR_MASK 0x0F
+#define VGA_MASK_2 0x0E
+#define CURSOR_BITMASK 0xFF
+
+#define ORIGIN_CURSOR 0 //mask to update cursor back to the beginning of the screen
 
 #ifndef ASM
+
+//custom functions
+
+//update the x,y position of the cursor
+extern void update_cursor(int x, int y); 
+
+//get y coordinate of cursor
+extern int get_cursor_y();
+
+//get x coordinate of cursor
+extern int get_cursor_x();
+
+void scrolling(); //implements the scrolling feature when lines run out
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);
@@ -31,7 +50,7 @@ int8_t* strncpy(int8_t* dest, const int8_t*src, uint32_t n);
 int32_t bad_userspace_addr(const void* addr, int32_t len);
 int32_t safe_strncpy(int8_t* dest, const int8_t* src, int32_t n);
 
-extern void test_interrupts(void);
+//extern void test_interrupts(void);
 /* Port read functions */
 /* Inb reads a byte and returns its value as a zero-extended 32-bit
  * unsigned int */

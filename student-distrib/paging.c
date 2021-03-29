@@ -1,10 +1,7 @@
 #include "paging.h"
 #include "lib.h"
 
-static unsigned int DIR_SIZE, TABLE_SIZE = 1024;
-unsigned int KERNEL_PHYS_ADDR = 0x400000;
-unsigned int VIDEO_ADDR = 0xB8000;
-unsigned int PHYSICAL_ADDR_SHIFT = 12;
+
 
 
 
@@ -25,14 +22,13 @@ unsigned int PHYSICAL_ADDR_SHIFT = 12;
 void enable_paging()
 {
 	uint32_t kernel_offset = KERNEL_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
-	uint32_t video_offset = VIDEO_ADDR << PHYSICAL_ADDR_SHIFT;
-	unsigned int video_mem_idx = VIDEO_ADDR/0x1000;
+	uint32_t video_offset = VIDEO_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
 	
 	int i;
 	for(i = 0; i < DIR_SIZE; i++)
 	{
 		// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 0 - not present (P)
-		page_directory[i] = 0x00000002;
+		page_directory[i] = R_MAP;
 	}
 
 
@@ -43,19 +39,19 @@ void enable_paging()
 	{
 		// sets top bits to physical address
 		// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 0 - not present (P)
-		kernel_page_table[j] = (j * 0x1000 + kernel_offset) | 3; // attributes: supervisor level, read/write, present.
+		kernel_page_table[j] = (j * BYTES_TO_ALIGN_TO + kernel_offset) | R_MAP | P_MAP; // attributes: supervisor level, read/write, present.
 	}
 
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
-	page_directory[1] = ((unsigned int)kernel_page_table) | 0x83;
+	page_directory[1] = ((unsigned int)kernel_page_table) | S_MAP | R_MAP | P_MAP;
 	
 	
 	//Set Video Memory
 	blank_table(first_page_table);
 	// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
-	first_page_table[video_mem_idx] = video_offset | 3;
+	first_page_table[VIDEO_PHYS_ADDR] = video_offset | R_MAP | P_MAP;
 	// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
-	page_directory[0] = ((unsigned int)first_page_table) | 3;
+	page_directory[0] = ((unsigned int)first_page_table) | R_MAP | P_MAP;
 	
 	
 	loadPageDirectory(page_directory);
@@ -70,7 +66,7 @@ void blank_table(uint32_t* table){
 	for(i = 0; i < TABLE_SIZE; i++)
 	{
 		// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 0 - not present (P)
-		table[i] = 0x00000002;
+		table[i] = R_MAP;
 	}
 	
 }

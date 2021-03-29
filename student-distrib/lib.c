@@ -8,9 +8,45 @@
 #define NUM_ROWS    25
 #define ATTRIB      0x7
 
+//macros for the vga ports to move the cursor
+#define VGA_PORT_1 0x3D4
+#define VGA_PORT_2 0x3D5
+
 static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
+
+//update_cursor(int x, int y)
+//function to update position of the cursor on the screen to a certain coordinate position
+//inputs: (x,y)
+//output: none
+//side effect: changes cursor to point to new
+void update_cursor(int x, int y){
+    screen_x  = x;
+    screen_y = y; //set screen position
+
+    uint16_t pos = y * NUM_COLS + x; //linearized position
+    outb(VGA_CURSOR_MASK, VGA_PORT_1);
+    outb((uint8_t)(pos & CURSOR_BITMASK), VGA_PORT_2);
+    outb(VGA_MASK_2, VGA_PORT_1);
+    outb((uint8_t)((pos >> 8) & CURSOR_BITMASK), VGA_PORT_2); //write VGA registers to get the visible cursor
+}
+
+//get_cursor_y
+//function to obtain the 'y' position of the cursor
+//inputs: none, outputs: the 'y' location of the cursor
+//side effect: returns y coordinate of the cursor
+int get_cursor_y(){
+    return screen_y;
+}
+
+//get_cursor_x
+//function to obtain the 'x' position of the cursor
+//inputs: none, outputs: the 'x' location of the cursor
+//side effect: returns x coordinate of the cursor
+int get_cursor_x(){
+    return screen_x;
+}
 
 /* void clear(void);
  * Inputs: void
@@ -163,6 +199,33 @@ int32_t puts(int8_t* s) {
     return index;
 }
 
+//scrolling
+//performs scrolling by moving all of the lines up by one place and then producing a new empty last line
+//input: nothing, output: nothing
+//side effect: implements a scrolling effect so that when running out of screen space, the lines are shifted to make space
+void scrolling(){
+int second_line_offset = NUM_COLS*2;
+	//the offset to the second line is the number of elements
+	//in the first line * 2, since each character is 2 bytes
+int number_of_bytes = (NUM_ROWS-1)*(NUM_COLS) + (NUM_ROWS-1)*(NUM_COLS);
+//the number of bytes to be copied upwards.
+//1 is subtracted from NUM_ROWS because of first row not counting
+memmove(video_mem, video_mem + second_line_offset, number_of_bytes); //move memory
+int i = 0;
+
+while (i < NUM_COLS){ //for all the characters in the line, clear them, aka set to 'space' character and set color
+*(uint8_t*)((video_mem + NUM_COLS * 2* (NUM_ROWS-1) + (i << 1))) = ' '; //multiplication by 2 due to the fact that two bytes = one character
+*(uint8_t*)(video_mem+NUM_COLS*2*(NUM_ROWS-1) + (i << 1) + 1) = ATTRIB;
+++i;
+}
+update_cursor(ORIGIN_CURSOR, NUM_ROWS-1); //set cursor to the first character of the new last line
+screen_x = ORIGIN_CURSOR;
+screen_y = NUM_ROWS-1;
+}
+
+
+
+
 /* void putc(uint8_t c);
  * Inputs: uint_8* c = character to print
  * Return Value: void
@@ -170,13 +233,20 @@ int32_t puts(int8_t* s) {
 void putc(uint8_t c) {
     if(c == '\n' || c == '\r') {
         screen_y++;
-        screen_x = 0;
-    } else {
+        screen_x = ORIGIN_CURSOR; //first position of newline
+	if (screen_y >= NUM_ROWS){ //if leaving the screen, then implement scrolling
+	scrolling();
+	}
+
+    }else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-        screen_x++;
-        screen_x %= NUM_COLS;
-        screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+        screen_x++; //increment horiz position
+        screen_y = (screen_y + (screen_x / NUM_COLS)); //if necessary new line
+	    screen_x = screen_x % NUM_COLS; //adjust overflow of horiz position
+	if (screen_y >= NUM_ROWS){ //implement scrolling if necessary
+        scrolling();
+}
     }
 }
 
@@ -464,18 +534,18 @@ int8_t* strncpy(int8_t* dest, const int8_t* src, uint32_t n) {
     return dest;
 }
 
-/* void test_interrupts(void)
- * Inputs: void
- * Return Value: void
- * Function: increments video memory. To be used to test rtc */
-void test_interrupts(void) {
-    int32_t i;
-    for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-        video_mem[i << 1]++;
-    }
+// /* void test_interrupts(void)
+//  * Inputs: void
+//  * Return Value: void
+//  * Function: increments video memory. To be used to test rtc */
+// void test_interrupts(void) {
+//     int32_t i;
+//     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
+//         video_mem[i << 1]++;
+//     }
 
-    outb(REGISTER_C, RTC_PORT);
-    inb(CMOS_PORT); // reading value from register C to ensure RTC interrupts happen again
+//     outb(REGISTER_C, RTC_PORT);
+//     inb(CMOS_PORT); // reading value from register C to ensure RTC interrupts happen again
 
-    send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line 
-}
+//     send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line 
+// }

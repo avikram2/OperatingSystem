@@ -9,6 +9,8 @@
 #define REG_A           0x8A //select register, disable NMI 
 #define REG_B           0x8B
 
+#define TWO_HZ_RATE 15
+
 #define LOWER_4_BITS_MASK   0x0F
 #define UPPER_4_BITS_MASK   0xF0
 
