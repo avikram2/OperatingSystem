@@ -34,8 +34,8 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     keyboard_buffer_index = 0; //reset the buffer
     terminal_read_flag = 0; //disable the flag, exiting the read function
 
-    for (i = 0; i < BUFFER_SIZE; ++i){ //initalize keyboard buffer
-        keyboard_buffer[i] = '\0'; //initialize to space
+    for (i = 0; i < BUFFER_SIZE; ++i){ //reset keyboard buffer
+        keyboard_buffer[i] = '\0'; //reset to nullcharacter
     }
     return nbytes;
     }
@@ -58,6 +58,9 @@ int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes){
         putc(buf[i]); //print character to screen
     }
     update_cursor(get_cursor_x(), get_cursor_y()); //update cursor after printing
+
+    for (int i = 0; i < BUFFER_SIZE; i++)
+    buf[i] = '\0'; //reset the buffer to nullcharacters
     return nbytes;
 }
 
