@@ -159,11 +159,15 @@ int terminal_driver_test(){
 	// 	putc(nullbuf[j])
 	// }
 	terminal_write(0, string, strlen(string));
-	uint8_t buff[BUFFER_SIZE];
-	int retval = terminal_read(0, buff, BUFFER_SIZE-1);
-	string = "Hi, \n";
+	uint8_t buffer_test[BUFFER_SIZE];
+	int retval = terminal_read(0, buffer_test, BUFFER_SIZE);
+	int i= 0;
+	for (int i = 0; i < retval; ++i)
+	putc(buffer_test[i]);
+	putc('d');
+	string = "Hi, ";
 	terminal_write(0, string, strlen(string));
-	terminal_write(0, buff, retval);
+	terminal_write(0, buffer_test, retval);
 	terminal_close(0);
 	return PASS;
 }
