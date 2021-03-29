@@ -534,18 +534,18 @@ int8_t* strncpy(int8_t* dest, const int8_t* src, uint32_t n) {
     return dest;
 }
 
-/* void test_interrupts(void)
- * Inputs: void
- * Return Value: void
- * Function: increments video memory. To be used to test rtc */
-void test_interrupts(void) {
-    int32_t i;
-    for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-        video_mem[i << 1]++;
-    }
+// /* void test_interrupts(void)
+//  * Inputs: void
+//  * Return Value: void
+//  * Function: increments video memory. To be used to test rtc */
+// void test_interrupts(void) {
+//     int32_t i;
+//     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
+//         video_mem[i << 1]++;
+//     }
 
-    outb(REGISTER_C, RTC_PORT);
-    inb(CMOS_PORT); // reading value from register C to ensure RTC interrupts happen again
+//     outb(REGISTER_C, RTC_PORT);
+//     inb(CMOS_PORT); // reading value from register C to ensure RTC interrupts happen again
 
-    send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line 
-}
+//     send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line 
+// }
