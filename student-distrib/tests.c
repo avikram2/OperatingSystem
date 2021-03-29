@@ -129,22 +129,17 @@ int video_memory_access_test(){
 	return PASS;
 }
 
-//testing to see if accesses in video memory are permitted, in order to test if video memory paging set up properly
-//covers paging, video memory paging
-//files: paging.c
-
-
-/* Checkpoint 2 tests */
-//RTC Test, to test the RTC_DRIVER
-//covers the RTC Driver test, such as open, write, read and close functions
-//file: rtc_driver.c/h
+//testing to see if we can egenrate interrupts with the rtc driver
+//covers rtc interrupts, the rtc driver
+//should wait for 10 seconds, regardless of the frequency set
+//files: rtc_driver.c/h
 int rtc_test(){
-	TEST_HEADER;
-	int count = 0; //init count
+	int frequency = 2;
+	int count = 0;
 	int rtc_instance;
 	rtc_open(&rtc_instance);
-	rtc_write(rtc_instance, 2);
-	for(count = 0;count<20;count++) //run for twenty times
+	rtc_write(rtc_instance, frequency);
+	for(count = 0;count<10 * frequency;count++)
 	{
 		rtc_read(rtc_instance);
 	}
