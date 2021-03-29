@@ -9,6 +9,10 @@
 
 #define NULLCHAR '\0' //representation of the nullcharacter
 
+#define ENABLE 1 //enable the flag if terminal_read is called
+
+#define DISABLE 0 //disable the flag if terminal_read is not invoked or finished
+
 #ifndef ASM
 
 uint8_t keyboard_buffer[BUFFER_SIZE];

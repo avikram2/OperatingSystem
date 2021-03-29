@@ -78,7 +78,7 @@ void interrupt_keyboard_handler(){
 
 	else if (scancode == ENTER){
 	 //check if enter (newline, pressed)
-	if (terminal_read_flag == 1){//if the terminal_read_function is being invoked
+	if (terminal_read_flag == ENABLE){//if the terminal_read_function is being invoked
 	if (keyboard_buffer_index <= (BUFFER_SIZE-1)){ //if the enter is in the range of the buffer
 		keyboard_buffer[keyboard_buffer_index] = '\n'; //add to buffer
 		keyboard_buffer_index+=1; //increment keyboard index after newline character
