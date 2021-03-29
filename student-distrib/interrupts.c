@@ -70,7 +70,7 @@ void interrupt_keyboard_handler(){
 		}
 	}
 
-    if (scancode >= SCAN_CODE_SIZE || scancode == 0){ //if scancode is outside array, then end interrupt
+    else if (scancode >= SCAN_CODE_SIZE || scancode == 0){ //if scancode is outside array, then end interrupt
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
@@ -78,15 +78,18 @@ void interrupt_keyboard_handler(){
 
 	else if (scancode == ENTER){
 	 //check if enter (newline, pressed)
-	if (keyboard_buffer_index <= BUFFER_SIZE-1){ //if the enter is in the range of the buffer
-		keyboard_buffer[keyboard_buffer_index] = '\n';
+	if (terminal_read_flag == 1){//if the terminal_read_function is being invoked
+	if (keyboard_buffer_index <= (BUFFER_SIZE-1)){ //if the enter is in the range of the buffer
+		keyboard_buffer[keyboard_buffer_index] = '\n'; //add to buffer
 		keyboard_buffer_index+=1; //increment keyboard index after newline character
-		int num_bytes = terminal_read(0, buffer, keyboard_buffer_index); //call terminal read
-		terminal_write(0, buffer, num_bytes); //call terminal write
-		keyboard_buffer_index = 0;
+		terminal_write(0,buffer, keyboard_buffer_index); //call terminal_write to display characters
 	}
+	}
+	else {
 	putc(scan_code_default[scancode-1]); //write out newline to screen
 	update_cursor(get_cursor_x(), get_cursor_y()); //update cursor position
+	keyboard_buffer_index = 0;
+	}
 	}
 	else if(scancode == BACK_SPACE){ //check if backspace pressed
 

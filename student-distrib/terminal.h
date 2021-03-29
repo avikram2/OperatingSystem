@@ -15,6 +15,8 @@ uint8_t buffer[BUFFER_SIZE];
 
 uint32_t keyboard_buffer_index; //tracks current index of keyboard buffer
 
+extern uint32_t terminal_read_flag;
+
 // uint8_t buf[BUFFER_SIZE];
 
 //open the terminal, initialize
