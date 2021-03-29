@@ -151,7 +151,7 @@ int terminal_driver_test(){
 	TEST_HEADER;
 	terminal_open(NULL); //open terminal
 	clear();
-	update_cursor(get_cursor_x(), get_cursor_y());
+	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
 	printf("Hello, what is your name ?\n");
 	uint8_t buff[BUFFER_SIZE];
 	int retval = terminal_read(0, buff, BUFFER_SIZE-1);
