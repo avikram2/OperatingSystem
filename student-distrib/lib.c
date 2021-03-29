@@ -549,3 +549,4 @@ int8_t* strncpy(int8_t* dest, const int8_t* src, uint32_t n) {
 
 //     send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line 
 // }
+
