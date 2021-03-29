@@ -153,7 +153,7 @@ int terminal_driver_test(){
 	clear();
 	printf("Hello, what is your name ?\n");
 	uint8_t buff[BUFFER_SIZE];
-	int retval = terminal_read(0, buff, BUFFER_SIZE);
+	int retval = terminal_read(0, buff, BUFFER_SIZE-1);
 	printf("Hi, ");
 	terminal_write(0, buff, retval);
 	terminal_close(0);
