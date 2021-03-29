@@ -66,7 +66,44 @@ uint32_t read_inode_data_len (uint32_t inode_idx){
 
 int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length){
 	
+	//Check if index is out of bounds
+	if(inode >= file_sys->num_dentries)
+		return -1;
+	
+	//Check empty buffer?
+	
+	inode_t* inode_real = (inode_t*)((uint32_t)file_sys + (inode + 1) * SIZE_BLOCK);
+	
+	//change to read_inode_data_len
+	uint32_t file_len = inode_real->length;
+	
+	if(offset >= file_len)
+		return -1;
+	
+	uint32_t num_blocks = file_sys->num_datablocks;
+	
+	uint32_t* data_block_start = (uint32_t*)((uint32_t)file_sys + (file_sys->num_dentries + 1) * SIZE_BLOCK);
+	uint32_t data_block_idx = ((uint32_t)inode_real + (offset / SIZE_BLOCK) + 1);
+	
+	uint32_t* data_block_addr = (uint32_t*)((uint32_t)data_block_start + data_block_idx * SIZE_BLOCK);
 	
 	
-	return -1;
+	uint32_t num_bytes_read = 0;
+	
+	while(num_bytes_read < length){
+		
+		if(offset + num_bytes_read >= file_len)
+			return 0;
+
+		//possible mess up
+		if((offset + num_bytes_read) % SIZE_BLOCK == 0){
+			data_block_idx += 1;
+			data_block_addr = (uint32_t*)((uint32_t)data_block_start + data_block_idx * SIZE_BLOCK);
+		}
+		
+		buf[num_bytes_read] = *(data_block_addr + offset + num_bytes_read);
+		num_bytes_read++;
+	}
+	
+	return num_bytes_read;
 }
