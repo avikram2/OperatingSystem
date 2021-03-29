@@ -21,6 +21,8 @@ static int shift_flag = 0; //variable for tracking shift state
 
 static int caps_flag = 0; //variable for tracking caps state
 
+static int ctrl_flag = 0; //varaible for tracking ctrl state
+
 // interrupt keyboard handler:
 // will handle input from the keyboard when interrupt is generated and echo them to the screen
 //inputs: none
@@ -47,14 +49,25 @@ void interrupt_keyboard_handler(){
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
+      case LEFT_CRTL:
+        ctrl_flag = ((scancode&BREAK_MASK)==0);
+        send_eoi(KEYBOARD_IRQ_1);
+        sti();
+        return;
     }
 
+    // Still need to replace putc statements with char buffer to be used in the terminal
     if (scancode >= SCAN_CODE_SIZE || scancode == 0){ //if scancode is outside array, then end interrupt
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
     }
-    else {
+    else if(ctrl_flag&&(scancode=="l")){ //Ctrl-L handle
+      int i;
+      for(i=0; i < 100; i++){
+        putc("\n"); //rudimentary way of clearing the screen for now
+      }
+    } else { //remaining cases
       if (shift_flag) { //check for shift held down
         if (caps_flag) { //check for caps lock
           putc(scan_code_caps_shift[scancode-1]); //put character onto screen from the array
