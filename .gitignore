@@ -114,5 +114,4 @@ source/
 
 # MP specific 
 *.dep
-*.img
 bootimg
