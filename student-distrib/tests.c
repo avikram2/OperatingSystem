@@ -3,6 +3,7 @@
 #include "lib.h"
 #include "idt.h"
 #include "rtc_driver.h"
+#include "terminal.h"
 
 #define PASS 1
 #define FAIL 0
@@ -128,6 +129,7 @@ int video_memory_access_test(){
 	return PASS;
 }
 
+<<<<<<< student-distrib/tests.c
 //testing to see if we can egenrate interrupts with the rtc driver
 //covers rtc interrupts, the rtc driver
 //should wait for 10 seconds, regardless of the frequency set
@@ -139,6 +141,24 @@ int rtc_test(){
 	rtc_open(&rtc_instance);
 	rtc_write(rtc_instance, frequency);
 	for(count = 0;count<10 * frequency;count++)
+=======
+//testing to see if accesses in video memory are permitted, in order to test if video memory paging set up properly
+//covers paging, video memory paging
+//files: paging.c
+
+
+/* Checkpoint 2 tests */
+//RTC Test, to test the RTC_DRIVER
+//covers the RTC Driver test, such as open, write, read and close functions
+//file: rtc_driver.c/h
+int rtc_test(){
+	TEST_HEADER;
+	int count = 0; //init count
+	int rtc_instance;
+	rtc_open(&rtc_instance);
+	rtc_write(rtc_instance, 2);
+	for(count = 0;count<20;count++) //run for twenty times
+>>>>>>> student-distrib/tests.c
 	{
 		rtc_read(rtc_instance);
 	}
@@ -146,8 +166,18 @@ int rtc_test(){
 	return PASS;
 }
 
+int terminal_driver_test(){
+	TEST_HEADER;
 
-/* Checkpoint 2 tests */
+	terminal_open(NULL); //open terminal
+	printf("Hello, what is your name ?");
+	uint8_t buff[BUFFER_SIZE];
+	int retval = terminal_read(0, buff, BUFFER_SIZE);
+	printf("Hi, ");
+	terminal_write(0, buff, retval);
+}
+
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */

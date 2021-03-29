@@ -26,8 +26,8 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     for (i = 0; i < nbytes; i++){ //for each byte
         buf[i] = keyboard_buffer[i]; //set terminal buffer equal to keyboard buffer
     }
-    return nbytes;
     keyboard_buffer_index = 0; //reset the buffer
+    return nbytes;
 }
 
 

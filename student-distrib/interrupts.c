@@ -38,28 +38,37 @@ void interrupt_keyboard_handler(){
     unsigned int scancode;
     scancode = inb(DATA_PORT_KEYBOARD); //read in from the keyboard data port, 0x60
     //Check if the scancode is a special key (shift, ctrl,... etc.) and set flags accordingly
-    switch(scancode&SCAN_MASK){
-      case LEFT_SHIFT:
+    switch(scancode&SCAN_MASK){ //check which special char is pressed
+      case LEFT_SHIFT: //if left shift is pressed
         shift_flag = ((scancode&BREAK_MASK)==0);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
-      case RIGHT_SHIFT:
+      case RIGHT_SHIFT: //if right shift is pressed
         shift_flag = ((scancode&BREAK_MASK)==0);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
-      case CAPS_LOCK:
+      case CAPS_LOCK: // if caps is pressed
         caps_flag = ((scancode&BREAK_MASK)==0);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
-	case LEFT_CRTL:
+	case LEFT_CRTL: //if left control is pressed
         ctrl_flag = ((scancode&BREAK_MASK)==0);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
     }
+
+	if (scancode == SPACE){ //if the SPACE BAR is pressed
+		putc(' '); //put space character
+		update_cursor(get_cursor_x(), get_cursor_y()); //update cursor position
+		if (keyboard_buffer_index <= (BUFFER_SIZE-2)){ //add space to the buffer, as long as its not in the last position or outside
+			keyboard_buffer[keyboard_buffer_index] = ' ';
+			keyboard_buffer_index++; //increment index of buffer
+		}
+	}
 
     if (scancode >= SCAN_CODE_SIZE || scancode == 0){ //if scancode is outside array, then end interrupt
         send_eoi(KEYBOARD_IRQ_1);
@@ -77,6 +86,7 @@ void interrupt_keyboard_handler(){
 		keyboard_buffer_index = 0;
 	}
 	putc(scan_code_default[scancode-1]); //write out newline to screen
+	update_cursor(get_cursor_x(), get_cursor_y()); //update cursor position
 	}
 	else if(scancode == BACK_SPACE){ //check if backspace pressed
 
@@ -98,17 +108,17 @@ void interrupt_keyboard_handler(){
 	}
 	else { //else if cursor was not at the beginning of a line
 	update_cursor(x_curr-1, y_curr);
-	putc(' ');
-	x_curr -=1;
-	if (x_curr == 0 && y_curr != 0){
-	x_curr = NUM_COLS-1;
+	putc(' '); //put the blank space, deleting previous charavter
+	x_curr -=1; //decrement x coordinate
+	if (x_curr == 0 && y_curr != 0){ //if at the beginning of a line, not the first line
+	x_curr = NUM_COLS-1; //go back to the end of the previous line
 	y_curr -=1;
 	update_cursor(x_curr, y_curr);
 	}
-	else if (x_curr == 0 && y_curr == 0){
+	else if (x_curr == 0 && y_curr == 0){ //if at the beginning of the screen, no need to do anything
 	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
 	}
-	else {
+	else { //update the cursor
 	update_cursor(x_curr, y_curr);
 	}
 
@@ -117,6 +127,7 @@ void interrupt_keyboard_handler(){
 	else if(ctrl_flag&&(scancode==L_CODE)){ //Ctrl-L handle
       clear(); //clear the screen
 	  update_cursor(ORIGIN_CURSOR,ORIGIN_CURSOR); //send the cursor back to the beginning of the screen
+	  terminal_write(0, buffer, keyboard_buffer_index); //write buffer to screen
 	}
 
     else {
