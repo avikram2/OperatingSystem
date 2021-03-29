@@ -268,9 +268,9 @@ void launch_tests(){
 	/* Checkpoint 2 Test */
 	//TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
 	//TEST_OUTPUT("echo_terminal_test", echo_terminal_test());
-	//TEST_OUTPUT("read_data test", read_data_test());
-	TEST_OUTPUT("read_data", file_read_test());
-	TEST_OUTPUT("read_data", directory_read_test());
+	TEST_OUTPUT("read_data test", read_data_test());
+	//TEST_OUTPUT("read_data", file_read_test());
+	//TEST_OUTPUT("read_data", directory_read_test());
 
 	// launch your tests here
 }
