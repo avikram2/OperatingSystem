@@ -5,7 +5,15 @@
 #include "types.h"
 #include "lib.h"
 
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 128 //the maximum size of the buffer, in characters
+
+#define NULLCHAR '\0' //representation of the nullcharacter
+
+#define ENABLE 1 //enable the flag if terminal_read is called
+
+#define DISABLE 0 //disable the flag if terminal_read is not invoked or finished
+
+#define BEGINNING_IDX 0 //the beginning of the keyboard_buffer (index)
 
 #ifndef ASM
 
@@ -14,6 +22,8 @@ uint8_t keyboard_buffer[BUFFER_SIZE];
 uint8_t buffer[BUFFER_SIZE];
 
 uint32_t keyboard_buffer_index; //tracks current index of keyboard buffer
+
+uint32_t terminal_read_flag; //flag to track if the terminal_read function has been invoked or not
 
 // uint8_t buf[BUFFER_SIZE];
 

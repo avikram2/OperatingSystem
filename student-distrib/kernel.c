@@ -154,7 +154,7 @@ void entry(unsigned long magic, unsigned long addr) {
      * PIC, any other initialization stuff... */
     //init keyboard
     keyboard_init();
-  //init_rtc(); 
+    //init_rtc(); 
 //init the RTC and enable RTC interrupts
     /* Enable interrupts */
     /* Do not enable the following until after you have set up your
@@ -167,8 +167,7 @@ void entry(unsigned long magic, unsigned long addr) {
 
 #ifdef RUN_TESTS
     /* Run tests */
-	launch_tests();
-
+   launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
 

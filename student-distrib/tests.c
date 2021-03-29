@@ -4,7 +4,6 @@
 #include "idt.h"
 #include "rtc_driver.h"
 #include "terminal.h"
-#include "filesystem.h"
 
 #define PASS 1
 #define FAIL 0
@@ -130,22 +129,17 @@ int video_memory_access_test(){
 	return PASS;
 }
 
-//testing to see if accesses in video memory are permitted, in order to test if video memory paging set up properly
-//covers paging, video memory paging
-//files: paging.c
-
-
-/* Checkpoint 2 tests */
-//RTC Test, to test the RTC_DRIVER
-//covers the RTC Driver test, such as open, write, read and close functions
-//file: rtc_driver.c/h
+//testing to see if we can egenrate interrupts with the rtc driver
+//covers rtc interrupts, the rtc driver
+//should wait for 10 seconds, regardless of the frequency set
+//files: rtc_driver.c/h
 int rtc_test(){
-	TEST_HEADER;
-	int count = 0; //init count
+	int frequency = 2;
+	int count = 0;
 	int rtc_instance;
 	rtc_open(&rtc_instance);
-	rtc_write(rtc_instance, 2);
-	for(count = 0;count<20;count++) //run for twenty times
+	rtc_write(rtc_instance, frequency);
+	for(count = 0;count<10 * frequency;count++)
 	{
 		rtc_read(rtc_instance);
 	}
@@ -155,79 +149,38 @@ int rtc_test(){
 
 int terminal_driver_test(){
 	TEST_HEADER;
-
 	terminal_open(NULL); //open terminal
-	printf("Hello, what is your name ?");
-	uint8_t buff[BUFFER_SIZE];
-	int retval = terminal_read(0, buff, BUFFER_SIZE);
-	printf("Hi, ");
-	terminal_write(0, buff, retval);
+	clear();
+	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
+	uint8_t* string = "Hello, what is your name \n";
+	// uint8_t * nullbuf = "\0\0\0\0\0a";
+	// int j;
+	// for (j = 0; j < 6; ++j){
+	// 	putc(nullbuf[j])
+	// }
+	terminal_write(0, string, strlen(string));
+	uint8_t buffer_test[BUFFER_SIZE];
+	int retval = terminal_read(0, buffer_test, BUFFER_SIZE-1);
+	int i= 0;
+	string = "Hi, ";
+	terminal_write(0, string, strlen(string));
+	terminal_write(0, buffer_test, retval);
+	terminal_close(0);
+	return PASS;
 }
 
-int read_data_test(){
-	uint8_t buf[FS_BUF_LENGTH];
-	
-	//SET FILE NAME
-	uint8_t fname[MAX_NAME_LENGTH] = "frame1.txt";
-	dentry_t temp;
-	uint32_t file_len, bytes_read;
-	
-	read_dentry_by_name(fname, &temp);
-	inode_t* inode = (inode_t*)((uint32_t)file_sys + (temp.inode_idx + 1) * SIZE_BLOCK);
-	file_len = inode->length;
-	bytes_read = read_data(temp.inode_idx, 0, buf, file_len);
-	
-	
-	printf("file_read(%s)\n", fname); // testing file_read
-	
-	
-	//test read_dentry_by_name output
-	//test needs to get redefined to match entire dentry to requested dentry
-	printf("file name: ");
-	uint32_t i;
-	for (i = 0; i < MAX_NAME_LENGTH; i++) {
-		printf("%c", temp.filename[i]);
+int echo_terminal_test(){
+	TEST_HEADER;
+	terminal_open(NULL);
+	clear();
+	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
+	while (1){
+		uint8_t buffer_test[BUFFER_SIZE];
+		int retval = terminal_read(0, buffer_test, BUFFER_SIZE);
+		terminal_write(0, buffer_test, retval);
 	}
-	printf("\n");
-	if(strncmp((char*)fname, (char*)temp.filename, MAX_NAME_LENGTH) != 0)
-		return FAIL;
-	
-	printf("read_dentry_by_name(): PASS\n");
-	
-	//test read_data
-	printf("file length: %d\n", bytes_read);
-	if(bytes_read == -1)
-		return FAIL;
-	
-	
-	//Uncomment below to print file data
-	printf("file data: \n");
-	printf("%s", (char*)buf);
-	
-	while(1);
 	return PASS;
 }
-
-int file_read_test(){
-	uint8_t buf[FS_BUF_LENGTH];
-	
-	//SET FILE NAME
-	uint8_t fname[MAX_NAME_LENGTH] = "frame1.txt";
-	file_read(fname, buf, FS_BUF_LENGTH - 1);
-	if(buf == NULL)
-		return FAIL;
-	printf("%s", buf);
-	return PASS;
-}
-
-int directory_read_test(){
-	uint8_t buf[FS_BUF_LENGTH];
-	uint8_t fname[MAX_NAME_LENGTH] = ".";
-	if(directory_read(fname, buf, FS_BUF_LENGTH - 1) == -1)
-		return FAIL;
-	return PASS;
-}
-
 
 
 /* Checkpoint 3 tests */
@@ -243,8 +196,7 @@ void launch_tests(){
 	//TEST_OUTPUT("page fault", page_fault_test());
 	//TEST_OUTPUT("video memory access", video_memory_access_test());
 	//TEST_OUTPUT("rtc_test", rtc_test());
-	//TEST_OUTPUT("read_data test", read_data_test());
-	TEST_OUTPUT("read_data", file_read_test());
-	TEST_OUTPUT("read_data", directory_read_test());
+	//TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
+	TEST_OUTPUT("echo_terminal_test", echo_terminal_test());
 	// launch your tests here
 }
