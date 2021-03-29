@@ -82,7 +82,6 @@ void interrupt_keyboard_handler(){
 	if (keyboard_buffer_index <= (BUFFER_SIZE-1)){ //if the enter is in the range of the buffer
 		keyboard_buffer[keyboard_buffer_index] = '\n'; //add to buffer
 		keyboard_buffer_index+=1; //increment keyboard index after newline character
-		keyboard_buffer_index = 0;
 	}
 	}
 	else {
