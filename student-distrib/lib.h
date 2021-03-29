@@ -13,6 +13,8 @@
 #define VGA_MASK_2 0x0E
 #define CURSOR_BITMASK 0xFF
 
+#define ORIGIN_CURSOR 0 //mask to update cursor back to the beginning of the screen
+
 #ifndef ASM
 
 //custom functions

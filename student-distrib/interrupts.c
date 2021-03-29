@@ -6,16 +6,16 @@
 
 //array for scancode keyboard inputs and characters to print
 static char scan_code_default[SCAN_CODE_SIZE] = {
-'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', ' ', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', '0', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '0', '0', '0', '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '0', '0', '/'};
+'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', ' ', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', '0', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '0', '0', '0', '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'};
 
 static char scan_code_shift[SCAN_CODE_SIZE] = {
-'0', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b', ' ', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n', '0', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '0', '0', '0', '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '0', '0', '?'};
+'0', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b', ' ', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n', '0', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '0', '0', '0', '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?'};
 
 static char scan_code_caps[SCAN_CODE_SIZE] = {
-'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', ' ', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\n', '0', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', '0', '0', '0', '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '0', '0', '/'};
+'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', ' ', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\n', '0', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', '0', '0', '0', '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/'};
 
 static char scan_code_caps_shift[SCAN_CODE_SIZE] = {
-'0', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b', ' ', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '{', '}', '\n', '0', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ':', '0', '0', '0', '|', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '0', '0', '?'};
+'0', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b', ' ', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '{', '}', '\n', '0', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ':', '0', '0', '0', '|', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '<', '>', '?'};
 
 //static char* video_mem = (char *)VIDEO;
 
@@ -115,8 +115,8 @@ void interrupt_keyboard_handler(){
         putc(scan_code_caps[scancode-1]); //put character onto screen from the array
       } else {
         putc(scan_code_default[scancode-1]); //put character onto screen from the array
-      	update_cursor(get_cursor_x(), get_cursor_y());
 	}
+	update_cursor(get_cursor_x(), get_cursor_y()); //mode cursor position to reflect added character
     }
 
     send_eoi(KEYBOARD_IRQ_1);

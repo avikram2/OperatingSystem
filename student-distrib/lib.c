@@ -199,6 +199,10 @@ int32_t puts(int8_t* s) {
     return index;
 }
 
+//scrolling
+//performs scrolling by moving all of the lines up by one place and then producing a new empty last line
+//input: nothing, output: nothing
+//side effect: implements a scrolling effect so that when running out of screen space, the lines are shifted to make space
 void scrolling(){
 int second_line_offset = NUM_COLS*2;
 	//the offset to the second line is the number of elements
@@ -209,14 +213,14 @@ int number_of_bytes = (NUM_ROWS-1)*(NUM_COLS) + (NUM_ROWS-1)*(NUM_COLS);
 memmove(video_mem, video_mem + second_line_offset, number_of_bytes); //move memory
 int i = 0;
 
-while (i < NUM_COLS){
-*(uint8_t*)((video_mem + NUM_COLS * 2* (NUM_ROWS-1) + (i << 1))) = ' ';
+while (i < NUM_COLS){ //for all the characters in the line, clear them, aka set to 'space' character and set color
+*(uint8_t*)((video_mem + NUM_COLS * 2* (NUM_ROWS-1) + (i << 1))) = ' '; //multiplication by 2 due to the fact that two bytes = one character
 *(uint8_t*)(video_mem+NUM_COLS*2*(NUM_ROWS-1) + (i << 1) + 1) = ATTRIB;
 ++i;
 }
-update_cursor(NUM_COLS-1, NUM_ROWS-2);
-screen_x = NUM_COLS-1;
-screen_y = NUM_ROWS-2;
+update_cursor(ORIGIN_CURSOR, NUM_ROWS-1); //set cursor to the first character of the new last line
+screen_x = ORIGIN_CURSOR;
+screen_y = NUM_ROWS-1;
 }
 
 
@@ -229,8 +233,8 @@ screen_y = NUM_ROWS-2;
 void putc(uint8_t c) {
     if(c == '\n' || c == '\r') {
         screen_y++;
-        screen_x = 0; //first position of newline
-	if (screen_y >= NUM_ROWS){
+        screen_x = ORIGINAL_CURSOR; //first position of newline
+	if (screen_y >= NUM_ROWS){ //if leaving the screen, then implement scrolling
 	scrolling();
 	}
 
