@@ -156,6 +156,7 @@ int terminal_driver_test(){
 	int retval = terminal_read(0, buff, BUFFER_SIZE);
 	printf("Hi, ");
 	terminal_write(0, buff, retval);
+	return PASS;
 }
 
 
