@@ -3,13 +3,13 @@
 
 
 //terminal_open
-//function to initialize buffers and the terminal
-//inputs: filename: unsigned int pointer
+//function to initialize buffers and the terminal, open the terminal
+//inputs: filename: unsigned integer pointer
 //outputs: return 0
-//effects initializes keyboard_buffer
+//effects initializes keyboard_buffer, and opens the terminal
 int32_t terminal_open(const uint8_t* filename){
     int i;
-    keyboard_buffer_index = 0; //reset to beginning of keyboard buffer
+    keyboard_buffer_index = BEGINNING_IDX; //reset to beginning of keyboard buffer
     for (i = 0; i < BUFFER_SIZE; ++i){ //initalize keyboard buffer
         keyboard_buffer[i] = NULLCHAR; //initialize to null character
         buffer[i] = NULLCHAR;
@@ -25,8 +25,8 @@ int32_t terminal_open(const uint8_t* filename){
 int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     terminal_read_flag = ENABLE; //enable flag, which means read function invoked
 
-    if (nbytes <= 0){ //if incorrect input (negative bytes)
-        keyboard_buffer_index = 0; //reset the keyboard buffer
+    if (nbytes <= BEGINNING_IDX){ //if incorrect input (negative bytes)
+        keyboard_buffer_index = BEGINNING_IDX; //reset the keyboard buffer
         terminal_read_flag = DISABLE; //exiting function
 
         int j;
@@ -39,7 +39,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     }
     
     while (1){
-    //polling for new_line to arrive in the buffer
+    //polling for new_line character to arrive in the buffer
     if (keyboard_buffer_index != 0 && keyboard_buffer[keyboard_buffer_index-1] == '\n'){
     int returnvalue = (nbytes < keyboard_buffer_index)? nbytes: keyboard_buffer_index;
     //the returnvalue (aka number of bytes read by the function)
@@ -53,7 +53,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     }
     //calculate the number of bytes printed
 
-    keyboard_buffer_index = 0; //reset the buffer
+    keyboard_buffer_index = BEGINNING_IDX; //reset the buffer index
     terminal_read_flag = DISABLE; //disable the flag, exiting the read function
     return returnvalue;
     }
@@ -72,7 +72,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 //output: how many characters written to screen
 int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes){
 
-    if (nbytes <= 0 || nbytes > BUFFER_SIZE){ //if the number of bytes is negative or too big, return 
+    if (nbytes <= BEGINNING_IDX|| nbytes > BUFFER_SIZE){ //if the number of bytes is negative or too big, return 
     return 0;
     }
     int i = 0;

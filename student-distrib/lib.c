@@ -26,7 +26,7 @@ void update_cursor(int x, int y){
     screen_y = y; //set screen position
 
     uint16_t pos = y * NUM_COLS + x; //linearized position
-    outb(VGA_CURSOR_MASK, VGA_PORT_1);
+    outb(VGA_CURSOR_MASK, VGA_PORT_1); //send relevant values to VGA registers
     outb((uint8_t)(pos & CURSOR_BITMASK), VGA_PORT_2);
     outb(VGA_MASK_2, VGA_PORT_1);
     outb((uint8_t)((pos >> 8) & CURSOR_BITMASK), VGA_PORT_2); //write VGA registers to get the visible cursor
