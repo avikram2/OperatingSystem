@@ -4,6 +4,7 @@
 #include "idt.h"
 #include "rtc_driver.h"
 #include "terminal.h"
+#include "filesystem.h"
 
 #define PASS 1
 #define FAIL 0
@@ -184,6 +185,71 @@ int echo_terminal_test(){
 }
 
 
+int read_data_test(){
+	uint8_t buf[FS_BUF_LENGTH];
+	
+	//SET FILE NAME
+	uint8_t fname[MAX_NAME_LENGTH] = "frame1.txt";
+	dentry_t temp;
+	uint32_t file_len, bytes_read;
+	
+	read_dentry_by_name(fname, &temp);
+	inode_t* inode = (inode_t*)((uint32_t)file_sys + (temp.inode_idx + 1) * SIZE_BLOCK);
+	file_len = inode->length;
+	bytes_read = read_data(temp.inode_idx, 0, buf, file_len);
+	
+	
+	printf("file_read(%s)\n", fname); // testing file_read
+	
+	
+	//test read_dentry_by_name output
+	//test needs to get redefined to match entire dentry to requested dentry
+	printf("file name: ");
+	uint32_t i;
+	for (i = 0; i < MAX_NAME_LENGTH; i++) {
+		printf("%c", temp.filename[i]);
+	}
+	printf("\n");
+	if(strncmp((char*)fname, (char*)temp.filename, MAX_NAME_LENGTH) != 0)
+		return FAIL;
+	
+	printf("read_dentry_by_name(): PASS\n");
+	
+	//test read_data
+	printf("file length: %d\n", bytes_read);
+	if(bytes_read == -1)
+		return FAIL;
+	
+	
+	//Uncomment below to print file data
+	printf("file data: \n");
+	printf("%s", (char*)buf);
+	
+	while(1);
+	return PASS;
+}
+
+int file_read_test(){
+	uint8_t buf[FS_BUF_LENGTH];
+	
+	//SET FILE NAME
+	uint8_t fname[MAX_NAME_LENGTH] = "frame1.txt";
+	file_read(fname, buf, FS_BUF_LENGTH - 1);
+	if(buf == NULL)
+		return FAIL;
+	printf("%s", buf);
+	return PASS;
+}
+
+int directory_read_test(){
+	uint8_t buf[FS_BUF_LENGTH];
+	uint8_t fname[MAX_NAME_LENGTH] = ".";
+	if(directory_read(fname, buf, FS_BUF_LENGTH - 1) == -1)
+		return FAIL;
+	return PASS;
+}
+
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -197,7 +263,14 @@ void launch_tests(){
 	//TEST_OUTPUT("page fault", page_fault_test());
 	//TEST_OUTPUT("video memory access", video_memory_access_test());
 	//TEST_OUTPUT("rtc_test", rtc_test());
-	TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
+	
+	
+	/* Checkpoint 2 Test */
+	//TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
 	//TEST_OUTPUT("echo_terminal_test", echo_terminal_test());
+	//TEST_OUTPUT("read_data test", read_data_test());
+	TEST_OUTPUT("read_data", file_read_test());
+	TEST_OUTPUT("read_data", directory_read_test());
+
 	// launch your tests here
 }

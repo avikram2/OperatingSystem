@@ -167,7 +167,7 @@ int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes){
 int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes){
     
 	dentry_t* dentry;
-	uint32_t cnt, idx = 0;
+	uint32_t idx = 0;
 
 	while(-1 != read_dentry_by_index(idx, dentry)){
 		
