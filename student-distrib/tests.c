@@ -158,7 +158,7 @@ int terminal_driver_test(){
 	// for (j = 0; j < 6; ++j){
 	// 	putc(nullbuf[j])
 	// }
-	terminal_write(0, string, strlen(string));
+	printf("What is your name ?\n");
 	uint8_t buffer_test[BUFFER_SIZE];
 	int retval = terminal_read(0, buffer_test, BUFFER_SIZE-1);
 	int i= 0;
