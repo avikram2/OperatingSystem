@@ -25,7 +25,7 @@ int32_t terminal_open(const uint8_t* filename){
 int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     terminal_read_flag = ENABLE; //enable flag, which means read function invoked
 
-    if (nbytes <= 0 || nbytes > BUFFER_SIZE){
+    if (nbytes <= 0){ //if incorrect input (negative bytes)
         keyboard_buffer_index = 0; //reset the keyboard buffer
         terminal_read_flag = DISABLE; //exiting function
 
@@ -41,15 +41,16 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     while (1){
     //polling for new_line to arrive in the buffer
     if (keyboard_buffer_index != 0 && keyboard_buffer[keyboard_buffer_index-1] == '\n'){
+    int returnvalue = (nbytes < keyboard_buffer_index)? nbytes: keyboard_buffer_index;
+    //the returnvalue (aka number of bytes read by the function)
     int i = 0;
-    for (i = 0; i < nbytes; i++){ //for each byte
+    for (i = 0; i < returnvalue; i++){ //for each byte
         buf[i] = keyboard_buffer[i]; //set terminal buffer equal to keyboard buffer
     }
 
     for (i = 0; i < BUFFER_SIZE; ++i){ //reset keyboard buffer
         keyboard_buffer[i] = NULLCHAR; //reset to nullcharacter
     }
-    int returnvalue = (nbytes < keyboard_buffer_index)? nbytes: keyboard_buffer_index;
     //calculate the number of bytes printed
 
     keyboard_buffer_index = 0; //reset the buffer
