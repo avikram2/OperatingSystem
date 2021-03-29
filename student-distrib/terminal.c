@@ -12,7 +12,7 @@ int32_t terminal_open(const uint8_t* filename){
     keyboard_buffer_index = 0; //reset to beginning of keyboard buffer
     for (i = 0; i < BUFFER_SIZE; ++i){ //initalize keyboard buffer
         keyboard_buffer[i] = '\0'; //initialize to null character
-        buffer[i] = '\0'
+        buffer[i] = '\0';
     }
 
     return 0;
