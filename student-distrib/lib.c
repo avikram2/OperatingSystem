@@ -12,6 +12,32 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
+//update_cursor(int x, int y)
+//function to update position of the cursor on the screen to a certain coordinate position
+//inputs: (x,y)
+//output: none
+//side effect: changes cursor to point to new
+void update_cursor(int x, int y){
+    screen_x  = x % NUM_COLS;
+    screen_y = (y % NUM_ROWS);
+}
+
+//get_cursor_y
+//function to obtain the 'y' position of the cursor
+//inputs: none, outputs: the 'y' location of the cursor
+//side effect: returns y coordinate of the cursor
+int get_cursor_y(){
+    return screen_y;
+}
+
+//get_cursor_x
+//function to obtain the 'x' position of the cursor
+//inputs: none, outputs: the 'x' location of the cursor
+//side effect: returns x coordinate of the cursor
+int get_cursor_x(){
+    return screen_x;
+}
+
 /* void clear(void);
  * Inputs: void
  * Return Value: none

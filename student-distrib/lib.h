@@ -10,6 +10,18 @@
 
 #ifndef ASM
 
+//custom functions
+
+//update the x,y position of the cursor
+extern void update_cursor(int x, int y); 
+
+//get y coordinate of cursor
+extern int get_cursor_y();
+
+//get x coordinate of cursor
+extern int get_cursor_x();
+
+
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);
 int32_t puts(int8_t *s);
