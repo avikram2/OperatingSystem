@@ -68,9 +68,6 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes){
 
     if (nbytes <= 0 || nbytes > BUFFER_SIZE){ //if the number of bytes is negative or too big, return 
-        int i;
-        for (i = 0; i < BUFFER_SIZE; i++) //for each buffer element
-    buf[i] = NULLCHAR; //reset the buffer to nullcharacters
     return 0;
     }
     int i = 0;
@@ -79,8 +76,6 @@ int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes){
     }
     update_cursor(get_cursor_x(), get_cursor_y()); //update cursor after printing
 
-    for (i = 0; i < BUFFER_SIZE; i++)
-    buf[i] = NULLCHAR; //reset the buffer to nullcharacters
     return nbytes;
 }
 
