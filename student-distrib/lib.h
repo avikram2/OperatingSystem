@@ -8,6 +8,11 @@
 #include "types.h"
 #include "interrupts.h"
 
+//three masks for when writing to VGA registers
+#define VGA_CURSOR_MASK 0x0F
+#define VGA_MASK_2 0x0E
+#define CURSOR_BITMASK 0xFF
+
 #ifndef ASM
 
 //custom functions
