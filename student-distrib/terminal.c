@@ -26,10 +26,6 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     terminal_read_flag = 1; //enable flag, which means read function invoked
 
     if (nbytes <= 0 || nbytes > BUFFER_SIZE){
-        int i;
-        for (i = 0; i < BUFFER_SIZE; ++i){ //reset keyboard buffer
-        keyboard_buffer[i] = NULLCHAR; //reset to nullcharacter
-        }
         keyboard_buffer_index = 0; //reset the keyboard buffer
         terminal_read_flag = 0; //exiting function
         return 0;
