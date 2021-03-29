@@ -127,6 +127,7 @@ void interrupt_keyboard_handler(){
 	else if(ctrl_flag&&(scancode==L_CODE)){ //Ctrl-L handle
       clear(); //clear the screen
 	  update_cursor(ORIGIN_CURSOR,ORIGIN_CURSOR); //send the cursor back to the beginning of the screen
+	  terminal_write(0, buffer, keyboard_buffer_index); //write buffer to screen
 	}
 
     else {
