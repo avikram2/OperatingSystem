@@ -153,11 +153,15 @@ int terminal_driver_test(){
 	clear();
 	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
 	uint8_t* string = "\0\0\0\0\0\0\0Hello, what is your name";
-
+	uint8_t * nullbuf = "\0\0\0\0\0a";
+	int j;
+	for (j = 0; j < 6; ++j){
+		putc(nullbuf[j]);
+	}
 	terminal_write(0, string, strlen(string));
 	uint8_t buff[BUFFER_SIZE];
 	int retval = terminal_read(0, buff, BUFFER_SIZE-1);
-	uint8_t string = "Hi, \n";
+	string = "Hi, \n";
 	terminal_write(0, string, strlen(string));
 	terminal_write(0, buff, retval);
 	terminal_close(0);
