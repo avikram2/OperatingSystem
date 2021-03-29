@@ -28,6 +28,13 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     if (nbytes <= 0 || nbytes > BUFFER_SIZE){
         keyboard_buffer_index = 0; //reset the keyboard buffer
         terminal_read_flag = 0; //exiting function
+
+        int j;
+        for (j = 0; j < BUFFER_SIZE; ++j){ //reset keyboard buffer
+        keyboard_buffer[j] = NULLCHAR; //reset to nullcharacter
+        }
+
+
         return 0;
     }
     
@@ -38,14 +45,15 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     for (i = 0; i < nbytes; i++){ //for each byte
         buf[i] = keyboard_buffer[i]; //set terminal buffer equal to keyboard buffer
     }
-    keyboard_buffer_index = 0; //reset the buffer
-    terminal_read_flag = 0; //disable the flag, exiting the read function
 
     for (i = 0; i < BUFFER_SIZE; ++i){ //reset keyboard buffer
         keyboard_buffer[i] = NULLCHAR; //reset to nullcharacter
     }
     int returnvalue = (nbytes < keyboard_buffer_index)? nbytes: keyboard_buffer_index;
     //calculate the number of bytes printed
+
+    keyboard_buffer_index = 0; //reset the buffer
+    terminal_read_flag = 0; //disable the flag, exiting the read function
     return returnvalue;
     }
 
