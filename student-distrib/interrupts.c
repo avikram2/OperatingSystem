@@ -74,6 +74,7 @@ void interrupt_keyboard_handler(){
 		keyboard_buffer_index+=1; //increment keyboard index after newline character
 		int num_bytes = terminal_read(0, buffer, keyboard_buffer_index); //call terminal read
 		terminal_write(0, buffer, num_bytes); //call terminal write
+		keyboard_buffer_index = 0;
 	}
 	putc(scan_code_default[scancode-1]); //write out newline to screen
 	}
