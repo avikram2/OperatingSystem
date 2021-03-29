@@ -148,7 +148,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 *			0 on reaching file end
 *
 */
-int32_t file_read(int32_t fname, uint8_t* buf, int32_t nbytes){
+int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes){
 
 	dentry_t* dentry;
 	if(read_dentry_by_name(fname, dentry) == -1)
@@ -164,7 +164,7 @@ int32_t file_read(int32_t fname, uint8_t* buf, int32_t nbytes){
 *			0 on reaching file end
 *
 */
-int32_t directory_read(int32_t fname, uint8_t* buf, int32_t nbytes){
+int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes){
     
 	dentry_t* dentry;
 	uint32_t cnt, idx = 0;
