@@ -73,14 +73,14 @@ uint32_t read_inode_data_len (uint32_t inode_idx);
 
 
 /* File Operations */
-int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes);
-int32_t file_open(const uint8_t* fname);
+int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* position);
+int32_t file_open(const uint8_t* fname, uint32_t* position);
 int32_t file_close(int32_t fd);
 int32_t file_write(const uint8_t* fname, const uint8_t* buf, int32_t nbytes);
 
 /* Directory Operations */
-int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes);
-int32_t directory_open(const uint8_t* fname);
+int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* position);
+int32_t directory_open(const uint8_t* fname, uint32_t* position);
 int32_t directory_close(int32_t fd);
 int32_t directory_write(const uint8_t* fname, const uint8_t* buf, int32_t nbytes);
 

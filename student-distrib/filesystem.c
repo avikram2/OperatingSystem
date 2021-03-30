@@ -45,12 +45,11 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry){
 *
 */
 int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry){
-	
 	//Check if index is out of bounds
 	if(index >= file_sys->num_dentries)
 		return -1;
 	
-	*dentry = file_sys->dentries[index];
+	(*dentry) = file_sys->dentries[index];
 	return 0;
 }
 
@@ -85,7 +84,7 @@ uint32_t read_inode_data_len(uint32_t inode_idx){
 int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length){
 	
 	//Check if inode index is out of bounds
-	if(inode > file_sys->num_inodes)
+	if(inode >= file_sys->num_inodes)
 		return -1;
 	
 	inode_t* inode_real = (inode_t*)((uint32_t)file_sys + (inode + 1) * SIZE_BLOCK);
@@ -93,7 +92,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 	//change to read_inode_data_len
 	uint32_t file_len = read_inode_data_len(inode);
 	
-	if(offset > file_len)
+	if(offset >= file_len)
 		return -1;
 	
 	uint32_t num_blocks = file_sys->num_datablocks;
@@ -117,7 +116,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 	while (num_bytes_read < length) {
 		
 		//Check for file end
-		if (offset + num_bytes_read > file_len)
+		if (offset + num_bytes_read >= file_len)
 			return 0;
 			
 		//Check for block end
@@ -148,12 +147,15 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 *			0 on reaching file end
 *
 */
-int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes){
+int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* position){
 
-	dentry_t* dentry;
-	if(read_dentry_by_name(fname, dentry) == -1)
+	dentry_t dentry;
+	int read;
+	if(read_dentry_by_name(fname, &dentry) == -1)
 		return -1;
-	return read_data(dentry->inode_idx, 0, buf, nbytes);
+	read = read_data(dentry.inode_idx, *position, buf, nbytes);
+	*position = *position + read;
+	return read;
 	
 }
 
@@ -164,21 +166,36 @@ int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes){
 *			0 on reaching file end
 *
 */
-int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes){
+int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* position) {
     
-	dentry_t* dentry;
-	uint32_t idx = 0;
-
-	while(-1 != read_dentry_by_index(idx, dentry)){
-		
-		printf("%s   size:%d\n", (char*)dentry->filename, read_inode_data_len(dentry->inode_idx));
-		idx++;
-		
-	}
-	if(idx != file_sys->num_dentries)
+	dentry_t dentry;
+	char* filename;
+	int32_t filenamePos = 0;
+	uint8_t ch;
+	if(position == 0 || buf == 0)
+	{
 		return -1;
+	}
 
-	return 0;
+	if(-1 == read_dentry_by_index(*position, &dentry))
+	{
+		return -1;
+	}
+	
+	//we read a valid file, let's put the name in the buffer
+	filename = (char*)dentry.filename;
+	for(filenamePos = 0;filenamePos < 32 && filenamePos < nbytes;filenamePos++)
+	{
+		ch = (uint8_t)filename[filenamePos];
+		buf[filenamePos] = ch;
+		/*if(ch == 0 || ch == (uint8_t)'\0')
+		{
+			filenamePos++;
+			break;
+		}*/
+	}
+	(*position) = (*position) + 1;
+	return filenamePos;
 
     // while (-1 != (cnt = file_read(fname, buf, FS_BUF_LENGTH-1))) {
         // if (-1 == cnt) {
@@ -195,7 +212,12 @@ int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes){
 }
 
 //file_open: yet to do anything
-int32_t file_open(const uint8_t* fname){
+int32_t file_open(const uint8_t* fname, uint32_t* position){
+	if(position == 0)
+	{
+		return -1;
+	}
+	*position = 0;
 	return 0;
 }
 
@@ -210,7 +232,12 @@ int32_t file_write(const uint8_t* fname, const uint8_t* buf, int32_t nbytes){
 }
 
 //directory_open: yet to do anything
-int32_t directory_open(const uint8_t* fname){
+int32_t directory_open(const uint8_t* fname, uint32_t* position){
+	if(position == 0)
+	{
+		return -1;
+	}
+	*position = 0;
 	return 0;
 }
 
