@@ -184,7 +184,7 @@ int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* p
 	
 	//we read a valid file, let's put the name in the buffer
 	filename = (char*)dentry.filename;
-	for(filenamePos = 0;filenamePos < 32 && filenamePos < nbytes;filenamePos++)
+	for(filenamePos = 0;filenamePos < MAX_NAME_LENGTH && filenamePos < nbytes;filenamePos++)
 	{
 		ch = (uint8_t)filename[filenamePos];
 		buf[filenamePos] = ch;

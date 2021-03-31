@@ -72,7 +72,7 @@ int rtc_write(int rtc_index, int rate)
 		return -1;
 	}
 	//check if the rate is valid(not zero, less then or equal to 1024, power of 2
-	if((rate & (rate-1)) != 0 || rate > MAX_RTC_FREQUENCY || rate == 0)
+	if((rate & (rate-1)) != 0 || rate > MAX_RTC_FREQUENCY || rate <= 0)
 	{
 		return -1;
 	}
