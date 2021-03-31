@@ -230,22 +230,29 @@ int read_data_test(){
 }
 
 int file_read_test(){
-	uint8_t buf[FS_BUF_LENGTH];
-	
+	uint8_t buf[10];
+	uint32_t position = 0;
+	uint32_t res;
 	//SET FILE NAME
 	uint8_t fname[MAX_NAME_LENGTH] = "frame1.txt";
-	file_read(fname, buf, FS_BUF_LENGTH - 1);
-	if(buf == NULL)
-		return FAIL;
-	printf("%s", buf);
+	res = file_read(fname, buf, 10 - 1, &position);
+	while(res != 0 && res != -1)
+	{
+		printf("%s", buf);
+		res = file_read(fname, buf, 10 - 1, &position);
+	}
 	return PASS;
 }
 
 int directory_read_test(){
-	uint8_t buf[FS_BUF_LENGTH];
 	uint8_t fname[MAX_NAME_LENGTH] = ".";
-	if(directory_read(fname, buf, FS_BUF_LENGTH - 1) == -1)
-		return FAIL;
+	uint8_t buf[MAX_NAME_LENGTH];
+	uint32_t position = 0;
+	while(directory_read(fname, buf, MAX_NAME_LENGTH, &position) != -1)
+	{
+		printf(buf);
+		printf("\n");
+	}
 	return PASS;
 }
 
@@ -266,11 +273,11 @@ void launch_tests(){
 	
 	
 	/* Checkpoint 2 Test */
-	TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
+	//TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
 	//TEST_OUTPUT("echo_terminal_test", echo_terminal_test());
 	//TEST_OUTPUT("read_data test", read_data_test());
-	//TEST_OUTPUT("read_data", file_read_test());
-	//TEST_OUTPUT("read_data", directory_read_test());
+	TEST_OUTPUT("read_data", file_read_test());
+	//TEST_OUTPUT("read_directory", directory_read_test());
 
 	// launch your tests here
 }
