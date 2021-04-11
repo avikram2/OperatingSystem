@@ -256,6 +256,22 @@ int directory_read_test(){
 	return PASS;
 }
 
+int syscall_test(){
+	asm volatile("movl $1,%eax \n\t"
+			"movl $1,%ebx \n\t"
+			"int $0x80 \n\t"
+			);
+asm volatile("movl $1,%eax \n\t"
+			"movl $1,%ebx \n\t"
+			"int $0x80 \n\t"
+			);
+asm volatile("movl $1,%eax \n\t"
+			"movl $1,%ebx \n\t"
+			"int $0x80 \n\t"
+			);
+	return PASS;
+}
+
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -276,8 +292,10 @@ void launch_tests(){
 	//TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
 	//TEST_OUTPUT("echo_terminal_test", echo_terminal_test());
 	//TEST_OUTPUT("read_data test", read_data_test());
-	TEST_OUTPUT("read_data", file_read_test());
+	//TEST_OUTPUT("read_data", file_read_test());
 	//TEST_OUTPUT("read_directory", directory_read_test());
+
+	TEST_OUTPUT("syscall", syscall_test());
 
 	// launch your tests here
 }
