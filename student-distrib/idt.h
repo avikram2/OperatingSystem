@@ -10,6 +10,7 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "exceptions.h"
+#include "syscall_linkage.h"
 
 #ifndef ASM
 

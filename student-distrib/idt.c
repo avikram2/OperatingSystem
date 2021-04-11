@@ -39,7 +39,7 @@ void load_idt()
     
     
     //set up skeleton system call support
-    set_system_call(0x80, system_call_skeleton);    
+    set_system_call(0x80, syscall_wrapper);    
 }
 
 /* set_exception_irq
