@@ -58,7 +58,7 @@ int32_t syscall_open(const uint8_t* filename){
                 return -1;
             }
 
-            int ret = processes[pid]->file_descriptors[fda_index].fops[0](filename);
+            int ret = processes[pid]->file_descriptors[fda_index].operations_table[0](filename);
             if (ret == -1)
             return -1;
 
