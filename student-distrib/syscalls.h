@@ -4,6 +4,17 @@
 #include "lib.h"
 #include "i8259.h"
 #include "processes.h"
+#include "filesystem.h"
+
+#include "rtc_driver.h"
+
+
+#define ACTIVE_FLAG 1
+
+#define NUMBER_OF_FILE_DESCRIPTORS 8
+
+
+
 
 #ifndef ASM
 

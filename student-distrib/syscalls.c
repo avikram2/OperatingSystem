@@ -20,12 +20,55 @@ int32_t syscall_write(int32_t fd, const void* buf, int32_t nbytes){
 }
 
 // open:
-// tbd
-//inputs: tbd
-//output: tbd
-//effect: tbd
+// allocates an entry in the FDA of the current process for the file
+//inputs: filename - name of the file
+//output: fda array index
+//effect: allocates entry in the FDA for the filename, fills in FOPS
 int32_t syscall_open(const uint8_t* filename){
+    dentry_t dentry; //directory entry object
+
+    if(read_dentry_by_name(filename, &dentry) == -1)
+		return -1; //file not found
+
+    int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
     return -1;
+
+    int fda_index = 0; //variable to hold current index in the fda while finding open spot
+
+    for (fda_index = 0; fda_index < NUMBER_OF_FILE_DESCRIPTORS; ++fda_index){
+        //traverse through FD array
+        if (processes[pid]->file_descriptors[fda_index].flags != ACTIVE_FLAG){
+            processes[pid]->file_descriptors[fda_index].flags = ACTIVE_FLAG;
+            processes[pid]->file_descriptors[fda_index].inode = dentry.inode_idx;
+
+            switch(dentry.type){
+                case 0:
+                processes[pid]->file_descriptors[fda_index].fops = {rtc_open, rtc_close, rtc_read, rtc_write};
+                break;
+                case 1:
+                processes[pid]->file_descriptors[fda_index].fops = {directory_open, directory_close, directory_read, directory_write};
+                break;
+                case 2:
+                processes[pid]->file_descriptors[fda_index].fops = {file_open, file_close, file_read, file_close};
+                break;
+                default:
+                return -1;
+            }
+
+            int ret = processes[pid]->file_descriptors[fda_index].fops[0](filename);
+            if (ret == -1)
+            return -1;
+
+            return pid;
+
+
+        }
+
+    }
+return -1; 
+
+
 }
 
 // close:

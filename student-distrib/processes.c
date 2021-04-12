@@ -123,4 +123,9 @@ uint32_t load_file(const uint8_t* command)
      return 1;
 }
 
+//get_pid
+//function to return the current process id
+int32_t get_pid(){
+    return current_process;
+}
 
