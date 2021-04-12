@@ -41,6 +41,10 @@ ireturn:
 	//user stack location
 	pushl $0x8400000 
 	pushfl
+    //allow interrupts
+popl  %eax
+        orl   $0x200,%eax
+        pushl %eax
 	//user cs
 	pushl $0x23
 	//passed in program start location
