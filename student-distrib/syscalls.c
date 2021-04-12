@@ -46,13 +46,13 @@ int32_t syscall_open(const uint8_t* filename){
 
             switch(dentry.type){
                 case 0:
-                processes[pid]->file_descriptors[fda_index].operations_table = (uint32_t*)({rtc_open, rtc_close, rtc_read, rtc_write});
+                processes[pid]->file_descriptors[fda_index].operations_table = rtc_ops;
                 break;
                 case 1:
-                processes[pid]->file_descriptors[fda_index].operations_table = (uint32_t*)({directory_open, directory_close, directory_read, directory_write});
+                processes[pid]->file_descriptors[fda_index].operations_table = dir_ops;
                 break;
                 case 2:
-                processes[pid]->file_descriptors[fda_index].operations_table = (uint32_t*)({file_open, file_close, file_read, file_close});
+                processes[pid]->file_descriptors[fda_index].operations_table = file_ops;
                 break;
                 default:
                 return -1;
