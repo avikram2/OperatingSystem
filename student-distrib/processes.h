@@ -24,7 +24,7 @@
 #define STARTING_POINT_LOCATION 24
 #define STARTING_POINT_LENGTH 4
 typedef struct fd {
-    uint32_t* operations_table;
+    void* operations_table;
     uint32_t inode;
     uint32_t position;
     uint32_t flags;
