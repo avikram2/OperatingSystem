@@ -1,5 +1,5 @@
-#ifndef _SYSCALLS_H
-#define _SYSCALLS_H
+#ifndef _PROCESS_H
+#define _PROCESS_H
 
 #include "lib.h"
 #include "i8259.h"
