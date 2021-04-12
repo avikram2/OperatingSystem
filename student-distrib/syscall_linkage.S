@@ -36,22 +36,23 @@ BAD_CALL_NUMBER:
     iret
 
 ireturn:
-	movw $0x23, %ax //2b
+	movw $0x2B, %ax //2b
 	movw %ax, %ds
-	movw %ax, %es 
-	movw %ax, %fs
-	movw %ax, %gs 
+	movl $0x8300000,%ecx
+	//movw %ax, %es 
+	//movw %ax, %fs
+	//movw %ax, %gs 
 	//user ds
-	pushl $0x23 //2b
+	pushl $0x2B //2b
 	//user stack location
-	pushl $0x83FFFFF
+	pushl $0x8300000
 	pushfl
 popl  %ebx
         orl   $0x200,%ebx
         pushl %ebx
 
 	//user cs
-	pushl $0x1b // 23
+	pushl $0x23 // 23
 	//passed in program start location
 	pushl %edx  
 	iret

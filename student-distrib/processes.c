@@ -74,6 +74,7 @@ uint32_t check_file(const uint8_t* command,uint32_t* starting_address)
 	dentry_t dentry;
 	int read;
         uint8_t buf[BUFFER_SIZE];
+        uint8_t buf2[4];
 	if(read_dentry_by_name(command, &dentry) == -1)
 		return 0;
 	read = read_data(dentry.inode_idx, 0, buf, BUFFER_SIZE);
@@ -87,8 +88,11 @@ uint32_t check_file(const uint8_t* command,uint32_t* starting_address)
 		return 0;
 	}
         //get starting address
-        *starting_address = 0;
-        *starting_address = (buf[26] << 24) | (buf[25] << 16) | (buf[24] << 8) | (buf[23] << 0);
+read_data( dentry.inode_idx, 24, buf2, 4);
+        *starting_address = *((uint32_t*)buf2);
+
+        //*starting_address = 0;
+        //*starting_address = (buf[26] << 24) | (buf[25] << 16) | (buf[24] << 8) | (buf[23] << 0);
 	return 1;
 }
 
