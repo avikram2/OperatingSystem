@@ -19,12 +19,6 @@
 #ifndef ASM
 
 
-void * rtc_ops[4] = {rtc_open, rtc_close, rtc_read, rtc_write};
-
-void * dir_ops[4] = {directory_open, directory_close, directory_read, directory_write};
-
-void * file_ops[4] = {file_open, file_close, file_read, file_close};
-
 //read system call
 extern int32_t syscall_read(int32_t fd, void* buf, int32_t nbytes);
 
