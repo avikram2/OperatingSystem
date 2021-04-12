@@ -45,7 +45,7 @@ ireturn:
     movl $0x002b, %eax
 	pushl %eax //push ss (user_ds)
 	//user stack location
-	pushl $0x83FFFFC
+	pushl $0x83FFFFF
 	pushfl
     popl  %ebx
     orl   $0x200,%ebx
