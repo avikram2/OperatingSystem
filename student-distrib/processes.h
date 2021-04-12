@@ -23,8 +23,16 @@
 #define MAGIC_NUMBER_FOUR 0x46
 #define STARTING_POINT_LOCATION 24
 #define STARTING_POINT_LENGTH 4
+
+typedef struct fops {
+    int32_t (*open)(const uint8_t* filename);
+	int32_t (*close)(int32_t fd);
+	int32_t (*read)(int32_t fd, void* buf, int32_t nbytes);
+	int32_t (*write)(int32_t fd, const void* buf, int32_t nbytes);
+} fops_t;
+
 typedef struct fd {
-    void* operations_table;
+    fops_t* operations_table;
     uint32_t inode;
     uint32_t position;
     uint32_t flags;
@@ -33,7 +41,6 @@ typedef struct fd {
 typedef struct pcb {
    fd_t file_descriptors[NUMBER_OF_FILE_DESCRIPTORS];
 } pcb_t;
-
 
 
 uint32_t kernel_stacks[NUMBER_OF_PROCESSES] = {KERNEL_STACK_ONE,KERNEL_STACK_TWO};

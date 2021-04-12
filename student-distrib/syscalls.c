@@ -2,11 +2,11 @@
 #include "syscalls.h"
 
 
-void * rtc_ops[4] = {rtc_open, rtc_close, rtc_read, rtc_write};
+// void * rtc_ops[4] = {rtc_open, rtc_close, rtc_read, rtc_write};
 
-void * dir_ops[4] = {directory_open, directory_close, directory_read, directory_write};
+// void * dir_ops[4] = {directory_open, directory_close, directory_read, directory_write};
 
-void * file_ops[4] = {file_open, file_close, file_read, file_close};
+// void * file_ops[4] = {file_open, file_close, file_read, file_close};
 
 
 
@@ -53,19 +53,28 @@ int32_t syscall_open(const uint8_t* filename){
 
             switch(dentry.type){
                 case 0:
-                processes[pid]->file_descriptors[fda_index].operations_table = rtc_ops;
+                processes[pid]->file_descriptors[fda_index].operations_table->read = rtc_read;
+                processes[pid]->file_descriptors[fda_index].operations_table->write = rtc_write;
+                processes[pid]->file_descriptors[fda_index].operations_table->open = rtc_open;
+                processes[pid]->file_descriptors[fda_index].operations_table->close = rtc_close;
                 break;
                 case 1:
-                processes[pid]->file_descriptors[fda_index].operations_table = dir_ops;
+                processes[pid]->file_descriptors[fda_index].operations_table->read = directory_read;
+                processes[pid]->file_descriptors[fda_index].operations_table->write = directory_write;
+                processes[pid]->file_descriptors[fda_index].operations_table->open = directory_open;
+                processes[pid]->file_descriptors[fda_index].operations_table->close = directory_close;
                 break;
                 case 2:
-                processes[pid]->file_descriptors[fda_index].operations_table = file_ops;
+                processes[pid]->file_descriptors[fda_index].operations_table->read = file_read;
+                processes[pid]->file_descriptors[fda_index].operations_table->write = file_write;
+                processes[pid]->file_descriptors[fda_index].operations_table->open = file_open;
+                processes[pid]->file_descriptors[fda_index].operations_table->close = file_close;
                 break;
                 default:
                 return -1;
             }
 
-            int ret = processes[pid]->file_descriptors[fda_index].operations_table[0](filename);
+            int ret = processes[pid]->file_descriptors[fda_index].operations_table->open(filename);
             if (ret == -1)
             return -1;
 
