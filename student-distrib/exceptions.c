@@ -158,12 +158,24 @@ void general_protection_exception()
 
 void page_fault_exception()
 {
+uint32_t cr0, cr2, cr3;
+    __asm__ __volatile__ (
+        "mov %%cr0, %%eax\n\t"
+        "mov %%eax, %0\n\t"
+        "mov %%cr2, %%eax\n\t"
+        "mov %%eax, %1\n\t"
+        "mov %%cr3, %%eax\n\t"
+        "mov %%eax, %2\n\t"
+    : "=m" (cr0), "=m" (cr2), "=m" (cr3)
+    : /* no input */
+    : "%rax"
+    );
     clear();
     printf("Exception: Page fault!\n");
 
     //While loop to freeze the screen
     int i = 0;
-    while(i < FREEZE_LOOP_LENGTH){ i++; }
+    //while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
 void floating_point_exception()

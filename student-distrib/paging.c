@@ -1,11 +1,8 @@
 #include "paging.h"
-#include "lib.h"
 
 
 
-
-
-
+uint32_t process_user_addresses[MAX_PROCESS_NUMBER] = {USER_ONE_PHYS_ADDR,USER_TWO_PHYS_ADDR};
 /* enable_paging() : function to enabe paging
 *INPUTS: NONE
 *OUTPUTS: NONE
@@ -22,6 +19,7 @@
 void enable_paging()
 {
 	uint32_t kernel_offset = KERNEL_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
+	uint32_t pcb_offset = PCB_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
 	uint32_t video_offset = VIDEO_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
 	
 	int i;
@@ -45,6 +43,20 @@ void enable_paging()
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
 	page_directory[1] = ((unsigned int)kernel_page_table) | S_MAP | R_MAP | P_MAP;
 	
+	// initialize pcb table
+	blank_table(pcb_page_table);
+	for(j = 0; j < TABLE_SIZE; j++)
+	{
+		// sets top bits to physical address
+		// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 0 - not present (P)
+		pcb_page_table[j] = (j * BYTES_TO_ALIGN_TO + pcb_offset) | R_MAP | P_MAP; // attributes: supervisor level, read/write, present.
+	}
+
+	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
+	page_directory[2] = ((unsigned int)pcb_page_table) | S_MAP | R_MAP | P_MAP;
+
+	set_user_table(0);
+	
 	
 	//Set Video Memory
 	blank_table(first_page_table);
@@ -58,6 +70,30 @@ void enable_paging()
 	enablePaging();
 }
 
+void set_user_table(uint32_t process)
+{
+	if(process < 0 || process > 1)
+	{
+		return;
+	}
+
+	uint32_t user_offset = process_user_addresses[process] << PHYSICAL_ADDR_SHIFT;
+	
+	// initialize user table
+	blank_table(user_page_table);
+	unsigned int j;
+	for(j = 0; j < TABLE_SIZE; j++)
+	{
+		// sets top bits to physical address
+		// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 0 - not present (P)
+		user_page_table[j] = (j * BYTES_TO_ALIGN_TO + user_offset) | U_MAP | R_MAP | P_MAP; // attributes: supervisor level, read/write, present.
+	}
+
+	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
+	page_directory[32] = ((unsigned int)user_page_table) | U_MAP | S_MAP | R_MAP | P_MAP;
+
+	loadPageDirectory(page_directory);
+}
 
 // Formats a page blank table
 // All indeces set to (supervisor, rw, not present)

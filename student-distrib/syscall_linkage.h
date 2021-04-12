@@ -10,6 +10,7 @@
 //assembly linkage function system calls
 extern void syscall_wrapper();
 
+extern void ireturn();
 #endif //ASM
 
 #endif //syscall_linkage

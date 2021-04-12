@@ -1,10 +1,14 @@
 #define ASM 1
 
 #define MAX_CALL_NUMBER 9
+#define USER_DS_VALUE 0x2b
+#define USER_CS_VALUE 0x23
+#define USER_STACK 0x8300000
+#define IF_BIT 0x200
 #include "syscall_linkage.h"
 
 
-.globl   syscall_wrapper
+.globl   syscall_wrapper, ireturn
 .align   4
  # linkage function between assembly and c system call functions
 syscall_wrapper:
@@ -18,7 +22,7 @@ syscall_wrapper:
     #check for valid call number
     cmpl $0,%eax
     jl BAD_CALL_NUMBER
-    cmpl MAX_CALL_NUMBER,%eax
+    cmpl $MAX_CALL_NUMBER,%eax
     jg BAD_CALL_NUMBER
     movl SYS_CALL_JUMP_TABLE(,%eax,4),%eax
     call *%eax
@@ -34,6 +38,26 @@ syscall_wrapper:
 BAD_CALL_NUMBER:
     movl -1,%eax
     iret
+
+ireturn:
+	movw $USER_DS_VALUE, %ax //user_ds value
+	movw %ax, %ds
+	//user ds
+    	movl $USER_DS_VALUE, %eax
+	pushl %eax //push ss (user_ds)
+	//user stack location
+	pushl $USER_STACK
+	pushfl
+	//set IF to 1
+    	popl  %ebx
+    	orl   $IF_BIT,%ebx
+    	pushl %ebx
+
+	//user cs
+	pushl $USER_CS_VALUE // USER_CS VALUE
+	//passed in program start location
+	pushl %edx
+	iret
 
 SYS_CALL_JUMP_TABLE:
 .long syscall_halt,syscall_execute,syscall_read,syscall_write,syscall_open,syscall_close,syscall_getargs,syscall_vidmap,syscall_set_handler,syscall_sigreturn
