@@ -22,6 +22,8 @@
 #define S_MAP 					0x80	//Page Size bit map
 #define U_MAP                                   0x4  //user allowed
  
+#ifndef ASM
+
 uint32_t page_directory[DIR_SIZE] __attribute__((aligned(BYTES_TO_ALIGN_TO)));
 uint32_t first_page_table[DIR_SIZE] __attribute__((aligned(BYTES_TO_ALIGN_TO)));
 uint32_t kernel_page_table[DIR_SIZE] __attribute__((aligned(BYTES_TO_ALIGN_TO)));
@@ -44,3 +46,5 @@ void enablePaging();
 void set_user_table(uint32_t process);
 
 #endif /* PAGING_H */
+
+#endif
