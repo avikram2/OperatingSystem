@@ -3,15 +3,10 @@
 
 #include "lib.h"
 #include "i8259.h"
+#include "processes.h"
 
 #ifndef ASM
 
-
-//halt system call
-extern int32_t syscall_halt(uint8_t status);
-
-//execute system call
-extern int32_t syscall_execute(const uint8_t* command);
 
 //read system call
 extern int32_t syscall_read(int32_t fd, void* buf, int32_t nbytes);

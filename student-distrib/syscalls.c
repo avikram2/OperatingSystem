@@ -1,25 +1,6 @@
 
 #include "syscalls.h"
 
-
-// execute:
-// executes program
-//inputs: tbd
-//output: tbd
-//effect: tbd
-int32_t syscall_execute(const uint8_t* command){
-    return -1;
-}
-
-// halt:
-// halts program
-//inputs: tbd
-//output: tbd
-//effect: tbd
-int32_t syscall_halt(const uint8_t status){
-    return -1;
-}
-
 // read:
 // tbd
 //inputs: tbd
