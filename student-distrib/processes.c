@@ -134,6 +134,6 @@ int32_t get_pid(){
 
 //get_process
 //function to return processes id
-pcb_t* get_process(){
+pcb_t** get_process(){
     return processes;
 }

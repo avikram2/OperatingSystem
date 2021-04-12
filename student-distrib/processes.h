@@ -56,7 +56,7 @@ extern uint32_t load_file(const uint8_t* command);
 
 extern int32_t get_pid();
 
-extern pcb_t* get_process();
+extern pcb_t** get_process();
 
 #endif
 
