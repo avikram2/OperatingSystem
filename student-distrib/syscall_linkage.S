@@ -36,24 +36,25 @@ BAD_CALL_NUMBER:
     iret
 
 ireturn:
-	movw $0x23, %ax //2b
+	movw $0x2b, %ax //user_ds value
 	movw %ax, %ds
 	movw %ax, %es 
 	movw %ax, %fs
 	movw %ax, %gs 
 	//user ds
-	pushl $0x23 //2b
+    movl $0x002b, %eax
+	pushl %eax //push ss (user_ds)
 	//user stack location
-	pushl $0x83FFFFF
+	pushl $0x83FFFFC
 	pushfl
-popl  %ebx
-        orl   $0x200,%ebx
-        pushl %ebx
+    popl  %ebx
+    orl   $0x200,%ebx
+    pushl %ebx
 
 	//user cs
-	pushl $0x1b // 23
+	pushl $0x23 // USER_CS VALUE
 	//passed in program start location
-	pushl %edx  
+	pushl %edx
 	iret
 
 SYS_CALL_JUMP_TABLE:
