@@ -45,6 +45,8 @@ int32_t syscall_open(const uint8_t* filename){
 
     int fda_index = 0; //variable to hold current index in the fda while finding open spot
 
+    pcb_t* processes = get_process();
+
     for (fda_index = 0; fda_index < NUMBER_OF_FILE_DESCRIPTORS; ++fda_index){
         //traverse through FD array
         if (processes[pid]->file_descriptors[fda_index].flags != ACTIVE_FLAG){

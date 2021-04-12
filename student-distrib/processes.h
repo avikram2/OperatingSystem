@@ -43,9 +43,6 @@ typedef struct pcb {
 } pcb_t;
 
 
-uint32_t kernel_stacks[NUMBER_OF_PROCESSES] = {KERNEL_STACK_ONE,KERNEL_STACK_TWO};
-
-pcb_t* processes[NUMBER_OF_PROCESSES] = {(pcb_t*)PROCESS_ONE_PCB,(pcb_t*)PROCESS_TWO_PCB};
 
 //halt system call
 extern int32_t syscall_halt(uint8_t status);
@@ -58,6 +55,8 @@ extern uint32_t check_file(const uint8_t* command, uint32_t* starting_address);
 extern uint32_t load_file(const uint8_t* command);
 
 extern int32_t get_pid();
+
+extern pcb_t* get_process();
 
 #endif
 
