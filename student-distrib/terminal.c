@@ -90,6 +90,6 @@ int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes){
 //terminal_close
 //function to close the terminal driver
 int32_t terminal_close(int32_t fd){
-    return 0; //return 0, close terminal
+    return -1; //return 0, close terminal
 }
 
