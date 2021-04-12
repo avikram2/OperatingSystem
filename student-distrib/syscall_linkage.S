@@ -1,6 +1,7 @@
 #define ASM 1
 
-#define MAX_CALL_NUMBER 9
+#define MAX_CALL_NUMBER 10
+#define MIN_CALL_NUMBER 1
 #define USER_DS_VALUE 0x2b
 #define USER_CS_VALUE 0x23
 #define USER_STACK 0x8300000
@@ -20,10 +21,11 @@ syscall_wrapper:
     pushl %ecx
     pushl %ebx
     #check for valid call number
-    cmpl $0,%eax
+    cmpl $MIN_CALL_NUMBER,%eax
     jl BAD_CALL_NUMBER
     cmpl $MAX_CALL_NUMBER,%eax
     jg BAD_CALL_NUMBER
+    subl $1,%eax
     movl SYS_CALL_JUMP_TABLE(,%eax,4),%eax
     call *%eax
     #restore registers
