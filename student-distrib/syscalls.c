@@ -1,6 +1,8 @@
 
 #include "syscalls.h"
 
+#include "processes.h"
+
 // read:
 // tbd
 //inputs: tbd
