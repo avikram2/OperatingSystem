@@ -1,6 +1,7 @@
 
 #include "processes.h"
-#include "syscall_linkage.h"
+
+int current_process = -1;
 
 
 // execute:
