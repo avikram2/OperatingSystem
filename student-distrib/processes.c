@@ -52,16 +52,9 @@ int32_t syscall_execute(const uint8_t* command){
 
 
     //push iret context
-    asm volatile("pushl 0x23 \n\t"
-		"pushl %%esp \n\t"
-		"pushf \n\t"
-		"pushl 0x001b   \n\t"
-		"pushl %1    \n\t"
-		/*"iret \n\t"
-		"movl %%eax,%0 \n\t"*/
- 		"movl %1,%%eax  \n\t"
+    asm volatile("movl %1,%%edx  \n\t"
 		: "=r" (out)
-                : "r" (starting_address + FILE_LOCATION));
+                : "r" (starting_address));
     //get halt results
 	ireturn();
     return 1;
@@ -80,10 +73,10 @@ uint32_t check_file(const uint8_t* command,uint32_t* starting_address)
 {
 	dentry_t dentry;
 	int read;
-        uint8_t buf[28];
+        uint8_t buf[BUFFER_SIZE];
 	if(read_dentry_by_name(command, &dentry) == -1)
 		return 0;
-	read = read_data(dentry.inode_idx, 0, buf, 28);
+	read = read_data(dentry.inode_idx, 0, buf, BUFFER_SIZE);
 	if(read < 28)
 	{
 	    return 0;
@@ -95,7 +88,7 @@ uint32_t check_file(const uint8_t* command,uint32_t* starting_address)
 	}
         //get starting address
         *starting_address = 0;
-        *starting_address = (buf[24] << 24) | (buf[25] << 16) | (buf[26] << 8) | (buf[27] << 0);
+        *starting_address = (buf[26] << 24) | (buf[25] << 16) | (buf[24] << 8) | (buf[23] << 0);
 	return 1;
 }
 

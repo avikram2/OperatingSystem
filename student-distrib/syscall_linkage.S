@@ -18,7 +18,7 @@ syscall_wrapper:
     #check for valid call number
     cmpl $0,%eax
     jl BAD_CALL_NUMBER
-    cmpl MAX_CALL_NUMBER,%eax
+    cmpl $MAX_CALL_NUMBER,%eax
     jg BAD_CALL_NUMBER
     movl SYS_CALL_JUMP_TABLE(,%eax,4),%eax
     call *%eax
@@ -36,15 +36,24 @@ BAD_CALL_NUMBER:
     iret
 
 ireturn:
+	movw $0x23, %ax //2b
+	movw %ax, %ds
+	movw %ax, %es 
+	movw %ax, %fs
+	movw %ax, %gs 
 	//user ds
-	pushl $0x2b
+	pushl $0x23 //2b
 	//user stack location
-	pushl $0x8400000 
+	pushl $0x83FFFFF
 	pushfl
+popl  %ebx
+        orl   $0x200,%ebx
+        pushl %ebx
+
 	//user cs
-	pushl $0x23
+	pushl $0x1b // 23
 	//passed in program start location
-	pushl %eax  
+	pushl %edx  
 	iret
 
 SYS_CALL_JUMP_TABLE:

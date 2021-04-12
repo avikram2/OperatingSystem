@@ -90,7 +90,7 @@ void set_user_table(uint32_t process)
 	}
 
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
-	page_directory[32] = ((unsigned int)user_page_table) | S_MAP | R_MAP | P_MAP;
+	page_directory[32] = ((unsigned int)user_page_table) | U_MAP | S_MAP | R_MAP | P_MAP;
 }
 
 // Formats a page blank table
