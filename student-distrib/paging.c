@@ -2,7 +2,7 @@
 
 
 
-
+uint32_t process_user_addresses[MAX_PROCESS_NUMBER] = {USER_ONE_PHYS_ADDR,USER_TWO_PHYS_ADDR};
 /* enable_paging() : function to enabe paging
 *INPUTS: NONE
 *OUTPUTS: NONE
@@ -86,7 +86,7 @@ void set_user_table(uint32_t process)
 	{
 		// sets top bits to physical address
 		// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 0 - not present (P)
-		user_page_table[j] = (j * BYTES_TO_ALIGN_TO + user_offset) | R_MAP | P_MAP; // attributes: supervisor level, read/write, present.
+		user_page_table[j] = (j * BYTES_TO_ALIGN_TO + user_offset) | U_MAP | R_MAP | P_MAP; // attributes: supervisor level, read/write, present.
 	}
 
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)

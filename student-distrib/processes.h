@@ -6,6 +6,8 @@
 #include "filesystem.h"
 #include "paging.h"
 #include "x86_desc.h"
+#include "syscall_linkage.h"
+
 #ifndef ASM
 #define NUMBER_OF_FILE_DESCRIPTORS 8
 #define NUMBER_OF_PROCESSES 2

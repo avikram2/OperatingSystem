@@ -257,17 +257,13 @@ int directory_read_test(){
 }
 
 int syscall_test(){
-	asm volatile("movl $1,%eax \n\t"
-			"movl $1,%ebx \n\t"
+	int out;
+        uint8_t file[3] = "ls";
+	asm volatile("movl %1,%%ebx \n\t"
+			"movl $1,%%eax \n\t"
 			"int $0x80 \n\t"
-			);
-asm volatile("movl $1,%eax \n\t"
-			"movl $1,%ebx \n\t"
-			"int $0x80 \n\t"
-			);
-asm volatile("movl $1,%eax \n\t"
-			"movl $1,%ebx \n\t"
-			"int $0x80 \n\t"
+			:"=r" (out)
+			:"r" (&file)
 			);
 	return PASS;
 }

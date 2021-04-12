@@ -1,5 +1,5 @@
-#ifndef PAGING_H
-#define PAGING_H
+#ifndef _PAGING_H
+#define _PAGING_H
 
 #include "lib.h"
 
@@ -20,9 +20,7 @@
 #define P_MAP 					0x1		//Present bit map
 #define R_MAP					0x2		//Read-Write bit map
 #define S_MAP 					0x80	//Page Size bit map
-
-
-uint32_t process_user_addresses[MAX_PROCESS_NUMBER] = {USER_ONE_PHYS_ADDR,USER_TWO_PHYS_ADDR};
+#define U_MAP                                   0x4  //user allowed
  
 uint32_t page_directory[DIR_SIZE] __attribute__((aligned(BYTES_TO_ALIGN_TO)));
 uint32_t first_page_table[DIR_SIZE] __attribute__((aligned(BYTES_TO_ALIGN_TO)));

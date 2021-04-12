@@ -1,5 +1,6 @@
 
 #include "processes.h"
+#include "syscall_linkage.h"
 
 
 // execute:
@@ -47,19 +48,22 @@ int32_t syscall_execute(const uint8_t* command){
     //need to set stdin and stdout
 
     tss.esp0 = kernel_stacks[current_process];
-    
+    tss.ss0 = KERNEL_DS;
+
+
     //push iret context
     asm volatile("pushl 0x23 \n\t"
 		"pushl %%esp \n\t"
 		"pushf \n\t"
 		"pushl 0x001b   \n\t"
 		"pushl %1    \n\t"
-		"iret \n\t"
-		"movl %%eax,%0 \n\t"
+		/*"iret \n\t"
+		"movl %%eax,%0 \n\t"*/
+ 		"movl %1,%%eax  \n\t"
 		: "=r" (out)
-                : "r" (starting_address));
-
+                : "r" (starting_address + FILE_LOCATION));
     //get halt results
+	ireturn();
     return 1;
 }
 
@@ -79,7 +83,7 @@ uint32_t check_file(const uint8_t* command,uint32_t* starting_address)
         uint8_t buf[28];
 	if(read_dentry_by_name(command, &dentry) == -1)
 		return 0;
-	read = read_data(dentry.inode_idx, 0, buf, 27);
+	read = read_data(dentry.inode_idx, 0, buf, 28);
 	if(read < 28)
 	{
 	    return 0;
