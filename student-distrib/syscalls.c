@@ -27,48 +27,48 @@ int32_t syscall_write(int32_t fd, const void* buf, int32_t nbytes){
 //output: fda array index
 //effect: allocates entry in the FDA for the filename, fills in FOPS
 int32_t syscall_open(const uint8_t* filename){
-//     dentry_t dentry; //directory entry object
+    dentry_t dentry; //directory entry object
 
-//     if(read_dentry_by_name(filename, &dentry) == -1)
-// 		return -1; //file not found
+    if(read_dentry_by_name(filename, &dentry) == -1)
+		return -1; //file not found
 
-//     int pid = get_pid();
-//     if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
-//     return -1;
+    int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    return -1;
 
-//     int fda_index = 0; //variable to hold current index in the fda while finding open spot
+    int fda_index = 0; //variable to hold current index in the fda while finding open spot
 
-//     for (fda_index = 0; fda_index < NUMBER_OF_FILE_DESCRIPTORS; ++fda_index){
-//         //traverse through FD array
-//         if (processes[pid]->file_descriptors[fda_index].flags != ACTIVE_FLAG){
-//             processes[pid]->file_descriptors[fda_index].flags = ACTIVE_FLAG;
-//             processes[pid]->file_descriptors[fda_index].inode = dentry.inode_idx;
+    for (fda_index = 0; fda_index < NUMBER_OF_FILE_DESCRIPTORS; ++fda_index){
+        //traverse through FD array
+        if (processes[pid]->file_descriptors[fda_index].flags != ACTIVE_FLAG){
+            processes[pid]->file_descriptors[fda_index].flags = ACTIVE_FLAG;
+            processes[pid]->file_descriptors[fda_index].inode = dentry.inode_idx;
 
-//             switch(dentry.type){
-//                 case 0:
-//                 processes[pid]->file_descriptors[fda_index].operations_table = rtc_ops;
-//                 break;
-//                 case 1:
-//                 processes[pid]->file_descriptors[fda_index].operations_table = dir_ops;
-//                 break;
-//                 case 2:
-//                 processes[pid]->file_descriptors[fda_index].operations_table = file_ops;
-//                 break;
-//                 default:
-//                 return -1;
-//             }
+            switch(dentry.type){
+                case 0:
+                processes[pid]->file_descriptors[fda_index].operations_table = rtc_ops;
+                break;
+                case 1:
+                processes[pid]->file_descriptors[fda_index].operations_table = dir_ops;
+                break;
+                case 2:
+                processes[pid]->file_descriptors[fda_index].operations_table = file_ops;
+                break;
+                default:
+                return -1;
+            }
 
-//             // int ret = (processes[pid]->file_descriptors[fda_index].operations_table[0](filename);
-//             // if (ret == -1)
-//             // return -1;
+            // int ret = (processes[pid]->file_descriptors[fda_index].operations_table[0](filename);
+            // if (ret == -1)
+            // return -1;
 
-//             return pid;
+            return pid;
 
 
-//         }
+        }
 
-//     }
-// return -1; 
+    }
+return -1; 
 
 
 }
