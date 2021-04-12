@@ -1,6 +1,10 @@
 #define ASM 1
 
 #define MAX_CALL_NUMBER 9
+#define USER_DS_VALUE 0x2b
+#define USER_CS_VALUE 0x23
+#define USER_STACK 0x8300000
+#define IF_BIT 0x200
 #include "syscall_linkage.h"
 
 
@@ -36,24 +40,21 @@ BAD_CALL_NUMBER:
     iret
 
 ireturn:
-	movw $0x2b, %ax //user_ds value
+	movw $USER_DS_VALUE, %ax //user_ds value
 	movw %ax, %ds
-	movl $0x8300000,%ecx
-	//movw %ax, %es 
-	//movw %ax, %fs
-	//movw %ax, %gs 
 	//user ds
-    movl $0x002b, %eax
+    	movl $USER_DS_VALUE, %eax
 	pushl %eax //push ss (user_ds)
 	//user stack location
-	pushl $0x8300000
+	pushl $USER_STACK
 	pushfl
-    popl  %ebx
-    orl   $0x200,%ebx
-    pushl %ebx
+	//set IF to 1
+    	popl  %ebx
+    	orl   $IF_BIT,%ebx
+    	pushl %ebx
 
 	//user cs
-	pushl $0x23 // USER_CS VALUE
+	pushl $USER_CS_VALUE // USER_CS VALUE
 	//passed in program start location
 	pushl %edx
 	iret

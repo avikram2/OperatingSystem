@@ -17,6 +17,12 @@
 #define KERNEL_STACK_TWO 0x7FE000
 #define FILE_LOCATION  0x08048000
 #define BUFFER_SIZE 1024
+#define MAGIC_NUMBER_ONE 0x7f
+#define MAGIC_NUMBER_TWO 0x45
+#define MAGIC_NUMBER_THREE 0x4c
+#define MAGIC_NUMBER_FOUR 0x46
+#define STARTING_POINT_LOCATION 24
+#define STARTING_POINT_LENGTH 4
 typedef struct fd {
     uint32_t* operations_table;
     uint32_t inode;

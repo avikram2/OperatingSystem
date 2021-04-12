@@ -78,22 +78,17 @@ uint32_t check_file(const uint8_t* command,uint32_t* starting_address)
 	if(read_dentry_by_name(command, &dentry) == -1)
 		return 0;
 	read = read_data(dentry.inode_idx, 0, buf, BUFFER_SIZE);
-	if(read < 28)
-	{
-	    return 0;
-        }
+
 	//check for executable magic number
-	if(buf[0] != 0x7f || buf[1] != 0x45 || buf[2] != 0x4c || buf[3] != 0x46)
+	if(buf[0] != MAGIC_NUMBER_ONE || buf[1] != MAGIC_NUMBER_TWO || buf[2] != MAGIC_NUMBER_THREE || buf[3] != MAGIC_NUMBER_FOUR)
 	{
 		return 0;
 	}
         //get starting address
-read_data( dentry.inode_idx, 24, buf2, 4);
+	read_data( dentry.inode_idx, STARTING_POINT_LOCATION, buf2, STARTING_POINT_LENGTH);
         *starting_address = *((uint32_t*)buf2);
 
-        //*starting_address = 0;
-        //*starting_address = (buf[26] << 24) | (buf[25] << 16) | (buf[24] << 8) | (buf[23] << 0);
-	return 1;
+        return 1;
 }
 
 uint32_t load_file(const uint8_t* command)
