@@ -243,7 +243,7 @@ int file_read_test(){
 	}
 	return PASS;
 }
-
+/*
 int directory_read_test(){
 	uint8_t fname[MAX_NAME_LENGTH] = ".";
 	uint8_t buf[MAX_NAME_LENGTH];
@@ -254,7 +254,7 @@ int directory_read_test(){
 		printf("\n");
 	}
 	return PASS;
-}
+}*/
 
 int syscall_test(){
 	int out;

@@ -175,7 +175,7 @@ uint32_t cr0, cr2, cr3;
 
     //While loop to freeze the screen
     int i = 0;
-    //while(i < FREEZE_LOOP_LENGTH){ i++; }
+    while(i < FREEZE_LOOP_LENGTH){ i++; }
 }
 
 void floating_point_exception()
