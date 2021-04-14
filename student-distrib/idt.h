@@ -34,6 +34,9 @@ void system_call_skeleton();
 //initialize the entry in the idt with the proper fields
 void init_idt_entry(int irq);
 
+//initialize the entry in the idt with the proper fields and user dpl
+void init_idt_entry_user(int irq);
+
 
 #endif
 

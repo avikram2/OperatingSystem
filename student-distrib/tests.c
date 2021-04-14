@@ -196,7 +196,7 @@ int read_data_test(){
 	read_dentry_by_name(fname, &temp);
 	inode_t* inode = (inode_t*)((uint32_t)file_sys + (temp.inode_idx + 1) * SIZE_BLOCK);
 	file_len = inode->length;
-	bytes_read = read_data(temp.inode_idx, 0, buf, file_len);
+	bytes_read = read_data(temp.inode_idx, 0, buf, file_len,SKIP_NULLS);
 	
 	
 	printf("file_read(%s)\n", fname); // testing file_read
@@ -258,7 +258,7 @@ int directory_read_test(){
 
 int syscall_test(){
 	int out;
-        uint8_t file[10] = "ls";
+        uint8_t file[10] = "shell";
 	asm volatile("movl %1,%%ebx \n\t"
 			"movl $2,%%eax \n\t"
 			"int $0x80 \n\t"

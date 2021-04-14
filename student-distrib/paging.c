@@ -19,7 +19,7 @@ uint32_t process_user_addresses[MAX_PROCESS_NUMBER] = {USER_ONE_PHYS_ADDR,USER_T
 void enable_paging()
 {
 	uint32_t kernel_offset = KERNEL_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
-	uint32_t pcb_offset = PCB_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
+	//uint32_t pcb_offset = PCB_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
 	uint32_t video_offset = VIDEO_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
 	
 	int i;
@@ -43,7 +43,7 @@ void enable_paging()
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
 	page_directory[1] = ((unsigned int)kernel_page_table) | S_MAP | R_MAP | P_MAP;
 	
-	// initialize pcb table
+	/*// initialize pcb table
 	blank_table(pcb_page_table);
 	for(j = 0; j < TABLE_SIZE; j++)
 	{
@@ -54,7 +54,7 @@ void enable_paging()
 
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
 	page_directory[2] = ((unsigned int)pcb_page_table) | S_MAP | R_MAP | P_MAP;
-
+	*/
 	set_user_table(0);
 	
 	
