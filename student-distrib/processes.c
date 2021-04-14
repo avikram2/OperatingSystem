@@ -1,7 +1,8 @@
 
 #include "processes.h"
-#include "syscall_linkage.h"
-#include "lib.h"
+int current_process = -1;
+uint32_t kernel_stacks[NUMBER_OF_PROCESSES] = {KERNEL_STACK_ONE,KERNEL_STACK_TWO};
+pcb_t* processes[NUMBER_OF_PROCESSES] = {(pcb_t*)PROCESS_ONE_PCB,(pcb_t*)PROCESS_TWO_PCB};
 
 // execute:
 // executes program
@@ -75,11 +76,12 @@ uint32_t check_file(const uint8_t* command,uint32_t* starting_address)
 {
 	dentry_t dentry;
 	int read;
-        uint8_t buf[BUFFER_SIZE];
+        uint8_t buf[BUFFER_SIZE_P];
         uint8_t buf2[4];
 	if(read_dentry_by_name(command, &dentry) == -1)
 		return 0;
-	read = read_data(dentry.inode_idx, 0, buf, BUFFER_SIZE,DONT_SKIP_NULLS);
+
+	read = read_data(dentry.inode_idx, 0, buf, BUFFER_SIZE_P,DONT_SKIP_NULLS);
 
 	//check for executable magic number
 	if(buf[0] != MAGIC_NUMBER_ONE || buf[1] != MAGIC_NUMBER_TWO || buf[2] != MAGIC_NUMBER_THREE || buf[3] != MAGIC_NUMBER_FOUR)
@@ -100,7 +102,7 @@ uint32_t load_file(const uint8_t* command)
         int not_done = 1;
         int count = 0;
         int position = 0;
-        uint8_t buf[BUFFER_SIZE];
+        uint8_t buf[BUFFER_SIZE_P];
 
 
     if(command == 0)
@@ -112,7 +114,7 @@ uint32_t load_file(const uint8_t* command)
         
         while(not_done)
         {	
-		read = read_data(dentry.inode_idx, position, buf, BUFFER_SIZE,DONT_SKIP_NULLS);
+		read = read_data(dentry.inode_idx, position, buf, BUFFER_SIZE_P,DONT_SKIP_NULLS);
                 if(read <= 0)
                 {
                     not_done = 0;
@@ -133,3 +135,14 @@ void flush_tlb()
 }
 
 
+//get_pid
+//function to return the current process id
+int32_t get_pid(){
+    return current_process;
+}
+
+//get_process
+//function to return processes id
+pcb_t** get_process(){
+    return processes;
+}

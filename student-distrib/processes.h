@@ -1,5 +1,5 @@
-#ifndef _SYSCALLS_H
-#define _SYSCALLS_H
+#ifndef _PROCESS_H
+#define _PROCESS_H
 
 #include "lib.h"
 #include "i8259.h"
@@ -16,15 +16,23 @@
 #define KERNEL_STACK_ONE 0x800000
 #define KERNEL_STACK_TWO 0x7FE000
 #define FILE_LOCATION  0x08048000
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE_P 1024
 #define MAGIC_NUMBER_ONE 0x7f
 #define MAGIC_NUMBER_TWO 0x45
 #define MAGIC_NUMBER_THREE 0x4c
 #define MAGIC_NUMBER_FOUR 0x46
 #define STARTING_POINT_LOCATION 24
 #define STARTING_POINT_LENGTH 4
+
+typedef struct fops {
+    int32_t (*open)(const uint8_t* filename);
+	int32_t (*close)(int32_t fd);
+	int32_t (*read)(int32_t fd, void* buf, int32_t nbytes);
+	int32_t (*write)(int32_t fd, const void* buf, int32_t nbytes);
+} fops_t;
+
 typedef struct fd {
-    uint32_t* operations_table;
+    fops_t* operations_table;
     uint32_t inode;
     uint32_t position;
     uint32_t flags;
@@ -35,11 +43,7 @@ typedef struct pcb {
 } pcb_t;
 
 
-uint32_t kernel_stacks[NUMBER_OF_PROCESSES] = {KERNEL_STACK_ONE,KERNEL_STACK_TWO};
 
-pcb_t* processes[NUMBER_OF_PROCESSES] = {(pcb_t*)PROCESS_ONE_PCB,(pcb_t*)PROCESS_TWO_PCB};
-
-int current_process = -1;
 //halt system call
 extern int32_t syscall_halt(uint8_t status);
 
@@ -51,6 +55,11 @@ extern uint32_t check_file(const uint8_t* command, uint32_t* starting_address);
 extern uint32_t load_file(const uint8_t* command);
 
 extern void flush_tlb();
+
+extern int32_t get_pid();
+
+extern pcb_t** get_process();
+
 #endif
 
 #endif

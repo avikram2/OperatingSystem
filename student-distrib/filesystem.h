@@ -4,7 +4,7 @@
 #include "lib.h"
 
 
-
+#ifndef ASM
 
 
 //inode definitions
@@ -85,5 +85,7 @@ int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* p
 int32_t directory_open(const uint8_t* fname, uint32_t* position);
 int32_t directory_close(int32_t fd);
 int32_t directory_write(const uint8_t* fname, const uint8_t* buf, int32_t nbytes);
+
+#endif
 
 #endif

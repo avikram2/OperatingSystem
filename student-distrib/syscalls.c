@@ -1,6 +1,15 @@
 
 #include "syscalls.h"
 
+
+// void * rtc_ops[4] = {rtc_open, rtc_close, rtc_read, rtc_write};
+
+// void * dir_ops[4] = {directory_open, directory_close, directory_read, directory_write};
+
+// void * file_ops[4] = {file_open, file_close, file_read, file_close};
+
+
+
 // read:
 // tbd
 //inputs: tbd
@@ -20,12 +29,64 @@ int32_t syscall_write(int32_t fd, const void* buf, int32_t nbytes){
 }
 
 // open:
-// tbd
-//inputs: tbd
-//output: tbd
-//effect: tbd
+// allocates an entry in the FDA of the current process for the file
+//inputs: filename - name of the file
+//output: fda array index
+//effect: allocates entry in the FDA for the filename, fills in FOPS
 int32_t syscall_open(const uint8_t* filename){
+    dentry_t dentry; //directory entry object
+
+    if(read_dentry_by_name(filename, &dentry) == -1)
+		return -1; //file not found
+
+    int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
     return -1;
+
+    int fda_index = 0; //variable to hold current index in the fda while finding open spot
+
+    pcb_t** processes = get_process();
+
+    for (fda_index = 0; fda_index < NUMBER_OF_FILE_DESCRIPTORS; ++fda_index){
+        //traverse through FD array
+        if (processes[pid]->file_descriptors[fda_index].flags != ACTIVE_FLAG){
+            processes[pid]->file_descriptors[fda_index].flags = ACTIVE_FLAG;
+            processes[pid]->file_descriptors[fda_index].inode = dentry.inode_idx;
+
+            switch(dentry.type){
+                case 0:
+                processes[pid]->file_descriptors[fda_index].operations_table->read = rtc_read;
+                processes[pid]->file_descriptors[fda_index].operations_table->write = rtc_write;
+                processes[pid]->file_descriptors[fda_index].operations_table->open = rtc_open;
+                processes[pid]->file_descriptors[fda_index].operations_table->close = rtc_close;
+                break;
+                case 1:
+                processes[pid]->file_descriptors[fda_index].operations_table->read = directory_read;
+                processes[pid]->file_descriptors[fda_index].operations_table->write = directory_write;
+                processes[pid]->file_descriptors[fda_index].operations_table->open = directory_open;
+                processes[pid]->file_descriptors[fda_index].operations_table->close = directory_close;
+                break;
+                case 2:
+                processes[pid]->file_descriptors[fda_index].operations_table->read = file_read;
+                processes[pid]->file_descriptors[fda_index].operations_table->write = file_write;
+                processes[pid]->file_descriptors[fda_index].operations_table->open = file_open;
+                processes[pid]->file_descriptors[fda_index].operations_table->close = file_close;
+                break;
+                default:
+                return -1;
+            }
+
+            int ret = processes[pid]->file_descriptors[fda_index].operations_table->open(filename);
+            if (ret == -1)
+            return -1;
+
+            return fda_index;
+        }
+
+    }
+return -1; 
+
+
 }
 
 // close:
