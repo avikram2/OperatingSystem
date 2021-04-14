@@ -50,6 +50,7 @@ extern uint32_t check_file(const uint8_t* command, uint32_t* starting_address);
 
 extern uint32_t load_file(const uint8_t* command);
 
+extern void flush_tlb();
 #endif
 
 #endif

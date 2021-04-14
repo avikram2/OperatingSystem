@@ -60,7 +60,7 @@ void set_interrupt_irq(int irq, void * handler){
 //set system_call
 //initialize the entry of the system call and set the entry into the idt as the system call handler
 void set_system_call(int irq, void *handler){
-    init_idt_entry2(irq); //init values
+    init_idt_entry_user(irq); //init values
     SET_IDT_ENTRY(idt[irq], handler); //set entry
 }
 
@@ -91,9 +91,9 @@ void init_idt_entry(int irq){
     idt[irq].reserved1 = 1; //init fields and reserved fields with the correct inputs
 }
 
-// init_idt_entry
-// initializes the fields of the idt entry with the proper values
-void init_idt_entry2(int irq){
+// init_idt_entry_user
+// initializes the fields of the idt entry with the proper values and user dpl
+void init_idt_entry_user(int irq){
     idt[irq].size = 1;
     idt[irq].dpl = 3;
     idt[irq].seg_selector = 16;

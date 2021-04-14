@@ -81,7 +81,7 @@ uint32_t read_inode_data_len(uint32_t inode_idx){
 *			0 on reaching file end
 *
 */
-int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length){
+int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length,int skip_nulls){
 	
 	//Check if inode index is out of bounds
 	if(inode >= file_sys->num_inodes)
@@ -117,7 +117,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 		
 		//Check for file end
 		if (offset + num_bytes_read >= file_len)
-			return 0;
+			return num_bytes_read;
 			
 		//Check for block end
 		if ((offset + num_bytes_read) % SIZE_BLOCK == 0) {
@@ -129,7 +129,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 		tracker = (char*)data_block_addr + (offset + num_bytes_read) % SIZE_BLOCK;
 		
 		//Disclude null char 
-		if(*tracker == '\0')
+		if(skip_nulls && *tracker == '\0')
 			count_null_char++;
 		else
 			buf[num_bytes_read - count_null_char] = *tracker; 
@@ -153,7 +153,7 @@ int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* positi
 	int read;
 	if(read_dentry_by_name(fname, &dentry) == -1)
 		return -1;
-	read = read_data(dentry.inode_idx, *position, buf, nbytes);
+	read = read_data(dentry.inode_idx, *position, buf, nbytes,SKIP_NULLS);
 	*position = *position + read;
 	return read;
 	
