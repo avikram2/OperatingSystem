@@ -10,6 +10,7 @@
 
 
 #define ACTIVE_FLAG 1
+#define INACTIVE_FLAG 0
 
 #define NUMBER_OF_FILE_DESCRIPTORS 8
 
