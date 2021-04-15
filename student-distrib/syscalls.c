@@ -89,10 +89,13 @@ int32_t syscall_open(const uint8_t* filename){
                 return -1;
             }
 
-            int ret = processes[pid]->file_descriptors[fda_index].fops_table->open(filename);
+            int ret = processes[pid]->file_descriptors[fda_index].fops_table->open(filename,fda_index);
             //int ret = processes[pid]->file_descriptors[fda_index].operations_table->open(filename);
             if (ret == -1)
-            return -1;
+	    {
+                processes[pid]->file_descriptors[fda_index].flags = INACTIVE_FLAG;
+            	return -1;
+            }
 
             return fda_index;
         }

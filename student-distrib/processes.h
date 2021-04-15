@@ -26,7 +26,7 @@
 #define STARTING_POINT_LENGTH 4
 
 typedef struct fops {
-    int32_t (*open)(const uint8_t* filename);
+    int32_t (*open)(const uint8_t* filename,int32_t fd);
 	int32_t (*close)(int32_t fd);
 	int32_t (*read)(int32_t fd, void* buf, int32_t nbytes);
 	int32_t (*write)(int32_t fd, const void* buf, int32_t nbytes);
@@ -64,7 +64,7 @@ extern int32_t get_pid();
 
 extern pcb_t** get_process();
 //for stdint/out, doesn't do anything
-extern int32_t std_open(const uint8_t* filename);
+extern int32_t std_open(const uint8_t* filename, uint32_t fd);
 
 //for stdint/out, doesn't do anything
 extern int32_t std_close(int32_t fd);

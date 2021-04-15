@@ -147,14 +147,16 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 *			0 on reaching file end
 *
 */
-int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* position){
-
-	dentry_t dentry;
+int32_t file_read(uint32_t fd, uint8_t* buf, int32_t nbytes){
 	int read;
-	if(read_dentry_by_name(fname, &dentry) == -1)
-		return -1;
-	read = read_data(dentry.inode_idx, *position, buf, nbytes,SKIP_NULLS);
-	*position = *position + read;
+	int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+	read = read_data(processes[pid]->file_descriptors[fd].inode, processes[pid]->file_descriptors[fd].position, buf, nbytes,SKIP_NULLS);
+	processes[pid]->file_descriptors[fd].position += read;
 	return read;
 	
 }
@@ -166,20 +168,28 @@ int32_t file_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* positi
 *			0 on reaching file end
 *
 */
-int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* position) {
-    
+int32_t directory_read(uint32_t fd, uint8_t* buf, int32_t nbytes) {
+    	int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+    uint32_t position = processes[pid]->file_descriptors[fd].position;
+
 	dentry_t dentry;
 	char* filename;
 	int32_t filenamePos = 0;
 	uint8_t ch;
-	if(position == 0 || buf == 0)
+	if(buf == 0)
 	{
 		return -1;
 	}
 
-	if(-1 == read_dentry_by_index(*position, &dentry))
+	if(-1 == read_dentry_by_index(position, &dentry))
 	{
-		return -1;
+  		//we've passed out of the directory, return 0
+		return 0;
 	}
 	
 	//we read a valid file, let's put the name in the buffer
@@ -194,30 +204,25 @@ int32_t directory_read(uint8_t* fname, uint8_t* buf, int32_t nbytes, uint32_t* p
 			break;
 		}*/
 	}
-	(*position) = (*position) + 1;
+	processes[pid]->file_descriptors[fd].position++;
 	return filenamePos;
-
-    // while (-1 != (cnt = file_read(fname, buf, FS_BUF_LENGTH-1))) {
-        // if (-1 == cnt) {
-	        // printf("directory entry read failed\n");
-	        // return cnt;
-	    // }
-		// printf("%s\n", buf);
-		// idx++;
-		// if(read_dentry_by_index(idx, dentry) == -1)
-			// return -1;
-		
-    // }
 	
 }
 
 //file_open: yet to do anything
-int32_t file_open(const uint8_t* fname, uint32_t* position){
-	if(position == 0)
-	{
+int32_t file_open(const uint8_t* fname, uint32_t fd){
+	int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+    dentry_t dentry;
+	if(read_dentry_by_name(fname, &dentry) == -1)
 		return -1;
-	}
-	*position = 0;
+    processes[pid]->file_descriptors[fd].position = 0;
+
+    processes[pid]->file_descriptors[fd].inode = dentry.inode_idx;
 	return 0;
 }
 
@@ -227,17 +232,19 @@ int32_t file_close(int32_t fd){
 }
 
 //file_write: not supported
-int32_t file_write(const uint8_t* fname, const uint8_t* buf, int32_t nbytes){
+int32_t file_write(uint32_t fd, const uint8_t* buf, int32_t nbytes){
 	return -1;
 }
 
 //directory_open: yet to do anything
-int32_t directory_open(const uint8_t* fname, uint32_t* position){
-	if(position == 0)
-	{
-		return -1;
-	}
-	*position = 0;
+int32_t directory_open(const uint8_t* fname, uint32_t fd){
+	int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+    processes[pid]->file_descriptors[fd].position = 0;
 	return 0;
 }
 
@@ -247,6 +254,6 @@ int32_t directory_close(int32_t fd){
 }
 
 //directory_write: not supported
-int32_t directory_write(const uint8_t* fname, const uint8_t* buf, int32_t nbytes){
+int32_t directory_write(uint32_t fd, const uint8_t* buf, int32_t nbytes){
 	return -1;
 }

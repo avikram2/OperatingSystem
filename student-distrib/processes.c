@@ -65,7 +65,7 @@ int32_t syscall_execute(const uint8_t* command){
 
     processes[current_process]->file_descriptors[1].flags = ACTIVE_FLAG;
     processes[current_process]->file_descriptors[1].fops_table = &stdout_ops;
-    processes[current_process]->file_descriptors[1].fops_table->open(filename);
+    processes[current_process]->file_descriptors[1].fops_table->open(filename, 1);
 
     //need to set stdin and stdout
 
@@ -190,7 +190,7 @@ pcb_t** get_process(){
 }
 
 //for stdint/out, doesn't do anything
-int32_t std_open(const uint8_t* filename){
+int32_t std_open(const uint8_t* filename, uint32_t fd){
 	return -1;
 }
 

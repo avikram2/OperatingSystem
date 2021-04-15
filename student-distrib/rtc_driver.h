@@ -14,6 +14,7 @@
 #include "lib.h"
 #include "i8259.h"
 #include "rtc.h"
+#include "processes.h"
 #ifndef ASM
 
 typedef struct rtc_driver_instance {
@@ -25,16 +26,16 @@ typedef struct rtc_driver_instance {
 extern rtc_driver_instance_t rtc_drivers_instances[MAX_RTC_DRIVERS];
 
 //Opens an rtc driver and finds the first open instance for the calling process to use
-int rtc_open(int* rtc_index);
+int rtc_open(const uint8_t* fname, uint32_t fd);
 
 //Waits for the next interrupt for this instance, then returns
-int rtc_read(int rtc_index);
+int rtc_read(uint32_t fd, uint8_t* buf, int32_t nbytes);
 
 //Sets the interrupt frequency for this instance
-int rtc_write(int rtc_index, int rate);
+int rtc_write(uint32_t fd, const uint8_t* buf, int32_t nbytese);
 
 // Closes the given rtc index
-int rtc_close(int rtc_index);
+int rtc_close(uint32_t fd);
 
 
 #endif /* ASM */

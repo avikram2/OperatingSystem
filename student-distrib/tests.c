@@ -130,7 +130,7 @@ int video_memory_access_test(){
 	return PASS;
 }
 
-//testing to see if we can egenrate interrupts with the rtc driver
+/*//testing to see if we can egenrate interrupts with the rtc driver
 //covers rtc interrupts, the rtc driver
 //should wait for 10 seconds, regardless of the frequency set
 //files: rtc_driver.c/h
@@ -146,7 +146,7 @@ int rtc_test(){
 	}
 	rtc_close(rtc_instance);
 	return PASS;
-}
+}*/
 
 int terminal_driver_test(){
 	TEST_HEADER;
@@ -229,7 +229,7 @@ int read_data_test(){
 	return PASS;
 }
 
-int file_read_test(){
+/*int file_read_test(){
 	uint8_t buf[10];
 	uint32_t position = 0;
 	uint32_t res;
@@ -242,7 +242,7 @@ int file_read_test(){
 		res = file_read(fname, buf, 10 - 1, &position);
 	}
 	return PASS;
-}
+}*/
 /*
 int directory_read_test(){
 	uint8_t fname[MAX_NAME_LENGTH] = ".";

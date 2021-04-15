@@ -12,8 +12,15 @@ rtc_driver_instance_t rtc_drivers_instances[MAX_RTC_DRIVERS];
  *  Effect: Sets the first open instance to in_use and puts the index of that instance in the given pointer
  * 		Also sets the rtc interrupt rate to 1024Hz
  */
-int rtc_open(int* rtc_index)
+int rtc_open(const uint8_t* fname, uint32_t fd)
 {	
+int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+
 	int first_open = 0;
 	
 	set_rtc_rate(TEN_ZERO_TWENTY_FOUR_HZ_RATE);
@@ -25,10 +32,7 @@ int rtc_open(int* rtc_index)
 		{
 			//puts this instance to use and gives the caller the instance index
 			rtc_drivers_instances[first_open].in_use = 1;
-			if(rtc_index != 0)
-			{
-				*rtc_index = first_open;
-			}
+			processes[pid]->file_descriptors[fd].position = first_open;
 			return 0;
 
 		}
@@ -41,8 +45,16 @@ int rtc_open(int* rtc_index)
  *  Output: 0 if successful and -1 if not(invalid instance index)
  *  Effect: None
  */
-int rtc_read(int rtc_index)
+int rtc_read(uint32_t fd, uint8_t* buf, int32_t nbytes)
 {
+int pid = get_pid();
+	if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+	uint32_t rtc_index = processes[pid]->file_descriptors[fd].position;
+
 	//check if the rtc index is valid
 	if(rtc_index >= MAX_RTC_DRIVERS || rtc_drivers_instances[rtc_index].in_use == 0)
 	{		
@@ -64,21 +76,32 @@ int rtc_read(int rtc_index)
  *  Output: 0 if successful and -1 if not(invalid instance index/invalid frequency)
  *  Effect: None
  */
-int rtc_write(int rtc_index, int rate)
+int rtc_write(uint32_t fd, const uint8_t* buf, int32_t nbytese)
 {
+int pid = get_pid();
+if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+	uint32_t rtc_index = processes[pid]->file_descriptors[fd].position;
 	//check if the rtc instance index is valid
 	if(rtc_index >= MAX_RTC_DRIVERS || rtc_drivers_instances[rtc_index].in_use == 0)
 	{		
 		return -1;
 	}
+	if(buf == 0)
+	{
+		return -1;
+	}
 	//check if the rate is valid(not zero, less then or equal to 1024, power of 2
-	if((rate & (rate-1)) != 0 || rate > MAX_RTC_FREQUENCY || rate <= 0)
+	if((*buf & (*buf-1)) != 0 || *buf > MAX_RTC_FREQUENCY || *buf <= 0)
 	{
 		return -1;
 	}
 
 	//sets the amount of ticks the interrupt handler should wait between each interrupt for this instance
-	rtc_drivers_instances[rtc_index].wait_ticks = MAX_RTC_FREQUENCY / rate;
+	rtc_drivers_instances[rtc_index].wait_ticks = MAX_RTC_FREQUENCY / *buf;
 
 	return 0;
 }
@@ -88,15 +111,21 @@ int rtc_write(int rtc_index, int rate)
  *  Output: 0 if successful and -1 if not(invalid instance index)
  *  Effect: None
  */
-int rtc_close(int rtc_index)
+int rtc_close(uint32_t fd)
 {
+int pid = get_pid();
+	if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
 	//check if the rtc instance index is valid
-	if(rtc_index >= MAX_RTC_DRIVERS || rtc_drivers_instances[rtc_index].in_use == 0)
+	if(processes[pid]->file_descriptors[fd].position >= MAX_RTC_DRIVERS || rtc_drivers_instances[processes[pid]->file_descriptors[fd].position].in_use == 0)
 	{		
 		return -1;
 	}
 	//Sets this instance to not in use
-	rtc_drivers_instances[rtc_index].in_use = 0;
+	rtc_drivers_instances[processes[pid]->file_descriptors[fd].position].in_use = 0;
 	return 0;
 }
 
