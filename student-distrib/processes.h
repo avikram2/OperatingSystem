@@ -7,6 +7,7 @@
 #include "paging.h"
 #include "x86_desc.h"
 #include "syscall_linkage.h"
+#include "terminal.h"
 
 #ifndef ASM
 #define NUMBER_OF_FILE_DESCRIPTORS 8
@@ -32,7 +33,8 @@ typedef struct fops {
 } fops_t;
 
 typedef struct fd {
-    fops_t* operations_table;
+    fops_t* fops_table;
+    //void * fops_table;
     uint32_t inode;
     uint32_t position;
     uint32_t flags;
@@ -40,6 +42,8 @@ typedef struct fd {
 
 typedef struct pcb {
    fd_t file_descriptors[NUMBER_OF_FILE_DESCRIPTORS];
+   uint32_t parent_esp;
+   uint32_t parent_ebp;
 } pcb_t;
 
 
@@ -50,16 +54,29 @@ extern int32_t syscall_halt(uint8_t status);
 //execute system call
 extern int32_t syscall_execute(const uint8_t* command);
 
-extern uint32_t check_file(const uint8_t* command, uint32_t* starting_address);
+extern uint32_t check_file(const uint8_t* command, uint32_t* starting_address, uint32_t* inode);
 
-extern uint32_t load_file(const uint8_t* command);
+extern uint32_t load_file(uint32_t inode);
 
 extern void flush_tlb();
 
 extern int32_t get_pid();
 
 extern pcb_t** get_process();
+//for stdint/out, doesn't do anything
+extern int32_t std_open(const uint8_t* filename);
 
+//for stdint/out, doesn't do anything
+extern int32_t std_close(int32_t fd);
+
+//for stdint/out, doesn't do anything
+extern int32_t std_read(int32_t fd, uint8_t* buf, int32_t nbytes);
+
+//for stdint/out, doesn't do anything
+extern int32_t std_write(int32_t fd, uint8_t* buf, int32_t nbytes);
+
+//halts a program from an exception
+extern void exception_halt();
 #endif
 
 #endif

@@ -291,7 +291,7 @@ void launch_tests(){
 	//TEST_OUTPUT("read_data", file_read_test());
 	//TEST_OUTPUT("read_directory", directory_read_test());
 
-	TEST_OUTPUT("syscall", syscall_test());
+	//TEST_OUTPUT("syscall", syscall_test());
 
 	// launch your tests here
 }

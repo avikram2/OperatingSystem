@@ -13,7 +13,10 @@
 
 #define NUMBER_OF_FILE_DESCRIPTORS 8
 
-
+#define OPS_OPEN_INDEX 0
+#define OPS_CLOSE_INDEX 1
+#define OPS_READ_INDEX 2
+#define OPS_WRITE_INDEX 3
 
 
 #ifndef ASM
