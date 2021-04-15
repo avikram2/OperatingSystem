@@ -7,6 +7,7 @@
 #include "paging.h"
 #include "x86_desc.h"
 #include "syscall_linkage.h"
+#include "terminal.h"
 
 #ifndef ASM
 #define NUMBER_OF_FILE_DESCRIPTORS 8
@@ -32,7 +33,8 @@ typedef struct fops {
 } fops_t;
 
 typedef struct fd {
-    fops_t* operations_table;
+    fops_t* fops_table;
+    //void * fops_table;
     uint32_t inode;
     uint32_t position;
     uint32_t flags;
@@ -40,6 +42,8 @@ typedef struct fd {
 
 typedef struct pcb {
    fd_t file_descriptors[NUMBER_OF_FILE_DESCRIPTORS];
+   uint32_t parent_esp;
+   uint32_t parent_ebp;
 } pcb_t;
 
 
@@ -59,6 +63,17 @@ extern void flush_tlb();
 extern int32_t get_pid();
 
 extern pcb_t** get_process();
+//for stdint/out, doesn't do anything
+extern int32_t std_open(const uint8_t* filename);
+
+//for stdint/out, doesn't do anything
+extern int32_t std_close(int32_t fd);
+
+//for stdint/out, doesn't do anything
+extern int32_t std_read(int32_t fd, uint8_t* buf, int32_t nbytes);
+
+//for stdint/out, doesn't do anything
+extern int32_t std_write(int32_t fd, uint8_t* buf, int32_t nbytes);
 
 #endif
 

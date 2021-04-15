@@ -2,7 +2,7 @@
  * vim:ts=4 noexpandtab
  */
 
-#include "idt.h"
+#include "exceptions.h"
 
 //divide exception: handler to acknowledge divide by 0
 void divide_exception()
@@ -170,6 +170,7 @@ uint32_t cr0, cr2, cr3;
     : /* no input */
     : "%rax"
     );
+    syscall_halt(256);
     clear();
     printf("Exception: Page fault!\n");
 

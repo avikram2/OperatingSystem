@@ -6,7 +6,7 @@
 #define _EXCEPTIONS_H
 
 #include "lib.h"
-
+#include "processes.h"
 #define FREEZE_LOOP_LENGTH 1000000000 //length of loop in exception handler 
 
 

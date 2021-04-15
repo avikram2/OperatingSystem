@@ -4,16 +4,21 @@ int current_process = -1;
 uint32_t kernel_stacks[NUMBER_OF_PROCESSES] = {KERNEL_STACK_ONE,KERNEL_STACK_TWO};
 pcb_t* processes[NUMBER_OF_PROCESSES] = {(pcb_t*)PROCESS_ONE_PCB,(pcb_t*)PROCESS_TWO_PCB};
 
+static fops_t stdin_ops = {std_open,std_close,terminal_read,std_write};
+static fops_t stdout_ops = {std_open,std_close,std_read,terminal_write};
 // execute:
 // executes program
 //inputs: tbd
 //output: tbd
 //effect: tbd
 int32_t syscall_execute(const uint8_t* command){
+    /*if(current_process == 0)
+	{
+	return 0;
+	}*/
     uint32_t starting_address;
+    const uint8_t filename[4] = "";
     int i;
-
-	int out;
     if(command == 0)
     {
         return -1;
@@ -40,6 +45,8 @@ int32_t syscall_execute(const uint8_t* command){
     {
         current_process--;
         set_user_table(current_process);
+    
+    flush_tlb();
     }
 
     //set fds to unused
@@ -47,6 +54,14 @@ int32_t syscall_execute(const uint8_t* command){
     {
         processes[current_process]->file_descriptors[i].flags = 0;
     }
+	
+    processes[current_process]->file_descriptors[0].flags = ACTIVE_FLAG;
+    processes[current_process]->file_descriptors[0].fops_table = &stdin_ops;
+
+
+    processes[current_process]->file_descriptors[1].flags = ACTIVE_FLAG;
+    processes[current_process]->file_descriptors[1].fops_table = &stdout_ops;
+    processes[current_process]->file_descriptors[1].fops_table->open(filename);
 
     //need to set stdin and stdout
 
@@ -54,13 +69,8 @@ int32_t syscall_execute(const uint8_t* command){
     tss.ss0 = KERNEL_DS;
 
 
-    //push iret context
-    asm volatile("movl %1,%%edx  \n\t"
-		: "=r" (out)
-                : "r" (starting_address));
-    //get halt results
-	ireturn();
-    return 1;
+    int ret = ireturn(starting_address,&(processes[current_process]->parent_esp),&(processes[current_process]->parent_ebp));
+    return ret;
 }
 
 // halt:
@@ -69,6 +79,34 @@ int32_t syscall_execute(const uint8_t* command){
 //output: tbd
 //effect: tbd
 int32_t syscall_halt(const uint8_t status){
+    //set fds to unused
+    if(current_process > 1)
+    {
+        return -1;
+    }
+    int i;
+    for(i = 0;i<NUMBER_OF_FILE_DESCRIPTORS;i++)
+    {
+        processes[current_process]->file_descriptors[i].flags = 0;
+	if(processes[current_process]->file_descriptors[i].flags == ACTIVE_FLAG)
+	{
+    		processes[current_process]->file_descriptors[1].fops_table->close(i);
+	}
+    }
+    current_process--;
+    set_user_table(current_process);
+    
+    flush_tlb();
+
+    tss.esp0 = kernel_stacks[current_process] - 4;
+    tss.ss0 = KERNEL_DS;
+    asm volatile("movl %1,%%esp  \n\t"
+		"movl %2,%%ebp  \n\t" 
+		"xorl %%eax,%%eax  \n\t" 
+		"mov %3,%%al  \n\t" 
+		"jmp ireturn_return  \n\t"
+		: "=r" (i)
+                : "r" (processes[current_process+1]->parent_esp), "r" (processes[current_process+1]->parent_ebp), "r" (status));
     return -1;
 }
 
@@ -145,4 +183,24 @@ int32_t get_pid(){
 //function to return processes id
 pcb_t** get_process(){
     return processes;
+}
+
+//for stdint/out, doesn't do anything
+int32_t std_open(const uint8_t* filename){
+	return -1;
+}
+
+//for stdint/out, doesn't do anything
+int32_t std_close(int32_t fd){
+	return -1;
+}
+
+//for stdint/out, doesn't do anything
+int32_t std_read(int32_t fd, uint8_t* buf, int32_t nbytes){
+	return -1;
+}
+
+//for stdint/out, doesn't do anything
+int32_t std_write(int32_t fd, uint8_t* buf, int32_t nbytes){
+	return -1;
 }

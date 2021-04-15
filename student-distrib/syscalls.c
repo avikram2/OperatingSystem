@@ -2,11 +2,9 @@
 #include "syscalls.h"
 
 
-// void * rtc_ops[4] = {rtc_open, rtc_close, rtc_read, rtc_write};
-
-// void * dir_ops[4] = {directory_open, directory_close, directory_read, directory_write};
-
-// void * file_ops[4] = {file_open, file_close, file_read, file_close};
+static fops_t rtc_ops = {rtc_open, rtc_close, rtc_read, rtc_write};
+static fops_t dir_ops = {directory_open, directory_close, directory_read, directory_write};
+static fops_t file_ops = {file_open, file_close, file_read, file_write};
 
 
 
@@ -16,7 +14,13 @@
 //output: tbd
 //effect: tbd
 int32_t syscall_read(int32_t fd, void* buf, int32_t nbytes){
+    int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
     return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+    return processes[pid]->file_descriptors[fd].fops_table->read(fd,buf,nbytes);
 }
 
 // write:
@@ -25,7 +29,13 @@ int32_t syscall_read(int32_t fd, void* buf, int32_t nbytes){
 //output: tbd
 //effect: tbd
 int32_t syscall_write(int32_t fd, const void* buf, int32_t nbytes){
+    int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
     return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+    return processes[pid]->file_descriptors[fd].fops_table->write(fd,buf,nbytes);
 }
 
 // open:
@@ -55,28 +65,32 @@ int32_t syscall_open(const uint8_t* filename){
 
             switch(dentry.type){
                 case 0:
-                processes[pid]->file_descriptors[fda_index].operations_table->read = rtc_read;
-                processes[pid]->file_descriptors[fda_index].operations_table->write = rtc_write;
-                processes[pid]->file_descriptors[fda_index].operations_table->open = rtc_open;
-                processes[pid]->file_descriptors[fda_index].operations_table->close = rtc_close;
+		processes[pid]->file_descriptors[fda_index].fops_table = &rtc_ops;
+                //processes[pid]->file_descriptors[fda_index].operations_table->read = rtc_read;
+                //processes[pid]->file_descriptors[fda_index].operations_table->write = rtc_write;
+                //processes[pid]->file_descriptors[fda_index].operations_table->open = rtc_open;
+                //processes[pid]->file_descriptors[fda_index].operations_table->close = rtc_close;
                 break;
                 case 1:
-                processes[pid]->file_descriptors[fda_index].operations_table->read = directory_read;
-                processes[pid]->file_descriptors[fda_index].operations_table->write = directory_write;
-                processes[pid]->file_descriptors[fda_index].operations_table->open = directory_open;
-                processes[pid]->file_descriptors[fda_index].operations_table->close = directory_close;
+		processes[pid]->file_descriptors[fda_index].fops_table = &dir_ops;
+                //processes[pid]->file_descriptors[fda_index].operations_table->read = directory_read;
+                //processes[pid]->file_descriptors[fda_index].operations_table->write = directory_write;
+                //processes[pid]->file_descriptors[fda_index].operations_table->open = directory_open;
+                //processes[pid]->file_descriptors[fda_index].operations_table->close = directory_close;
                 break;
                 case 2:
-                processes[pid]->file_descriptors[fda_index].operations_table->read = file_read;
-                processes[pid]->file_descriptors[fda_index].operations_table->write = file_write;
-                processes[pid]->file_descriptors[fda_index].operations_table->open = file_open;
-                processes[pid]->file_descriptors[fda_index].operations_table->close = file_close;
+		processes[pid]->file_descriptors[fda_index].fops_table = &file_ops;
+                //processes[pid]->file_descriptors[fda_index].operations_table->read = file_read;
+                //processes[pid]->file_descriptors[fda_index].operations_table->write = file_write;
+                //processes[pid]->file_descriptors[fda_index].operations_table->open = file_open;
+                //processes[pid]->file_descriptors[fda_index].operations_table->close = file_close;
                 break;
                 default:
                 return -1;
             }
 
-            int ret = processes[pid]->file_descriptors[fda_index].operations_table->open(filename);
+            int ret = processes[pid]->file_descriptors[fda_index].fops_table->open(filename);
+            //int ret = processes[pid]->file_descriptors[fda_index].operations_table->open(filename);
             if (ret == -1)
             return -1;
 
@@ -95,7 +109,13 @@ return -1;
 //output: tbd
 //effect: tbd
 int32_t syscall_close(const uint32_t fd){
+    int pid = get_pid();
+    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
     return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+    return processes[pid]->file_descriptors[fd].fops_table->close(fd);
 }
 
 // getargs:
