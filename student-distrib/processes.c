@@ -6,6 +6,8 @@ pcb_t* processes[NUMBER_OF_PROCESSES] = {(pcb_t*)PROCESS_ONE_PCB,(pcb_t*)PROCESS
 
 static fops_t stdin_ops = {std_open,std_close,terminal_read,std_write};
 static fops_t stdout_ops = {std_open,std_close,std_read,terminal_write};
+
+static exception_halt_triggered = 0;
 // execute:
 // executes program
 //inputs: tbd
@@ -17,6 +19,7 @@ int32_t syscall_execute(const uint8_t* command){
 	return 0;
 	}*/
     uint32_t starting_address;
+    uint32_t inode;
     const uint8_t filename[4] = "";
     int i;
     if(command == 0)
@@ -24,7 +27,7 @@ int32_t syscall_execute(const uint8_t* command){
         return -1;
     }
     //check if its an executable
-    if(!check_file(command,&starting_address))
+    if(!check_file(command,&starting_address,&inode))
     {
 	return -1;
     }
@@ -41,12 +44,13 @@ int32_t syscall_execute(const uint8_t* command){
     
     flush_tlb();
 
-    if(!load_file(command))
+    if(!load_file(inode))
     {
         current_process--;
         set_user_table(current_process);
     
     flush_tlb();
+	return -1;
     }
 
     //set fds to unused
@@ -79,6 +83,12 @@ int32_t syscall_execute(const uint8_t* command){
 //output: tbd
 //effect: tbd
 int32_t syscall_halt(const uint8_t status){
+    uint32_t ret_status = (uint32_t)status;
+    if(exception_halt_triggered)
+    {
+        ret_status = 256;
+    }
+    exception_halt_triggered = 0;
     //set fds to unused
     if(current_process > 1)
     {
@@ -102,16 +112,19 @@ int32_t syscall_halt(const uint8_t status){
     tss.ss0 = KERNEL_DS;
     asm volatile("movl %1,%%esp  \n\t"
 		"movl %2,%%ebp  \n\t" 
-		"xorl %%eax,%%eax  \n\t" 
-		"mov %3,%%al  \n\t" 
+		"movl %3,%%eax  \n\t" 
 		"jmp ireturn_return  \n\t"
 		: "=r" (i)
-                : "r" (processes[current_process+1]->parent_esp), "r" (processes[current_process+1]->parent_ebp), "r" (status));
+                : "r" (processes[current_process+1]->parent_esp), "r" (processes[current_process+1]->parent_ebp), "r" (ret_status));
     return -1;
 }
 
-uint32_t check_file(const uint8_t* command,uint32_t* starting_address)
+uint32_t check_file(const uint8_t* command,uint32_t* starting_address,uint32_t* inode)
 {
+	if(starting_address == 0 || inode == 0)
+	{
+		return -1;
+	}
 	dentry_t dentry;
 	int read;
         uint8_t buf[BUFFER_SIZE_P];
@@ -129,30 +142,21 @@ uint32_t check_file(const uint8_t* command,uint32_t* starting_address)
         //get starting address
 	read_data( dentry.inode_idx, STARTING_POINT_LOCATION, buf2, STARTING_POINT_LENGTH,DONT_SKIP_NULLS);
         *starting_address = *((uint32_t*)buf2);
-
+	*inode = dentry.inode_idx;
         return 1;
 }
 
-uint32_t load_file(const uint8_t* command)
+uint32_t load_file(uint32_t inode)
 {
-	dentry_t dentry;
 	int read;
         int not_done = 1;
         int count = 0;
         int position = 0;
         uint8_t buf[BUFFER_SIZE_P];
-
-
-    if(command == 0)
-    {
-        return -1;
-    }
-	if(read_dentry_by_name(command, &dentry) == -1)
-		return 0;
         
         while(not_done)
         {	
-		read = read_data(dentry.inode_idx, position, buf, BUFFER_SIZE_P,DONT_SKIP_NULLS);
+		read = read_data(inode, position, buf, BUFFER_SIZE_P,DONT_SKIP_NULLS);
                 if(read <= 0)
                 {
                     not_done = 0;
@@ -203,4 +207,11 @@ int32_t std_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 //for stdint/out, doesn't do anything
 int32_t std_write(int32_t fd, uint8_t* buf, int32_t nbytes){
 	return -1;
+}
+
+//halts a program from an exception
+void exception_halt()
+{
+	exception_halt_triggered = 1;
+	syscall_halt(0);
 }

@@ -170,7 +170,14 @@ void entry(unsigned long magic, unsigned long addr) {
    launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-
+    int out;
+        uint8_t file[10] = "shell";
+	asm volatile("movl %1,%%ebx \n\t"
+			"movl $2,%%eax \n\t"
+			"int $0x80 \n\t"
+			:"=r" (out)
+			:"r" (&file)
+			);
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

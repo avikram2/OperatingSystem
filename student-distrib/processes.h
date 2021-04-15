@@ -54,9 +54,9 @@ extern int32_t syscall_halt(uint8_t status);
 //execute system call
 extern int32_t syscall_execute(const uint8_t* command);
 
-extern uint32_t check_file(const uint8_t* command, uint32_t* starting_address);
+extern uint32_t check_file(const uint8_t* command, uint32_t* starting_address, uint32_t* inode);
 
-extern uint32_t load_file(const uint8_t* command);
+extern uint32_t load_file(uint32_t inode);
 
 extern void flush_tlb();
 
@@ -75,6 +75,8 @@ extern int32_t std_read(int32_t fd, uint8_t* buf, int32_t nbytes);
 //for stdint/out, doesn't do anything
 extern int32_t std_write(int32_t fd, uint8_t* buf, int32_t nbytes);
 
+//halts a program from an exception
+extern void exception_halt();
 #endif
 
 #endif
