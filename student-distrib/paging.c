@@ -2,7 +2,6 @@
 
 
 
-uint32_t process_user_addresses[MAX_PROCESS_NUMBER] = {USER_ONE_PHYS_ADDR,USER_TWO_PHYS_ADDR};
 /* enable_paging() : function to enabe paging
 *INPUTS: NONE
 *OUTPUTS: NONE
@@ -60,12 +59,13 @@ void enable_paging()
 
 void set_user_table(uint32_t process)
 {
-	if(process < 0 || process > 1)
+	if(process < 0 || process >= NUMBER_OF_PROCESSES)
 	{
 		return;
 	}
-
-	uint32_t user_offset = (process_user_addresses[process] >> PHYSICAL_ADDR_SHIFT) << PHYSICAL_ADDR_SHIFT;
+	uint32_t user_pos = USER_ONE_PHYS_ADDR;
+	user_pos = user_pos + USER_PHYS_ADDR_LEN * process;
+	uint32_t user_offset = (user_pos >> PHYSICAL_ADDR_SHIFT) << PHYSICAL_ADDR_SHIFT;
 	
 	// initialize user table
 	blank_table(user_page_table);
@@ -78,7 +78,7 @@ void set_user_table(uint32_t process)
 	}
 
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
-	page_directory[32] = ((unsigned int)process_user_addresses[process]) | S_MAP | U_MAP | R_MAP | P_MAP;
+	page_directory[32] = ((unsigned int)user_pos) | S_MAP | U_MAP | R_MAP | P_MAP;
 
 	loadPageDirectory(page_directory);
 }

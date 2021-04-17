@@ -15,7 +15,7 @@ static fops_t file_ops = {file_open, file_close, file_read, file_write};
 //effect: tbd
 int32_t syscall_read(int32_t fd, void* buf, int32_t nbytes){
     int pid = get_pid();
-    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
@@ -30,7 +30,7 @@ int32_t syscall_read(int32_t fd, void* buf, int32_t nbytes){
 //effect: tbd
 int32_t syscall_write(int32_t fd, const void* buf, int32_t nbytes){
     int pid = get_pid();
-    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
@@ -50,7 +50,7 @@ int32_t syscall_open(const uint8_t* filename){
 		return -1; //file not found
 
     int pid = get_pid();
-    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
 
     int fda_index = 0; //variable to hold current index in the fda while finding open spot
@@ -113,11 +113,12 @@ return -1;
 //effect: tbd
 int32_t syscall_close(const uint32_t fd){
     int pid = get_pid();
-    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
     pcb_t** processes = get_process();
+    processes[pid]->file_descriptors[fd].flags = INACTIVE_FLAG;
     return processes[pid]->file_descriptors[fd].fops_table->close(fd);
 }
 
@@ -127,7 +128,25 @@ int32_t syscall_close(const uint32_t fd){
 //output: tbd
 //effect: tbd
 int32_t syscall_getargs(uint8_t* buf, int32_t nbytes){
+    if(buf == 0 || nbytes<= 1)
+	return -1;
+    int pid = get_pid();
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
+    pcb_t** processes = get_process();
+    int arg_len = processes[pid]->args_len;
+    //plus 1 for null terminator
+    if(arg_len + 1 > nbytes)
+    	return -1;
+    if(arg_len <= 0)
+    	return -1;
+    int pos = 0;
+    for(pos = 0; pos < arg_len; pos++)
+    {
+         buf[pos] = processes[pid]->args[pos];
+    }
+    buf[pos] = '\0';
+    return 0;
 }
 
 // vidmap:

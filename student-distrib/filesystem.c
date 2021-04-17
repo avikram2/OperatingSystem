@@ -93,7 +93,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 	uint32_t file_len = read_inode_data_len(inode);
 	
 	if(offset >= file_len)
-		return -1;
+		return 0;
 	
 	uint32_t num_blocks = file_sys->num_datablocks;
 	uint32_t* data_block_start = (uint32_t*)((uint32_t)file_sys + (file_sys->num_inodes + 1) * SIZE_BLOCK);
@@ -150,7 +150,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 int32_t file_read(uint32_t fd, uint8_t* buf, int32_t nbytes){
 	int read;
 	int pid = get_pid();
-    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
@@ -170,7 +170,7 @@ int32_t file_read(uint32_t fd, uint8_t* buf, int32_t nbytes){
 */
 int32_t directory_read(uint32_t fd, uint8_t* buf, int32_t nbytes) {
     	int pid = get_pid();
-    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
@@ -212,7 +212,7 @@ int32_t directory_read(uint32_t fd, uint8_t* buf, int32_t nbytes) {
 //file_open: yet to do anything
 int32_t file_open(const uint8_t* fname, uint32_t fd){
 	int pid = get_pid();
-    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
@@ -239,7 +239,7 @@ int32_t file_write(uint32_t fd, const uint8_t* buf, int32_t nbytes){
 //directory_open: yet to do anything
 int32_t directory_open(const uint8_t* fname, uint32_t fd){
 	int pid = get_pid();
-    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;

@@ -167,9 +167,11 @@ void entry(unsigned long magic, unsigned long addr) {
 
 #ifdef RUN_TESTS
     /* Run tests */
-   launch_tests();
+   //launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
+    while(1)
+    {
     int out;
         uint8_t file[10] = "shell";
 	asm volatile("movl %1,%%ebx \n\t"
@@ -178,6 +180,7 @@ void entry(unsigned long magic, unsigned long addr) {
 			:"=r" (out)
 			:"r" (&file)
 			);
+    }
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

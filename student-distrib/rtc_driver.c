@@ -15,7 +15,7 @@ rtc_driver_instance_t rtc_drivers_instances[MAX_RTC_DRIVERS];
 int rtc_open(const uint8_t* fname, uint32_t fd)
 {	
 int pid = get_pid();
-    if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
@@ -48,7 +48,7 @@ int pid = get_pid();
 int rtc_read(uint32_t fd, uint8_t* buf, int32_t nbytes)
 {
 int pid = get_pid();
-	if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+	if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
@@ -79,7 +79,7 @@ int pid = get_pid();
 int rtc_write(uint32_t fd, const uint8_t* buf, int32_t nbytese)
 {
 int pid = get_pid();
-if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
@@ -114,7 +114,7 @@ if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
 int rtc_close(uint32_t fd)
 {
 int pid = get_pid();
-	if (pid < 0 || pid > 1) //if the current process id is out of bounds return -1
+	if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;

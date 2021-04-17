@@ -2,6 +2,7 @@
 #define _PAGING_H
 
 #include "lib.h"
+#include "processes.h"
 
 //Directory and page size definitions
 #define DIR_SIZE  				1024
@@ -12,7 +13,7 @@
 #define KERNEL_PHYS_ADDR 		0x400000
 #define PCB_PHYS_ADDR 		0x800000
 #define USER_ONE_PHYS_ADDR 		0x800000
-#define USER_TWO_PHYS_ADDR 		0xC00000
+#define USER_PHYS_ADDR_LEN 		0x400000
 #define VIDEO_PHYS_ADDR 		0xB8
 #define PHYSICAL_ADDR_SHIFT 	12
 #define MAX_PROCESS_NUMBER 2
