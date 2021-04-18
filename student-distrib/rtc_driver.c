@@ -32,6 +32,7 @@ int pid = get_pid();
 		{
 			//puts this instance to use and gives the caller the instance index
 			rtc_drivers_instances[first_open].in_use = 1;
+			rtc_drivers_instances[first_open].set = 0;
 			processes[pid]->file_descriptors[fd].position = first_open;
 			return 0;
 
@@ -56,9 +57,9 @@ int pid = get_pid();
 	uint32_t rtc_index = processes[pid]->file_descriptors[fd].position;
 
 	//check if the rtc index is valid
-	if(rtc_index >= MAX_RTC_DRIVERS || rtc_drivers_instances[rtc_index].in_use == 0)
+	if(rtc_index >= MAX_RTC_DRIVERS || rtc_drivers_instances[rtc_index].in_use == 0 || rtc_drivers_instances[rtc_index].set == 0)
 	{		
-		return -1;
+		return 0;
 	}
 
 	//Raise this instance's flag, then wait for the interrupt handler to trigger it 
@@ -102,7 +103,7 @@ if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of
 
 	//sets the amount of ticks the interrupt handler should wait between each interrupt for this instance
 	rtc_drivers_instances[rtc_index].wait_ticks = MAX_RTC_FREQUENCY / *buf;
-
+	rtc_drivers_instances[rtc_index].set = 1;
 	return 0;
 }
 

@@ -149,8 +149,11 @@ int32_t syscall_getargs(uint8_t* buf, int32_t nbytes){
     //plus 1 for null terminator
     if(arg_len + 1 > nbytes)
     	return -1;
-    if(arg_len <= 0)
-    	return -1;
+    if(arg_len <= 0 && nbytes > 0)
+    {
+	buf[0] = '\0';
+    	return 0;
+    }
     int pos = 0;
     for(pos = 0; pos < arg_len; pos++)
     {

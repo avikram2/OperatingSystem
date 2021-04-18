@@ -21,6 +21,7 @@ typedef struct rtc_driver_instance {
     	int flag;
 	int wait_ticks;
 	int in_use;
+	int set;
 } rtc_driver_instance_t;
 
 extern rtc_driver_instance_t rtc_drivers_instances[MAX_RTC_DRIVERS];

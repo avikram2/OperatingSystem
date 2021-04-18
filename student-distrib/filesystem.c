@@ -25,7 +25,10 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry){
 		
 		int8_t* dentry_name = (int8_t*)file_sys->dentries[i].filename;
 		dentry_length = strlen(dentry_name);
-
+		if(dentry_length > 32)
+		{
+			dentry_length = 32;
+		}
 		//If current dentry name is equal to the file name, copy mem
 		if (length == dentry_length && strncmp((int8_t*)fname, dentry_name, length) == 0){
 			*dentry = file_sys->dentries[i];
