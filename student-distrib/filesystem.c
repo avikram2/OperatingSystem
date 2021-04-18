@@ -14,7 +14,7 @@ boot_block_t*	file_sys;
 int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry){
 	
 	int length = strlen((int8_t*)fname);
-	
+	int dentry_length;
 	
 	//no input
 	if(length == 0)
@@ -24,9 +24,10 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry){
 	for(i = 0; i < NUM_DENTRIES; i++){
 		
 		int8_t* dentry_name = (int8_t*)file_sys->dentries[i].filename;
-		
+		dentry_length = strlen(dentry_name);
+
 		//If current dentry name is equal to the file name, copy mem
-		if (strncmp((int8_t*)fname, dentry_name, length) == 0){
+		if (length == dentry_length && strncmp((int8_t*)fname, dentry_name, length) == 0){
 			*dentry = file_sys->dentries[i];
 			return 0;
 		}
@@ -228,6 +229,13 @@ int32_t file_open(const uint8_t* fname, uint32_t fd){
 
 //file_close: yet to do anything
 int32_t file_close(int32_t fd){
+int pid = get_pid();
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+    processes[pid]->file_descriptors[fd].flags = INACTIVE_FLAG;
 	return 0;
 }
 
@@ -250,6 +258,13 @@ int32_t directory_open(const uint8_t* fname, uint32_t fd){
 
 //directory_close: yet to do anything
 int32_t directory_close(int32_t fd){
+int pid = get_pid();
+    if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
+    return -1;
+    if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
+    return -1;
+    pcb_t** processes = get_process();
+    processes[pid]->file_descriptors[fd].flags = INACTIVE_FLAG;
 	return 0;
 }
 

@@ -42,7 +42,13 @@ syscall_wrapper:
     iret
 
 BAD_CALL_NUMBER:
-    movl -1,%eax
+    movl $-1,%eax
+    popl %ebx
+    popl %ecx
+    popl %edx
+    popl %esi
+    popl %edi
+    popl %ebp
     iret
 
 ireturn:

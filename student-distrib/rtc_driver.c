@@ -119,6 +119,7 @@ int pid = get_pid();
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
     pcb_t** processes = get_process();
+    processes[pid]->file_descriptors[fd].flags = INACTIVE_FLAG;
 	//check if the rtc instance index is valid
 	if(processes[pid]->file_descriptors[fd].position >= MAX_RTC_DRIVERS || rtc_drivers_instances[processes[pid]->file_descriptors[fd].position].in_use == 0)
 	{		

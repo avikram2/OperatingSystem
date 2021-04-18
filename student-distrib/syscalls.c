@@ -20,6 +20,10 @@ int32_t syscall_read(int32_t fd, void* buf, int32_t nbytes){
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
     pcb_t** processes = get_process();
+    if(processes[pid]->file_descriptors[fd].flags != ACTIVE_FLAG)
+    {
+        return -1;
+    }
     return processes[pid]->file_descriptors[fd].fops_table->read(fd,buf,nbytes);
 }
 
@@ -35,6 +39,10 @@ int32_t syscall_write(int32_t fd, const void* buf, int32_t nbytes){
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
     pcb_t** processes = get_process();
+    if(processes[pid]->file_descriptors[fd].flags != ACTIVE_FLAG)
+    {
+        return -1;
+    }
     return processes[pid]->file_descriptors[fd].fops_table->write(fd,buf,nbytes);
 }
 
@@ -118,7 +126,10 @@ int32_t syscall_close(const uint32_t fd){
     if(fd < 0 || fd >= NUMBER_OF_FILE_DESCRIPTORS)
     return -1;
     pcb_t** processes = get_process();
-    processes[pid]->file_descriptors[fd].flags = INACTIVE_FLAG;
+    if(processes[pid]->file_descriptors[fd].flags != ACTIVE_FLAG)
+    {
+        return -1;
+    }
     return processes[pid]->file_descriptors[fd].fops_table->close(fd);
 }
 
