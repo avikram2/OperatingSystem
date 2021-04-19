@@ -2,7 +2,7 @@
 #include "syscalls.h"
 
 
-static fops_t rtc_ops = {rtc_open, rtc_close, rtc_read, rtc_write};
+static fops_t rtc_ops = {&rtc_open, &rtc_close, rtc_read, rtc_write};
 static fops_t dir_ops = {directory_open, directory_close, directory_read, directory_write};
 static fops_t file_ops = {file_open, file_close, file_read, file_write};
 

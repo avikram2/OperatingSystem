@@ -30,8 +30,8 @@
 typedef struct fops {
     int32_t (*open)(const uint8_t* filename,int32_t fd);
 	int32_t (*close)(int32_t fd);
-	int32_t (*read)(int32_t fd, void* buf, int32_t nbytes);
-	int32_t (*write)(int32_t fd, const void* buf, int32_t nbytes);
+	int32_t (*read)(int32_t fd, uint8_t* buf, int32_t nbytes);
+	int32_t (*write)(int32_t fd, const uint8_t* buf, int32_t nbytes);
 } fops_t;
 
 typedef struct fd {
@@ -68,7 +68,7 @@ extern int32_t get_pid();
 
 extern pcb_t** get_process();
 //for stdint/out, doesn't do anything
-extern int32_t std_open(const uint8_t* filename, uint32_t fd);
+extern int32_t std_open(const uint8_t* filename, int32_t fd);
 
 //for stdint/out, doesn't do anything
 extern int32_t std_close(int32_t fd);
@@ -77,12 +77,12 @@ extern int32_t std_close(int32_t fd);
 extern int32_t std_read(int32_t fd, uint8_t* buf, int32_t nbytes);
 
 //for stdint/out, doesn't do anything
-extern int32_t std_write(int32_t fd, uint8_t* buf, int32_t nbytes);
+extern int32_t std_write(int32_t fd, const uint8_t* buf, int32_t nbytes);
 
 //halts a program from an exception
 extern void exception_halt();
 
-extern void store_args(uint8_t* command);
+extern void store_args(const uint8_t* command);
 
 extern void get_command(uint8_t* filename, const uint8_t* command);
 #endif

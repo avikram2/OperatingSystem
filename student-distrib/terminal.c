@@ -73,7 +73,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 //write the provided number of bytes to the screen from the terminal buffer, provided as argument
 //inputs: buf -- the buffer from which to write to the screen, nbytes: how many bytes to write to the screen
 //output: how many characters written to screen
-int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes){
+int32_t terminal_write(int32_t fd, const uint8_t* buf, int32_t nbytes){
 //cat doesn't work if we compare a max number of bytes
     if (nbytes <= BEGINNING_IDX){//|| nbytes > BUFFER_SIZE){ //if the number of bytes is negative or too big, return
     return 0;

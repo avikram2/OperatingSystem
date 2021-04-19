@@ -12,7 +12,7 @@ rtc_driver_instance_t rtc_drivers_instances[MAX_RTC_DRIVERS];
  *  Effect: Sets the first open instance to in_use and puts the index of that instance in the given pointer
  * 		Also sets the rtc interrupt rate to 1024Hz
  */
-int rtc_open(const uint8_t* fname, uint32_t fd)
+int32_t rtc_open(const uint8_t* fname, int32_t fd)
 {	
 int pid = get_pid();
     if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
@@ -46,7 +46,7 @@ int pid = get_pid();
  *  Output: 0 if successful and -1 if not(invalid instance index)
  *  Effect: None
  */
-int rtc_read(uint32_t fd, uint8_t* buf, int32_t nbytes)
+int32_t rtc_read(int32_t fd, uint8_t* buf, int32_t nbytes)
 {
 int pid = get_pid();
 	if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
@@ -77,8 +77,11 @@ int pid = get_pid();
  *  Output: 0 if successful and -1 if not(invalid instance index/invalid frequency)
  *  Effect: None
  */
-int rtc_write(uint32_t fd, const uint8_t* buf, int32_t nbytese)
+int32_t rtc_write(int32_t fd, const uint8_t* buf, int32_t nbytes)
 {
+if(nbytes < 4 || buf == 0)
+	return -1;
+uint32_t rate = *((uint32_t*)buf);
 int pid = get_pid();
 if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
@@ -96,13 +99,13 @@ if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of
 		return -1;
 	}
 	//check if the rate is valid(not zero, less then or equal to 1024, power of 2
-	if((*buf & (*buf-1)) != 0 || *buf > MAX_RTC_FREQUENCY || *buf <= 0)
+	if((rate & (rate-1)) != 0 || rate > MAX_RTC_FREQUENCY || rate == 0)
 	{
 		return -1;
 	}
 
 	//sets the amount of ticks the interrupt handler should wait between each interrupt for this instance
-	rtc_drivers_instances[rtc_index].wait_ticks = MAX_RTC_FREQUENCY / *buf;
+	rtc_drivers_instances[rtc_index].wait_ticks = MAX_RTC_FREQUENCY / rate;
 	rtc_drivers_instances[rtc_index].set = 1;
 	return 0;
 }
@@ -112,7 +115,7 @@ if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of
  *  Output: 0 if successful and -1 if not(invalid instance index)
  *  Effect: None
  */
-int rtc_close(uint32_t fd)
+int32_t rtc_close(int32_t fd)
 {
 int pid = get_pid();
 	if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1

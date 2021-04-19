@@ -151,7 +151,7 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
 *			0 on reaching file end
 *
 */
-int32_t file_read(uint32_t fd, uint8_t* buf, int32_t nbytes){
+int32_t file_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 	int read;
 	int pid = get_pid();
     if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
@@ -172,7 +172,7 @@ int32_t file_read(uint32_t fd, uint8_t* buf, int32_t nbytes){
 *			0 on reaching file end
 *
 */
-int32_t directory_read(uint32_t fd, uint8_t* buf, int32_t nbytes) {
+int32_t directory_read(int32_t fd, uint8_t* buf, int32_t nbytes) {
     	int pid = get_pid();
     if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
@@ -214,7 +214,7 @@ int32_t directory_read(uint32_t fd, uint8_t* buf, int32_t nbytes) {
 }
 
 //file_open: yet to do anything
-int32_t file_open(const uint8_t* fname, uint32_t fd){
+int32_t file_open(const uint8_t* fname, int32_t fd){
 	int pid = get_pid();
     if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
@@ -243,12 +243,12 @@ int pid = get_pid();
 }
 
 //file_write: not supported
-int32_t file_write(uint32_t fd, const uint8_t* buf, int32_t nbytes){
+int32_t file_write(int32_t fd, const uint8_t* buf, int32_t nbytes){
 	return -1;
 }
 
 //directory_open: yet to do anything
-int32_t directory_open(const uint8_t* fname, uint32_t fd){
+int32_t directory_open(const uint8_t* fname, int32_t fd){
 	int pid = get_pid();
     if (pid < 0 || pid >= NUMBER_OF_PROCESSES) //if the current process id is out of bounds return -1
     return -1;
@@ -272,6 +272,6 @@ int pid = get_pid();
 }
 
 //directory_write: not supported
-int32_t directory_write(uint32_t fd, const uint8_t* buf, int32_t nbytes){
+int32_t directory_write(int32_t fd, const uint8_t* buf, int32_t nbytes){
 	return -1;
 }

@@ -37,7 +37,7 @@ extern int32_t terminal_close(int32_t fd);
 extern int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes);
 
 //output from terminal buf onto screen
-extern int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes);
+extern int32_t terminal_write(int32_t fd, const uint8_t* buf, int32_t nbytes);
 
 #endif /* ASM */
 
