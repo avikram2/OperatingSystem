@@ -57,7 +57,7 @@ void entry(unsigned long magic, unsigned long addr) {
         int mod_count = 0;
         int i;
         module_t* mod = (module_t*)mbi->mods_addr;
-		
+
 		//init filesystem
 		file_sys = (boot_block_t*) mod->mod_start;
         while (mod_count < mbi->mods_count) {
@@ -154,14 +154,14 @@ void entry(unsigned long magic, unsigned long addr) {
      * PIC, any other initialization stuff... */
     //init keyboard
     keyboard_init();
-    init_rtc(); 
+    init_rtc();
 //init the RTC and enable RTC interrupts
     /* Enable interrupts */
     /* Do not enable the following until after you have set up your
      * IDT correctly otherwise QEMU will triple fault and simple close
      * without showing you any output */
     printf("Enabling Interrupts\n");
-	
+
 	enable_paging();
     sti();
 
