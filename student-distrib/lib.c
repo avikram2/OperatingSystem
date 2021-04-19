@@ -231,22 +231,28 @@ screen_y = NUM_ROWS-1;
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
-    if(c == '\n' || c == '\r') {
+    if(c == '\n') {
         screen_y++;
         screen_x = ORIGIN_CURSOR; //first position of newline
-	if (screen_y >= NUM_ROWS){ //if leaving the screen, then implement scrolling
-	scrolling();
-	}
+		if (screen_y >= NUM_ROWS){ //if leaving the screen, then implement scrolling
+			scrolling();
+		}
 
-    }else {
+    }
+	
+	else if(c == '\r')
+		screen_x = ORIGIN_CURSOR;
+	
+	
+	else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++; //increment horiz position
         screen_y = (screen_y + (screen_x / NUM_COLS)); //if necessary new line
 	    screen_x = screen_x % NUM_COLS; //adjust overflow of horiz position
-	if (screen_y >= NUM_ROWS){ //implement scrolling if necessary
-        scrolling();
-}
+		if (screen_y >= NUM_ROWS){ //implement scrolling if necessary
+			scrolling();
+		}
     }
 }
 
