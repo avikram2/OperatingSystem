@@ -9,19 +9,22 @@
 #define TABLE_SIZE 				1024
 #define BYTES_TO_ALIGN_TO		DIR_SIZE * 4
 
+#define USER_DIRECTORY_IDX		32
+#define USER_VIDEO_IDX			924
 //Memory location Deffinitions
+#define VIDEO_PHYS_ADDR 		0xB8000
 #define KERNEL_PHYS_ADDR 		0x400000
-#define PCB_PHYS_ADDR 		0x800000
+#define PCB_PHYS_ADDR 		    0x800000
 #define USER_ONE_PHYS_ADDR 		0x800000
 #define USER_PHYS_ADDR_LEN 		0x400000
-#define VIDEO_PHYS_ADDR 		0xB8
+
 #define PHYSICAL_ADDR_SHIFT 	12
 #define MAX_PROCESS_NUMBER 2
 //Bit map definitions
 #define P_MAP 					0x1		//Present bit map
 #define R_MAP					0x2		//Read-Write bit map
 #define S_MAP 					0x80	//Page Size bit map
-#define U_MAP                                   0x4  //user allowed
+#define U_MAP                   0x4     //user allowed
  
 #ifndef ASM
 
@@ -45,6 +48,8 @@ void loadPageDirectory(unsigned int* addr);
 void enablePaging();
 
 void set_user_table(uint32_t process);
+
+void remap_user(uint32_t table_idx, uint32_t virtual_addr);
 
 #endif /* PAGING_H */
 

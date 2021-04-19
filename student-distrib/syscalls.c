@@ -169,7 +169,18 @@ int32_t syscall_getargs(uint8_t* buf, int32_t nbytes){
 //output: tbd
 //effect: tbd
 int32_t syscall_vidmap(uint8_t** screen_start){
-    return -1;
+	
+	if(screen_start == NULL || screen_start < (uint8_t**)(USER_VIDEO) || screen_start >= (uint8_t**)(USER_VIDEO+_4MB))
+		return -1;
+
+	
+	//USER_DIRECTORY_IDX, VIDEO_PHYS_ADDR defined in paging.h
+	remap_user(USER_DIRECTORY_IDX, VIDEO_PHYS_ADDR);
+	*screen_start = (uint8_t*)(USER_DIRECTORY_IDX * _4MB);
+	*screen_start += VIDEO_PHYS_ADDR % _4KB;
+	flush_tlb();
+	
+    return 0;
 }
 
 // set_handler:
