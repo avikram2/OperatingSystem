@@ -1,4 +1,3 @@
-
 #include "interrupts.h"
 
 //macro for the scancode of letter L
@@ -76,7 +75,7 @@ void interrupt_keyboard_handler(){
 		}
 	}
 
-    else if (scancode >= SCAN_CODE_SIZE || scancode == ZERO_CODE || scancode == ESCAPE){ //if scancode is outside array, invalid, or escape key, then end interrupt
+    else if (scancode > SCAN_CODE_SIZE || scancode == ZERO_CODE || scancode == ESCAPE){ //if scancode is outside array, invalid, or escape key, then end interrupt
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
