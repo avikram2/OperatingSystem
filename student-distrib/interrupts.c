@@ -2,6 +2,7 @@
 
 //macro for the scancode of letter L
 #define L_CODE 0x26
+#define C_CODE 0x2E
 
 //array for scancode keyboard inputs and characters to print
 static char scan_code_default[SCAN_CODE_SIZE] = {
@@ -158,8 +159,12 @@ void interrupt_keyboard_handler(){
       clear(); //clear the screen
 	  //update_cursor(ORIGIN_CURSOR,ORIGIN_CURSOR); //send the cursor back to the beginning of the screen
 	}
-
-    else {
+  else if(ctrl_flag&&(scancode==C_CODE)){
+    send_eoi(KEYBOARD_IRQ_1);
+    syscall_halt(0);
+    sti();
+  }
+  else {
       if (shift_flag) { //check for shift held down
         if (caps_flag) { //check for caps lock
           putc(scan_code_caps_shift[scancode-1]); //put character onto screen from the array

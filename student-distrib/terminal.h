@@ -4,6 +4,7 @@
 
 #include "types.h"
 #include "lib.h"
+#include "processes.h"
 
 #define BUFFER_SIZE 128 //the maximum size of the buffer, in characters
 
