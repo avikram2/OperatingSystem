@@ -95,3 +95,22 @@ int32_t terminal_write(int32_t fd, const uint8_t* buf, int32_t nbytes){
 int32_t terminal_close(int32_t fd){
     return -1; //return 0, close terminal
 }
+
+
+
+//terminal tracker structure for multiple terminals
+terminal_info_t terminal_info;
+
+
+
+//Program for initializing the terminal info structure
+void init_terminal(){
+  terminal_info.current_terminal = 0;
+  return;
+}
+
+//terminal swqapping function
+//takes interger for terminal (0-2) and saves current while swapping to the next
+void terminal_swap(int32_t new_terminal){
+    return;
+}
