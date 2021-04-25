@@ -89,7 +89,7 @@ int32_t syscall_halt(const uint8_t status){
     }
     exception_halt_triggered = 0;
     //set fds to unused
-    if(current_process >= NUMBER_OF_PROCESSES)
+    if(current_process >= NUMBER_OF_PROCESSES || current_process<0)
     {
         return -1;
     }
@@ -107,8 +107,11 @@ int32_t syscall_halt(const uint8_t status){
     
     flush_tlb();
 
-uint32_t stack = KERNEL_STACK_START;
-    stack = stack - PROC_KERNEL_LEN * current_process;
+	uint32_t stack = KERNEL_STACK_START;
+	if(current_process>0)
+	{
+    		stack = stack - PROC_KERNEL_LEN * current_process;
+	}
     tss.esp0 = stack - 4;
 
     tss.ss0 = KERNEL_DS;
