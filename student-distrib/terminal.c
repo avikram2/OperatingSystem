@@ -10,9 +10,9 @@
 //effects initializes keyboard_buffer, and opens the terminal
 int32_t terminal_open(const uint8_t* filename){
     int i;
-    keyboard_buffer_index = BEGINNING_IDX; //reset to beginning of keyboard buffer
+    terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] = BEGINNING_IDX; //reset to beginning of keyboard buffer
     for (i = 0; i < BUFFER_SIZE; ++i){ //initalize keyboard buffer
-        keyboard_buffer[i] = NULLCHAR; //initialize to null character
+        terminal_info.keyboard_buffers[terminal_info.current_terminal][i] = NULLCHAR; //initialize to null character
         buffer[i] = NULLCHAR;
     }
 
@@ -27,12 +27,12 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     terminal_read_flag = ENABLE; //enable flag, which means read function invoked
 
     if (nbytes <= BEGINNING_IDX){ //if incorrect input (negative bytes)
-        keyboard_buffer_index = BEGINNING_IDX; //reset the keyboard buffer
+        terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] = BEGINNING_IDX; //reset the keyboard buffer
         terminal_read_flag = DISABLE; //exiting function
 
         int j;
         for (j = 0; j < BUFFER_SIZE; ++j){ //reset keyboard buffer
-        keyboard_buffer[j] = NULLCHAR; //reset to nullcharacter
+        terminal_info.keyboard_buffers[terminal_info.current_terminal][j] = NULLCHAR; //reset to nullcharacter
         }
 
 
@@ -41,20 +41,20 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 
     while (1){
     //polling for new_line character to arrive in the buffer
-    if (keyboard_buffer_index != 0 && keyboard_buffer[keyboard_buffer_index-1] == '\n'){
-    int returnvalue = (nbytes < keyboard_buffer_index)? nbytes: keyboard_buffer_index;
+    if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] != 0 && terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]-1] == '\n'){
+    int returnvalue = (nbytes < terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal])? nbytes: terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal];
     //the returnvalue (aka number of bytes read by the function)
     int i = 0;
     for (i = 0; i < returnvalue; i++){ //for each byte
-        buf[i] = keyboard_buffer[i]; //set terminal buffer equal to keyboard buffer
+        buf[i] = terminal_info.keyboard_buffers[terminal_info.current_terminal][i]; //set terminal buffer equal to keyboard buffer
     }
 
     for (i = 0; i < BUFFER_SIZE; ++i){ //reset keyboard buffer
-        keyboard_buffer[i] = NULLCHAR; //reset to nullcharacter
+        terminal_info.keyboard_buffers[terminal_info.current_terminal][i] = NULLCHAR; //reset to nullcharacter
     }
     //calculate the number of bytes printed
 
-    keyboard_buffer_index = BEGINNING_IDX; //reset the buffer index
+    terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] = BEGINNING_IDX; //reset the buffer index
     terminal_read_flag = DISABLE; //disable the flag, exiting the read function
     uint8_t c = '\n';
     putc(c);
@@ -98,11 +98,6 @@ int32_t terminal_close(int32_t fd){
 
 
 
-//terminal tracker structure for multiple terminals
-terminal_info_t terminal_info;
-
-
-
 //Program for initializing the terminal info structure
 void init_terminal(){
   terminal_info.current_terminal = 0;
@@ -112,5 +107,20 @@ void init_terminal(){
 //terminal swqapping function
 //takes interger for terminal (0-2) and saves current while swapping to the next
 void terminal_swap(int32_t new_terminal){
+    if(new_terminal == terminal_info.current_terminal){
+      printf("Already on this terminal\n");
+      return;
+    }
+    // copy curent vid_mem to terminal structure
+    memcpy(terminal_info.vid_mem_buffer[terminal_info.current_terminal], get_vid_mem(), MEM_BUF_SIZE);
+    //save current curors
+    terminal_info.cursors[terminal_info.current_terminal][0] = get_cursor_x();
+    terminal_info.cursors[terminal_info.current_terminal][1] = get_cursor_y();
+    //change current cursors to the new terminal
+    update_cursor(terminal_info.cursors[new_terminal][0], terminal_info.cursors[new_terminal][1]);
+    //swap the vid memory to the new terminal
+    memcpy(get_vid_mem(), terminal_info.vid_mem_buffer[new_terminal], MEM_BUF_SIZE);
+    //change current terminal to new terminal
+    terminal_info.current_terminal = new_terminal;
     return;
 }

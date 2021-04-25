@@ -19,7 +19,7 @@
 //custom functions
 
 //update the x,y position of the cursor
-extern void update_cursor(int x, int y); 
+extern void update_cursor(int x, int y);
 
 //get y coordinate of cursor
 extern int get_cursor_y();
@@ -45,6 +45,7 @@ void* memmove(void* dest, const void* src, uint32_t n);
 int32_t strncmp(const int8_t* s1, const int8_t* s2, uint32_t n);
 int8_t* strcpy(int8_t* dest, const int8_t*src);
 int8_t* strncpy(int8_t* dest, const int8_t*src, uint32_t n);
+char* get_vid_mem();
 
 /* Userspace address-check functions */
 int32_t bad_userspace_addr(const void* addr, int32_t len);

@@ -68,6 +68,11 @@ void clear(void) {
     */
 }
 
+
+char* get_vid_mem(){
+  return video_mem;
+}
+
 /* Standard printf().
  * Only supports the following format strings:
  * %%  - print a literal '%' character

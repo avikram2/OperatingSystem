@@ -16,7 +16,11 @@
 
 #define BEGINNING_IDX 0 //the beginning of the keyboard_buffer (index)
 
-#define MEM_BUF_SIZE 2000 //size of the video memory
+#define MEM_BUF_SIZE 4096 //size of the video memory
+
+#define TERMINAL_NUMBER 3 //Number of terminals running
+
+#define NUM_CURSORS 2  //Number of cursors
 
 #ifndef ASM
 
@@ -32,10 +36,14 @@ uint32_t terminal_read_flag; //flag to track if the terminal_read function has b
 
 typedef struct terminal_info {
     uint32_t current_terminal;
-    uint8_t buffer_0[MEM_BUF_SIZE];
-    uint8_t buffer_1[MEM_BUF_SIZE];
-    uint8_t buffer_2[MEM_BUF_SIZE];
+    uint8_t vid_mem_buffer[TERMINAL_NUMBER][MEM_BUF_SIZE];
+    uint8_t cursors[TERMINAL_NUMBER][NUM_CURSORS];
+    uint8_t keyboard_buffers[TERMINAL_NUMBER][BUFFER_SIZE];
+    uint32_t keyboard_buffer_indexes[TERMINAL_NUMBER];
 } terminal_info_t;
+
+//terminal tracker structure for multiple terminals
+terminal_info_t terminal_info;
 
 //open the terminal, initialize
 extern int32_t terminal_open(const uint8_t* filename);

@@ -72,9 +72,9 @@ void interrupt_keyboard_handler(){
 	if (scancode == SPACE){ //if the SPACE BAR is pressed
 		putc(' '); //put space character
 		update_cursor(get_cursor_x(), get_cursor_y()); //update cursor position
-		if (keyboard_buffer_index <= (BUFFER_SIZE-2)){ //add space to the buffer, as long as its not in the last position or outside
-			keyboard_buffer[keyboard_buffer_index] = ' ';
-			keyboard_buffer_index++; //increment index of buffer
+		if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-2)){ //add space to the buffer, as long as its not in the last position or outside
+			terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = ' ';
+			terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++; //increment index of buffer
 		}
 	}
   else if (alt_flag){
@@ -104,24 +104,24 @@ void interrupt_keyboard_handler(){
 	else if (scancode == ENTER){
 	 //check if enter (newline, pressed)
 	if (terminal_read_flag == ENABLE){//if the terminal_read_function is being invoked
-  	if (keyboard_buffer_index <= (BUFFER_SIZE-1)){ //if the enter is in the range of the buffer
-  		keyboard_buffer[keyboard_buffer_index] = '\n'; //add to buffer
-  		keyboard_buffer_index+=1; //increment keyboard index after newline character
+  	if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-1)){ //if the enter is in the range of the buffer
+  		terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = '\n'; //add to buffer
+  		terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]+=1; //increment keyboard index after newline character
   	}
 	}
 	else {
   	putc(scan_code_default[scancode-1]); //write out newline to screen
   	update_cursor(get_cursor_x(), get_cursor_y()); //update cursor position
-  	keyboard_buffer_index = 0;
+  	terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] = 0;
   	}
 	}
 	else if(scancode == BACK_SPACE){ //check if backspace pressed
-      if(keyboard_buffer_index == 0){//Check if there is no text to delete
+      if(terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] == 0){//Check if there is no text to delete
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return; //Do not delete shell text, just return
       }
-    	keyboard_buffer_index = keyboard_buffer_index - 1; //decrement index in buffer
+    	terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] = terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] - 1; //decrement index in buffer
 
     	int x_curr = get_cursor_x();
     	int y_curr = get_cursor_y();
@@ -168,31 +168,31 @@ void interrupt_keyboard_handler(){
       if (shift_flag) { //check for shift held down
         if (caps_flag) { //check for caps lock
           putc(scan_code_caps_shift[scancode-1]); //put character onto screen from the array
-		  if (keyboard_buffer_index <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
-			  keyboard_buffer[keyboard_buffer_index] = scan_code_caps_shift[scancode-1];
-			  keyboard_buffer_index++;
+		  if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
+			  terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_caps_shift[scancode-1];
+			  terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++;
 		  }
         } else {  //only shift held
           putc(scan_code_shift[scancode-1]); //put character onto screen from the array
 
-		   if (keyboard_buffer_index <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
-			  keyboard_buffer[keyboard_buffer_index] = scan_code_shift[scancode-1];
-			  keyboard_buffer_index++;
+		   if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
+			  terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_shift[scancode-1];
+			  terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++;
 		  }
         }
       } else if(caps_flag){  //only caps held
         putc(scan_code_caps[scancode-1]); //put character onto screen from the array
 
-		if (keyboard_buffer_index <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
-			  keyboard_buffer[keyboard_buffer_index] = scan_code_caps[scancode-1];
-			  keyboard_buffer_index++;
+		if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
+			  terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_caps[scancode-1];
+			  terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++;
 		  }
     } else {
       putc(scan_code_default[scancode-1]); //put character onto screen from the array
 
-		if (keyboard_buffer_index <= (BUFFER_SIZE-2)){ //add character to the buffer, keeping space for the last newline
-			keyboard_buffer[keyboard_buffer_index] = scan_code_default[scancode-1];
-			keyboard_buffer_index++; //increment current index in buffer
+		if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-2)){ //add character to the buffer, keeping space for the last newline
+			terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_default[scancode-1];
+			terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++; //increment current index in buffer
 		}
 	}
 	update_cursor(get_cursor_x(), get_cursor_y()); //mode cursor position to reflect added character
