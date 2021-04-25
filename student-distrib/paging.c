@@ -56,7 +56,22 @@ void enable_paging()
 	loadPageDirectory(page_directory);
 	enablePaging();
 }
+uint32_t set_user_video_mem(uint8_t** screen_start)
+{
+	if(screen_start == 0 || *screen_start == 0)
+	{
+		return -1;
+	}
+	if(*screen_start < USER_MEM_START || *screen_start >= USER_MEM_END)
+	{
+		return -1;
+	}
 
+	uint32_t video_offset = VIDEO_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
+	
+	int j = (((uint32_t)*screen_start) - USER_MEM_START) >> PHYSICAL_ADDR_SHIFT;
+	user_page_table[j] = (video_offset) | U_MAP | R_MAP | P_MAP; // attributes: supervisor level, read/write, present.
+}
 void set_user_table(uint32_t process)
 {
 	if(process < 0 || process >= NUMBER_OF_PROCESSES)
@@ -78,7 +93,7 @@ void set_user_table(uint32_t process)
 	}
 
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
-	page_directory[32] = ((unsigned int)user_pos) | S_MAP | U_MAP | R_MAP | P_MAP;
+	page_directory[32] = ((unsigned int)user_page_table) | U_MAP | R_MAP | P_MAP;
 
 	loadPageDirectory(page_directory);
 }

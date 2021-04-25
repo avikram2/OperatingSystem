@@ -23,6 +23,8 @@
 #define S_MAP 					0x80	//Page Size bit map
 #define U_MAP                                   0x4  //user allowed
  
+#define USER_MEM_START  0x8000000
+#define USER_MEM_END  0x8400000
 #ifndef ASM
 
 uint32_t page_directory[DIR_SIZE] __attribute__((aligned(BYTES_TO_ALIGN_TO)));
@@ -46,6 +48,7 @@ void enablePaging();
 
 void set_user_table(uint32_t process);
 
+uint32_t set_user_video_mem(uint8_t** screen_start);
 #endif /* PAGING_H */
 
 #endif

@@ -97,7 +97,8 @@ void interrupt_keyboard_handler(){
 	}
 	}
 	else if(scancode == BACK_SPACE){ //check if backspace pressed
-
+	if(keyboard_buffer_index!=0)
+	{
 	keyboard_buffer_index = (keyboard_buffer_index == 0)? 0: (keyboard_buffer_index-1); //decrement index in buffer
 
 	int x_curr = get_cursor_x();
@@ -136,7 +137,7 @@ void interrupt_keyboard_handler(){
       clear(); //clear the screen
 	  update_cursor(ORIGIN_CURSOR,ORIGIN_CURSOR); //send the cursor back to the beginning of the screen
 	}
-
+	}
     else {
       if (shift_flag) { //check for shift held down
         if (caps_flag) { //check for caps lock
