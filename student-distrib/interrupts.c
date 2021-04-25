@@ -1,8 +1,8 @@
-
 #include "interrupts.h"
 
 //macro for the scancode of letter L
-#define L_CODE 0x26 
+#define L_CODE 0x26
+#define C_CODE 0x2E
 
 //array for scancode keyboard inputs and characters to print
 static char scan_code_default[SCAN_CODE_SIZE] = {
@@ -24,9 +24,11 @@ static int shift_flag = 0; //variable for tracking shift state
 
 static int caps_flag = 0; //variable for tracking caps state
 
-static int rtc_counter = 0; //ticks counter for RTC 
+static int rtc_counter = 0; //ticks counter for RTC
 
 static int ctrl_flag = 0; //track if control is pressed
+
+static int alt_flag = 0; //track if alt is pressed
 
 // interrupt keyboard handler:
 // will handle input from the keyboard when interrupt is generated and echo them to the screen
@@ -37,6 +39,7 @@ void interrupt_keyboard_handler(){
     cli(); //disable interrupts
     unsigned int scancode;
     scancode = inb(DATA_PORT_KEYBOARD); //read in from the keyboard data port, 0x60
+    //printf("scancode: %d\n", scancode);
     //Check if the scancode is a special key (shift, ctrl,... etc.) and set flags accordingly
     switch(scancode&SCAN_MASK){ //check which special char is pressed
       case LEFT_SHIFT: //if left shift is pressed
@@ -54,18 +57,17 @@ void interrupt_keyboard_handler(){
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
-	case LEFT_CRTL: //if left control is pressed
+	    case LEFT_CRTL: //if left control is pressed
         ctrl_flag = ((scancode&BREAK_MASK)==0);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
+      case LEFT_ALT: //if left-alt is pressed
+        alt_flag = ((scancode&BREAK_MASK)==0);
+        send_eoi(KEYBOARD_IRQ_1);
+        sti();
+        return;
     }
-	if (scancode == CAPS_LOCK){
-		caps_flag = ENABLE; //caps pressed
-	}
-	else if (scancode == CAPS_LOCK_RELEASE){
-		caps_flag = DISABLE; //caps released
-	}
 
 	if (scancode == SPACE){ //if the SPACE BAR is pressed
 		putc(' '); //put space character
@@ -75,70 +77,94 @@ void interrupt_keyboard_handler(){
 			keyboard_buffer_index++; //increment index of buffer
 		}
 	}
-
-    else if (scancode >= SCAN_CODE_SIZE || scancode == ZERO_CODE || scancode == ESCAPE){ //if scancode is outside array, invalid, or escape key, then end interrupt
+  else if (alt_flag){
+    switch(scancode){
+      case F1:
+        terminal_swap(0);
+        send_eoi(KEYBOARD_IRQ_1);
+        sti();
+        return;
+      case F2:
+        terminal_swap(1);
+        send_eoi(KEYBOARD_IRQ_1);
+        sti();
+        return;
+      case F3:
+        terminal_swap(2);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
         return;
     }
-
+  }
+  else if (scancode > SCAN_CODE_SIZE || scancode == ZERO_CODE || scancode == ESCAPE){ //if scancode is outside array, invalid, or escape key, then end interrupt
+    send_eoi(KEYBOARD_IRQ_1);
+    sti();
+    return;
+  }
 	else if (scancode == ENTER){
 	 //check if enter (newline, pressed)
 	if (terminal_read_flag == ENABLE){//if the terminal_read_function is being invoked
-	if (keyboard_buffer_index <= (BUFFER_SIZE-1)){ //if the enter is in the range of the buffer
-		keyboard_buffer[keyboard_buffer_index] = '\n'; //add to buffer
-		keyboard_buffer_index+=1; //increment keyboard index after newline character
-	}
+  	if (keyboard_buffer_index <= (BUFFER_SIZE-1)){ //if the enter is in the range of the buffer
+  		keyboard_buffer[keyboard_buffer_index] = '\n'; //add to buffer
+  		keyboard_buffer_index+=1; //increment keyboard index after newline character
+  	}
 	}
 	else {
-	putc(scan_code_default[scancode-1]); //write out newline to screen
-	update_cursor(get_cursor_x(), get_cursor_y()); //update cursor position
-	keyboard_buffer_index = 0;
-	}
+  	putc(scan_code_default[scancode-1]); //write out newline to screen
+  	update_cursor(get_cursor_x(), get_cursor_y()); //update cursor position
+  	keyboard_buffer_index = 0;
+  	}
 	}
 	else if(scancode == BACK_SPACE){ //check if backspace pressed
-	if(keyboard_buffer_index!=0)
-	{
-	keyboard_buffer_index = (keyboard_buffer_index == 0)? 0: (keyboard_buffer_index-1); //decrement index in buffer
+      if(keyboard_buffer_index == 0){//Check if there is no text to delete
+        send_eoi(KEYBOARD_IRQ_1);
+        sti();
+        return; //Do not delete shell text, just return
+      }
+    	keyboard_buffer_index = keyboard_buffer_index - 1; //decrement index in buffer
 
-	int x_curr = get_cursor_x();
-	int y_curr = get_cursor_y();
-	if (x_curr == 0 && y_curr != 0){ //need to go back to prev line 
-	x_curr = NUM_COLS-1; //last character in prev line
-	y_curr-=1; //back to prev line
-	update_cursor(x_curr, y_curr);
-	putc(' ');
-	x_curr-=1; //previous position
-	update_cursor(x_curr, y_curr);
-	}
-	else if (x_curr == 0 && y_curr == 0){
-	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
-	//dont need to do anything when the cursor is at the beginning
-	}
-	else { //else if cursor was not at the beginning of a line
-	update_cursor(x_curr-1, y_curr);
-	putc(' '); //put the blank space, deleting previous charavter
-	x_curr -=1; //decrement x coordinate
-	if (x_curr == 0 && y_curr != 0){ //if at the beginning of a line, not the first line
-	x_curr = NUM_COLS-1; //go back to the end of the previous line
-	y_curr -=1;
-	update_cursor(x_curr, y_curr);
-	}
-	else if (x_curr == 0 && y_curr == 0){ //if at the beginning of the screen, no need to do anything
-	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
-	}
-	else { //update the cursor
-	update_cursor(x_curr, y_curr);
-	}
+    	int x_curr = get_cursor_x();
+    	int y_curr = get_cursor_y();
+    	if (x_curr == 0 && y_curr != 0){ //need to go back to prev line
+      	x_curr = NUM_COLS-1; //last character in prev line
+      	y_curr-=1; //back to prev line
+      	update_cursor(x_curr, y_curr);
+      	putc(' ');
+      	x_curr-=1; //previous position
+      	update_cursor(x_curr, y_curr);
+  	   }
+  	else if (x_curr == 0 && y_curr == 0){
+    	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
+    	//dont need to do anything when the cursor is at the beginning
+  	}
+  	else { //else if cursor was not at the beginning of a line
+    	update_cursor(x_curr-1, y_curr);
+    	putc(' '); //put the blank space, deleting previous charavter
+    	x_curr -=1; //decrement x coordinate
+    	if (x_curr == 0 && y_curr != 0){ //if at the beginning of a line, not the first line
+      	x_curr = NUM_COLS-1; //go back to the end of the previous line
+      	y_curr -=1;
+      	update_cursor(x_curr, y_curr);
+  	   }
+    	else if (x_curr == 0 && y_curr == 0){ //if at the beginning of the screen, no need to do anything
+    	   update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
+    	}
+    	else { //update the cursor
+    	   update_cursor(x_curr, y_curr);
+    	}
 
-	} 
+  	}
 	}
 	else if(ctrl_flag&&(scancode==L_CODE)){ //Ctrl-L handle
       clear(); //clear the screen
-	  update_cursor(ORIGIN_CURSOR,ORIGIN_CURSOR); //send the cursor back to the beginning of the screen
+	  //update_cursor(ORIGIN_CURSOR,ORIGIN_CURSOR); //send the cursor back to the beginning of the screen
 	}
-	}
-    else {
+  else if(ctrl_flag&&(scancode==C_CODE)){
+    send_eoi(KEYBOARD_IRQ_1);
+    syscall_halt(0);
+    sti();
+  }
+  else {
       if (shift_flag) { //check for shift held down
         if (caps_flag) { //check for caps lock
           putc(scan_code_caps_shift[scancode-1]); //put character onto screen from the array
@@ -161,8 +187,8 @@ void interrupt_keyboard_handler(){
 			  keyboard_buffer[keyboard_buffer_index] = scan_code_caps[scancode-1];
 			  keyboard_buffer_index++;
 		  }
-      } else {
-        putc(scan_code_default[scancode-1]); //put character onto screen from the array
+    } else {
+      putc(scan_code_default[scancode-1]); //put character onto screen from the array
 
 		if (keyboard_buffer_index <= (BUFFER_SIZE-2)){ //add character to the buffer, keeping space for the last newline
 			keyboard_buffer[keyboard_buffer_index] = scan_code_default[scancode-1];
@@ -179,12 +205,12 @@ void interrupt_keyboard_handler(){
 
 //RTC interrupt handler. Checks through each rtc driver instance and triggers it if it needs
 //to be triggered
-//input/output: none 
+//input/output: none
 //effect: triggers rtc driver interrupts if needed
 void rtc_handler(){
 
 	int count = 0;
-	
+
 	//cli();
 
 	//increment the rtc ticks counter
@@ -194,7 +220,7 @@ void rtc_handler(){
 	{
 		rtc_counter = rtc_counter % MAX_RTC_FREQUENCY;
 	}
-	
+
 	//iterate through each rtc driver instance and check if it should be triggered
 	for(count = 0; count < MAX_RTC_DRIVERS;count++)
 	{
@@ -207,9 +233,7 @@ void rtc_handler(){
     	outb(REGISTER_C, RTC_PORT);
     	inb(CMOS_PORT); // reading value from register C to ensure RTC interrupts happen again
 
-    	send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line 
+    	send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line
 
 	//sti();
 }
-
-

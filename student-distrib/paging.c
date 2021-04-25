@@ -17,8 +17,9 @@
 */
 void enable_paging()
 {
+	
 	uint32_t kernel_offset = (KERNEL_PHYS_ADDR >> PHYSICAL_ADDR_SHIFT) << PHYSICAL_ADDR_SHIFT;
-	uint32_t video_offset = VIDEO_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
+	uint32_t video_offset = (VIDEO_PHYS_ADDR >> PHYSICAL_ADDR_SHIFT) << PHYSICAL_ADDR_SHIFT;
 	
 	int i;
 	for(i = 0; i < DIR_SIZE; i++)
@@ -47,8 +48,10 @@ void enable_paging()
 	
 	//Set Video Memory
 	blank_table(first_page_table);
+
 	// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
-	first_page_table[VIDEO_PHYS_ADDR] = video_offset | R_MAP | P_MAP;
+	first_page_table[VIDEO_PHYS_ADDR >> PHYSICAL_ADDR_SHIFT] = video_offset | R_MAP | P_MAP;
+
 	// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
 	page_directory[0] = ((unsigned int)first_page_table) | R_MAP | P_MAP;
 	
@@ -93,7 +96,8 @@ void set_user_table(uint32_t process)
 	}
 
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
-	page_directory[32] = ((unsigned int)user_page_table) | U_MAP | R_MAP | P_MAP;
+
+	page_directory[USER_DIRECTORY_IDX] = ((unsigned int)user_pos) | S_MAP | U_MAP | R_MAP | P_MAP;
 
 	loadPageDirectory(page_directory);
 }
@@ -110,6 +114,17 @@ void blank_table(uint32_t* table){
 	
 }
 
+//TO DO: shift input to be usable
+void remap_user(uint32_t table_idx, uint32_t virtual_addr){
+	
+	//allign virtual address
+	uint32_t virtual_offset = (virtual_addr >> PHYSICAL_ADDR_SHIFT) << PHYSICAL_ADDR_SHIFT;
+	
+	//Set user page
+	user_page_table[0] = virtual_offset | U_MAP | R_MAP | P_MAP;
+	page_directory[table_idx] = ((unsigned int)user_page_table) | U_MAP | R_MAP | P_MAP;
+	
+}
 
 
 

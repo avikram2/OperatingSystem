@@ -19,6 +19,10 @@
 #define OPS_READ_INDEX 2
 #define OPS_WRITE_INDEX 3
 
+#define _4KB	0x1000
+#define _4MB	0x400000
+#define USER_VIDEO	_4MB * 32
+
 
 #ifndef ASM
 

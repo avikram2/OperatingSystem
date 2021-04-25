@@ -7,7 +7,7 @@ pcb_t* processes[NUMBER_OF_PROCESSES] = {(pcb_t*)PROCESS_ONE_PCB,(pcb_t*)PROCESS
 static fops_t stdin_ops = {std_open,std_close,terminal_read,std_write};
 static fops_t stdout_ops = {std_open,std_close,std_read,terminal_write};
 
-static exception_halt_triggered = 0;
+static int exception_halt_triggered = 0;
 // execute:
 // executes program
 //inputs: tbd
@@ -216,7 +216,7 @@ pcb_t** get_process(){
 }
 
 //for stdint/out, doesn't do anything
-int32_t std_open(const uint8_t* filename, uint32_t fd){
+int32_t std_open(const uint8_t* filename, int32_t fd){
 	return -1;
 }
 
@@ -231,7 +231,7 @@ int32_t std_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 }
 
 //for stdint/out, doesn't do anything
-int32_t std_write(int32_t fd, uint8_t* buf, int32_t nbytes){
+int32_t std_write(int32_t fd, const uint8_t* buf, int32_t nbytes){
 	return -1;
 }
 
@@ -242,7 +242,7 @@ void exception_halt()
 	syscall_halt(0);
 }
 
-void store_args(uint8_t* command)
+void store_args(const uint8_t* command)
 {
     if(command == 0)
     {

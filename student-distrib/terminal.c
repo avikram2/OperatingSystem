@@ -1,5 +1,6 @@
 
 #include "terminal.h"
+#include "types.h"
 
 
 //terminal_open
@@ -37,7 +38,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 
         return 0;
     }
-    
+
     while (1){
     //polling for new_line character to arrive in the buffer
     if (keyboard_buffer_index != 0 && keyboard_buffer[keyboard_buffer_index-1] == '\n'){
@@ -55,6 +56,8 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 
     keyboard_buffer_index = BEGINNING_IDX; //reset the buffer index
     terminal_read_flag = DISABLE; //disable the flag, exiting the read function
+    uint8_t c = '\n';
+    putc(c);
     return returnvalue;
     }
 
@@ -70,9 +73,9 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 //write the provided number of bytes to the screen from the terminal buffer, provided as argument
 //inputs: buf -- the buffer from which to write to the screen, nbytes: how many bytes to write to the screen
 //output: how many characters written to screen
-int32_t terminal_write(int32_t fd, uint8_t* buf, int32_t nbytes){
+int32_t terminal_write(int32_t fd, const uint8_t* buf, int32_t nbytes){
 //cat doesn't work if we compare a max number of bytes
-    if (nbytes <= BEGINNING_IDX){//|| nbytes > BUFFER_SIZE){ //if the number of bytes is negative or too big, return 
+    if (nbytes <= BEGINNING_IDX){//|| nbytes > BUFFER_SIZE){ //if the number of bytes is negative or too big, return
     return 0;
     }
     int i = 0;
@@ -93,3 +96,21 @@ int32_t terminal_close(int32_t fd){
     return -1; //return 0, close terminal
 }
 
+
+
+//terminal tracker structure for multiple terminals
+terminal_info_t terminal_info;
+
+
+
+//Program for initializing the terminal info structure
+void init_terminal(){
+  terminal_info.current_terminal = 0;
+  return;
+}
+
+//terminal swqapping function
+//takes interger for terminal (0-2) and saves current while swapping to the next
+void terminal_swap(int32_t new_terminal){
+    return;
+}

@@ -54,10 +54,18 @@ int get_cursor_x(){
  * Function: Clears video memory */
 void clear(void) {
     int32_t i;
+    int x_curr = get_cursor_x();
+    int y_curr = get_cursor_y();
+    for(i = 0; i < y_curr; i++){
+      scrolling();
+    }
+    update_cursor(x_curr, ORIGIN_CURSOR);
+    /*
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
         *(uint8_t *)(video_mem + (i << 1)) = ' ';
         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
     }
+    */
 }
 
 /* Standard printf().
@@ -231,22 +239,28 @@ screen_y = NUM_ROWS-1;
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
-    if(c == '\n' || c == '\r') {
+    if(c == '\n') {
         screen_y++;
         screen_x = ORIGIN_CURSOR; //first position of newline
-	if (screen_y >= NUM_ROWS){ //if leaving the screen, then implement scrolling
-	scrolling();
-	}
+		if (screen_y >= NUM_ROWS){ //if leaving the screen, then implement scrolling
+			scrolling();
+		}
 
-    }else {
+    }
+
+	else if(c == '\r')
+		screen_x = ORIGIN_CURSOR;
+
+
+	else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++; //increment horiz position
         screen_y = (screen_y + (screen_x / NUM_COLS)); //if necessary new line
 	    screen_x = screen_x % NUM_COLS; //adjust overflow of horiz position
-	if (screen_y >= NUM_ROWS){ //implement scrolling if necessary
-        scrolling();
-}
+		if (screen_y >= NUM_ROWS){ //implement scrolling if necessary
+			scrolling();
+		}
     }
 }
 
@@ -547,6 +561,5 @@ int8_t* strncpy(int8_t* dest, const int8_t* src, uint32_t n) {
 //     outb(REGISTER_C, RTC_PORT);
 //     inb(CMOS_PORT); // reading value from register C to ensure RTC interrupts happen again
 
-//     send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line 
+//     send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line
 // }
-
