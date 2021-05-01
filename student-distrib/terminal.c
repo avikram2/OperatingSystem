@@ -1,4 +1,3 @@
-
 #include "terminal.h"
 #include "types.h"
 
@@ -138,6 +137,9 @@ void save_terminal(){
 
 //load in the new terminal vid_mem and shell
 void load_terminal(uint32_t term){
+
+  get_current_terminal(term); //update the value of the current terminal before updating cursor
+
   //change current cursors to the new terminal
   update_cursor(terminal_info.cursors[term][0], terminal_info.cursors[term][1]);
   //swap the vid memory to the new terminal
