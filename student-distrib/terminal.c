@@ -101,6 +101,7 @@ int32_t terminal_close(int32_t fd){
 void init_terminal(){
   //set current terminal to 0 upon boot
   terminal_info.current_terminal = 0;
+  get_current_terminal(0); //set current terminal value to 0
   //only first terminal active on boot
   terminal_info.active_terminals[0] = 1;
   terminal_info.active_terminals[1] = 0;
