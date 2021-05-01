@@ -14,7 +14,7 @@ static int exception_halt_triggered = 0;
 //output: tbd
 //effect: tbd
 int32_t syscall_execute(const uint8_t* command){
-    
+
     uint32_t starting_address;
     uint32_t inode;
     const uint8_t filename[4] = "";
@@ -39,14 +39,14 @@ int32_t syscall_execute(const uint8_t* command){
     store_args(command);
 
     set_user_table(current_process);
-    
+
     flush_tlb();
 
     if(!load_file(inode))
     {
         current_process--;
         set_user_table(current_process);
-    
+
     flush_tlb();
 	return -1;
     }
@@ -56,7 +56,7 @@ int32_t syscall_execute(const uint8_t* command){
     {
         processes[current_process]->file_descriptors[i].flags = 0;
     }
-	
+
     processes[current_process]->file_descriptors[0].flags = ACTIVE_FLAG;
     processes[current_process]->file_descriptors[0].fops_table = &stdin_ops;
 
@@ -71,6 +71,9 @@ int32_t syscall_execute(const uint8_t* command){
     tss.esp0 = stack - 4;
     tss.ss0 = KERNEL_DS;
 
+    //set terminal data
+    set_process(terminal_info.current_terminal);
+    processes[current_process]->process_term = terminal_info.current_terminal;
 
     int ret = ireturn(starting_address,&(processes[current_process]->parent_esp),&(processes[current_process]->parent_ebp));
     return ret;
@@ -104,7 +107,7 @@ int32_t syscall_halt(const uint8_t status){
     }
     current_process--;
     set_user_table(current_process);
-    
+
     flush_tlb();
 
 	uint32_t stack = KERNEL_STACK_START;
@@ -116,8 +119,8 @@ int32_t syscall_halt(const uint8_t status){
 
     tss.ss0 = KERNEL_DS;
     asm volatile("movl %1,%%esp  \n\t"
-		"movl %2,%%ebp  \n\t" 
-		"movl %3,%%eax  \n\t" 
+		"movl %2,%%ebp  \n\t"
+		"movl %3,%%eax  \n\t"
 		"jmp ireturn_return  \n\t"
 		: "=r" (i)
                 : "r" (processes[current_process+1]->parent_esp), "r" (processes[current_process+1]->parent_ebp), "r" (ret_status));
@@ -179,9 +182,9 @@ uint32_t load_file(uint32_t inode)
         int count = 0;
         int position = 0;
         uint8_t buf[BUFFER_SIZE_P];
-        
+
         while(not_done)
-        {	
+        {
 		read = read_data(inode, position, buf, BUFFER_SIZE_P,DONT_SKIP_NULLS);
                 if(read <= 0)
                 {
@@ -273,3 +276,8 @@ void store_args(const uint8_t* command)
 		return;
 }
 
+
+//code for switching between processes
+void switch_process(int32_t pid){
+  return;
+}

@@ -80,19 +80,19 @@ void interrupt_keyboard_handler(){
   else if (alt_flag){
     switch(scancode){
       case F1:
-        terminal_swap(0);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
+        terminal_swap(0);
         return;
       case F2:
-        terminal_swap(1);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
+        terminal_swap(1);
         return;
       case F3:
-        terminal_swap(2);
         send_eoi(KEYBOARD_IRQ_1);
         sti();
+        terminal_swap(2);
         return;
     }
   }
@@ -130,7 +130,7 @@ void interrupt_keyboard_handler(){
       	y_curr-=1; //back to prev line
       	update_cursor(x_curr, y_curr);
       	putc(' ');
-      	x_curr-=1; //previous position
+      	//x_curr-=1; //previous position
       	update_cursor(x_curr, y_curr);
   	   }
   	else if (x_curr == 0 && y_curr == 0){
@@ -140,19 +140,7 @@ void interrupt_keyboard_handler(){
   	else { //else if cursor was not at the beginning of a line
     	update_cursor(x_curr-1, y_curr);
     	putc(' '); //put the blank space, deleting previous charavter
-    	x_curr -=1; //decrement x coordinate
-    	if (x_curr == 0 && y_curr != 0){ //if at the beginning of a line, not the first line
-      	x_curr = NUM_COLS-1; //go back to the end of the previous line
-      	y_curr -=1;
-      	update_cursor(x_curr, y_curr);
-  	   }
-    	else if (x_curr == 0 && y_curr == 0){ //if at the beginning of the screen, no need to do anything
-    	   update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
-    	}
-    	else { //update the cursor
-    	   update_cursor(x_curr, y_curr);
-    	}
-
+      update_cursor(x_curr-1, y_curr);
   	}
 	}
 	else if(ctrl_flag&&(scancode==L_CODE)){ //Ctrl-L handle
@@ -167,34 +155,31 @@ void interrupt_keyboard_handler(){
   else {
       if (shift_flag) { //check for shift held down
         if (caps_flag) { //check for caps lock
-          putc(scan_code_caps_shift[scancode-1]); //put character onto screen from the array
-		  if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
-			  terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_caps_shift[scancode-1];
-			  terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++;
-		  }
+    		  if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-1)){ //add to the buffer, keeping space for newline
+    			  terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_caps_shift[scancode-1];
+    			  terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++;
+            putc(scan_code_caps_shift[scancode-1]); //put character onto screen from the array
+    		  }
         } else {  //only shift held
-          putc(scan_code_shift[scancode-1]); //put character onto screen from the array
-
-		   if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
-			  terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_shift[scancode-1];
-			  terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++;
-		  }
-        }
+    		   if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-1)){ //add to the buffer, keeping space for newline
+    			  terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_shift[scancode-1];
+    			  terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++;
+            putc(scan_code_shift[scancode-1]); //put character onto screen from the array
+		        }
+          }
       } else if(caps_flag){  //only caps held
-        putc(scan_code_caps[scancode-1]); //put character onto screen from the array
-
-		if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
-			  terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_caps[scancode-1];
-			  terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++;
-		  }
-    } else {
-      putc(scan_code_default[scancode-1]); //put character onto screen from the array
-
-		if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-2)){ //add character to the buffer, keeping space for the last newline
-			terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_default[scancode-1];
-			terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++; //increment current index in buffer
-		}
-	}
+      		if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-1)){ //add to the buffer, keeping space for newline
+      			  terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_caps[scancode-1];
+      			  terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++;
+              putc(scan_code_caps[scancode-1]); //put character onto screen from the array
+      		  }
+      } else {
+      		if (terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] <= (BUFFER_SIZE-1)){ //add character to the buffer, keeping space for the last newline
+      			terminal_info.keyboard_buffers[terminal_info.current_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]] = scan_code_default[scancode-1];
+      			terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal]++; //increment current index in buffer
+            putc(scan_code_default[scancode-1]); //put character onto screen from the array
+      		}
+	   }
 	update_cursor(get_cursor_x(), get_cursor_y()); //mode cursor position to reflect added character
     }
 

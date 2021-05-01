@@ -100,27 +100,58 @@ int32_t terminal_close(int32_t fd){
 
 //Program for initializing the terminal info structure
 void init_terminal(){
+  //set current terminal to 0 upon boot
   terminal_info.current_terminal = 0;
+  //only first terminal active on boot
+  terminal_info.active_terminals[0] = 1;
+  terminal_info.active_terminals[1] = 0;
+  terminal_info.active_terminals[2] = 0;
+  set_buffers(terminal_info.vid_mem_buffer[0], terminal_info.vid_mem_buffer[1],terminal_info.vid_mem_buffer[2]);
   return;
 }
+
 
 //terminal swqapping function
 //takes interger for terminal (0-2) and saves current while swapping to the next
 void terminal_swap(int32_t new_terminal){
     if(new_terminal == terminal_info.current_terminal){
-      printf("Already on this terminal\n");
+      //printf("Already on this terminal\n");
       return;
     }
-    // copy curent vid_mem to terminal structure
-    memcpy(terminal_info.vid_mem_buffer[terminal_info.current_terminal], get_vid_mem(), MEM_BUF_SIZE);
-    //save current curors
-    terminal_info.cursors[terminal_info.current_terminal][0] = get_cursor_x();
-    terminal_info.cursors[terminal_info.current_terminal][1] = get_cursor_y();
-    //change current cursors to the new terminal
-    update_cursor(terminal_info.cursors[new_terminal][0], terminal_info.cursors[new_terminal][1]);
-    //swap the vid memory to the new terminal
-    memcpy(get_vid_mem(), terminal_info.vid_mem_buffer[new_terminal], MEM_BUF_SIZE);
-    //change current terminal to new terminal
-    terminal_info.current_terminal = new_terminal;
+    //save the current contents of the terminal
+    save_terminal();
+    //load the new terminal
+    load_terminal(new_terminal);
     return;
+}
+
+
+//save the terminal data before switching to a new terminal
+void save_terminal(){
+  // copy curent vid_mem to terminal structure
+  memcpy(terminal_info.vid_mem_buffer[terminal_info.current_terminal], get_vid_mem(), MEM_BUF_SIZE);
+  //save current curors
+  terminal_info.cursors[terminal_info.current_terminal][0] = get_cursor_x();
+  terminal_info.cursors[terminal_info.current_terminal][1] = get_cursor_y();
+}
+
+
+//load in the new terminal vid_mem and shell
+void load_terminal(uint32_t term){
+  //change current cursors to the new terminal
+  update_cursor(terminal_info.cursors[term][0], terminal_info.cursors[term][1]);
+  //swap the vid memory to the new terminal
+  memcpy(get_vid_mem(), terminal_info.vid_mem_buffer[term], MEM_BUF_SIZE);
+  //change current terminal to new terminal
+  terminal_info.current_terminal = term;
+  set_display(term);
+  if(terminal_info.active_terminals[term]){
+    switch_process(0); //switch to a new process
+    //printf("The terminal shell previously launched\n");
+  }else{
+    //set active terminal flag
+    terminal_info.active_terminals[term] = 1;
+    //launch a new shell for the terminal
+    syscall_execute("shell");
+  }
 }

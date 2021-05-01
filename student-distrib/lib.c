@@ -16,6 +16,77 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
+//custum variables
+//vidmem buffer addresses
+static char* buf0;
+static char* buf1;
+static char* buf2;
+//terminal display/process execution
+static int terminal_display;
+static int terminal_process;
+
+//begin custom functions
+
+//set_buffers(char* b0, char* b1, char* b2)
+//function to set the local addresses of the buffer
+//inputs: 3 buffer addresses
+//output: none
+//side effect: initialize the 3 buffers for writing to when terminal not displayed
+void set_buffers(char* b0, char* b1, char* b2){
+  buf0 = b0;
+  buf1 = b1;
+  buf2 = b2;
+}
+
+//set_display(int term)
+//function to set the current terminal being displayed
+//inputs: current terminal displayed
+//output: none
+//side effect: set displayed terminal
+void set_display(int term){
+  terminal_display = term;
+  //printf("d: %d\n", term);
+  update_video_mem(); //update vid_mem pointer with new display
+}
+
+//set_process(int term)
+//function to set the current terminal being executed
+//inputs: current terminal being executed
+//output: none
+//side effect: set executed terminal
+void set_process(int term){
+  terminal_process = term;
+  update_video_mem(); //update vid_mem pointer with new process
+  //printf("p: %d\n", term);
+}
+
+//update_video_mem()
+//function to set the video_mem pointer
+//inputs: none
+//output: none
+//side effect: changes the video memory pointer
+void update_video_mem(){
+  //if process matches display, write to display
+  if(terminal_display == terminal_process){
+    video_mem = (char *)VIDEO;
+  }else{
+    //if process does not equal display, write to buffer of process
+    switch(terminal_process){
+      case 0:
+        video_mem = buf0;
+        return;
+      case 1:
+        video_mem = buf1;
+        return;
+      case 2:
+        video_mem = buf2;
+        return;
+    }
+  }
+}
+
+//end custom functions
+
 //update_cursor(int x, int y)
 //function to update position of the cursor on the screen to a certain coordinate position
 //inputs: (x,y)

@@ -17,6 +17,17 @@
 #ifndef ASM
 
 //custom functions
+//set the vid memory buffers
+extern void set_buffers(char* b0, char* b1, char* b2);
+
+//set the current display terminal
+extern void set_display(int term);
+
+//set the current process terminal
+extern void set_process(int term);
+
+//update the video_mem pointer
+extern void update_video_mem();
 
 //update the x,y position of the cursor
 extern void update_cursor(int x, int y);

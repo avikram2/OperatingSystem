@@ -48,6 +48,7 @@ typedef struct pcb {
    uint32_t parent_ebp;
    uint8_t args[ARGS_BUFFER_SIZE];
    uint32_t args_len;
+   uint32_t process_term;
 } pcb_t;
 
 
@@ -85,6 +86,9 @@ extern void exception_halt();
 extern void store_args(const uint8_t* command);
 
 extern void get_command(uint8_t* filename, const uint8_t* command);
+
+//program for switching to a new process
+extern void switch_process(int32_t pid);
 #endif
 
 #endif
