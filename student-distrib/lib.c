@@ -12,8 +12,8 @@
 #define VGA_PORT_1 0x3D4
 #define VGA_PORT_2 0x3D5
 
-static int screen_x;
-static int screen_y;
+static int screen_x[3] = {ORIGIN_CURSOR,ORIGIN_CURSOR,ORIGIN_CURSOR};
+static int screen_y[3] = {ORIGIN_CURSOR,ORIGIN_CURSOR,ORIGIN_CURSOR};
 static char* video_mem = (char *)VIDEO;
 
 //custum variables
@@ -93,8 +93,8 @@ void update_video_mem(){
 //output: none
 //side effect: changes cursor to point to new
 void update_cursor(int x, int y){
-    screen_x  = x;
-    screen_y = y; //set screen position
+    screen_x[terminal_process]  = x;
+    screen_y[terminal_process] = y; //set screen position
 
     uint16_t pos = y * NUM_COLS + x; //linearized position
     outb(VGA_CURSOR_MASK, VGA_PORT_1); //send relevant values to VGA registers
@@ -108,7 +108,7 @@ void update_cursor(int x, int y){
 //inputs: none, outputs: the 'y' location of the cursor
 //side effect: returns y coordinate of the cursor
 int get_cursor_y(){
-    return screen_y;
+    return screen_y[terminal_process];
 }
 
 //get_cursor_x
@@ -116,7 +116,7 @@ int get_cursor_y(){
 //inputs: none, outputs: the 'x' location of the cursor
 //side effect: returns x coordinate of the cursor
 int get_cursor_x(){
-    return screen_x;
+    return screen_x[terminal_process];
 }
 
 /* void clear(void);
@@ -303,8 +303,8 @@ while (i < NUM_COLS){ //for all the characters in the line, clear them, aka set 
 ++i;
 }
 update_cursor(ORIGIN_CURSOR, NUM_ROWS-1); //set cursor to the first character of the new last line
-screen_x = ORIGIN_CURSOR;
-screen_y = NUM_ROWS-1;
+screen_x[terminal_process] = ORIGIN_CURSOR;
+screen_y[terminal_process] = NUM_ROWS-1;
 }
 
 
@@ -316,25 +316,25 @@ screen_y = NUM_ROWS-1;
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
     if(c == '\n') {
-        screen_y++;
-        screen_x = ORIGIN_CURSOR; //first position of newline
-		if (screen_y >= NUM_ROWS){ //if leaving the screen, then implement scrolling
+        screen_y[terminal_process]++;
+        screen_x[terminal_process] = ORIGIN_CURSOR; //first position of newline
+		if (screen_y[terminal_process] >= NUM_ROWS){ //if leaving the screen, then implement scrolling
 			scrolling();
 		}
 
     }
 
 	else if(c == '\r')
-		screen_x = ORIGIN_CURSOR;
+		screen_x[terminal_process] = ORIGIN_CURSOR;
 
 
 	else {
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-        screen_x++; //increment horiz position
-        screen_y = (screen_y + (screen_x / NUM_COLS)); //if necessary new line
-	    screen_x = screen_x % NUM_COLS; //adjust overflow of horiz position
-		if (screen_y >= NUM_ROWS){ //implement scrolling if necessary
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y[terminal_process] + screen_x[terminal_process]) << 1)) = c;
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y[terminal_process] + screen_x[terminal_process]) << 1) + 1) = ATTRIB;
+        screen_x[terminal_process]++; //increment horiz position
+        screen_y[terminal_process] = (screen_y[terminal_process] + (screen_x[terminal_process] / NUM_COLS)); //if necessary new line
+	    screen_x[terminal_process] = screen_x[terminal_process] % NUM_COLS; //adjust overflow of horiz position
+		if (screen_y[terminal_process] >= NUM_ROWS){ //implement scrolling if necessary
 			scrolling();
 		}
     }
