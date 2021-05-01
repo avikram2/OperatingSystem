@@ -39,6 +39,9 @@ extern int get_cursor_y();
 //get x coordinate of cursor
 extern int get_cursor_x();
 
+//updates the value of the current terminal (0,1,2)
+extern void get_current_terminal(int term);
+
 void scrolling(); //implements the scrolling feature when lines run out
 
 int32_t printf(int8_t *format, ...);
