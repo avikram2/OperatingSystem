@@ -129,7 +129,7 @@ void terminal_swap(int32_t new_terminal){
 //save the terminal data before switching to a new terminal
 void save_terminal(){
   // copy curent vid_mem to terminal structure
-  memcpy(terminal_info.vid_mem_buffer[terminal_info.current_terminal], get_vid_mem(), MEM_BUF_SIZE);
+  memcpy(terminal_info.vid_mem_buffer[terminal_info.current_terminal], (char *)VIDEO, MEM_BUF_SIZE);
   //save current curors
   terminal_info.cursors[terminal_info.current_terminal][0] = get_cursor_x();
   terminal_info.cursors[terminal_info.current_terminal][1] = get_cursor_y();
@@ -141,7 +141,7 @@ void load_terminal(uint32_t term){
   //change current cursors to the new terminal
   update_cursor(terminal_info.cursors[term][0], terminal_info.cursors[term][1]);
   //swap the vid memory to the new terminal
-  memcpy(get_vid_mem(), terminal_info.vid_mem_buffer[term], MEM_BUF_SIZE);
+  memcpy((char *)VIDEO, terminal_info.vid_mem_buffer[term], MEM_BUF_SIZE);
   //change current terminal to new terminal
   terminal_info.current_terminal = term;
   set_display(term);

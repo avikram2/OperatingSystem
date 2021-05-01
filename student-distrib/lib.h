@@ -11,6 +11,7 @@
 #define VGA_CURSOR_MASK 0x0F
 #define VGA_MASK_2 0x0E
 #define CURSOR_BITMASK 0xFF
+#define VIDEO       0xB8000
 
 #define ORIGIN_CURSOR 0 //mask to update cursor back to the beginning of the screen
 
