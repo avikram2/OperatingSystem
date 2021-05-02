@@ -2,7 +2,7 @@
 #define _INTERRUPT_LINKAGE_H
 
 #include "interrupts.h"
-
+#include "syscall_linkage.h"
 
 #ifndef ASM
 

@@ -15,22 +15,26 @@ static int exception_halt_triggered = 0;
 //effect: tbd
 int32_t syscall_execute(const uint8_t* command){
 
+	//cli();
     uint32_t starting_address;
     uint32_t inode;
     const uint8_t filename[4] = "";
     int i;
     if(command == 0)
     {
+	//sti();
         return -1;
     }
     //check if its an executable
     if(!check_file(command,&starting_address,&inode))
     {
+	//sti();
 	return -1;
     }
 
     if(terminal_info.terminal_pid_lengths[terminal_info.current_terminal] >= MAX_TERMINAL_PROCESSES)
     {
+	//sti();
         return -1;
     }
 
@@ -60,11 +64,13 @@ int32_t syscall_execute(const uint8_t* command){
     if(remaining_terminals >= empty)
     {
         current_process = old_process;
+	//sti();
 	return -1;
     }
     if(!found)
     {
 	//no empty processes
+	//sti();
         return -1;
     }
  
@@ -82,6 +88,7 @@ int32_t syscall_execute(const uint8_t* command){
         set_user_table(current_process);
 
     flush_tlb();
+	//sti();
 	return -1;
     }
 
@@ -113,7 +120,9 @@ int32_t syscall_execute(const uint8_t* command){
     processes[current_process]->process_term = terminal_info.current_terminal;
 
     int ret = ireturn(starting_address,&(processes[current_process]->parent_esp),&(processes[current_process]->parent_ebp));
-    return ret;
+   
+	//sti();
+ return ret;
 }
 
 // halt:
@@ -122,6 +131,7 @@ int32_t syscall_execute(const uint8_t* command){
 //output: tbd
 //effect: tbd
 int32_t syscall_halt(const uint8_t status){
+	//cli();
     uint32_t ret_status = (uint32_t)status;
     if(exception_halt_triggered)
     {
@@ -131,10 +141,12 @@ int32_t syscall_halt(const uint8_t status){
     //set fds to unused
     if(current_process >= NUMBER_OF_PROCESSES || current_process<0)
     {
+	//sti();
         return -1;
     }
     if(terminal_info.terminal_pid_lengths[terminal_info.current_terminal] <= 0)
     {
+	//sti();
         return -1;
     }
     int i;
@@ -173,7 +185,9 @@ int32_t syscall_halt(const uint8_t status){
 		"jmp ireturn_return  \n\t"
 		: "=r" (i)
                 : "r" (processes[old_process]->parent_esp), "r" (processes[old_process]->parent_ebp), "r" (ret_status));
-    return -1;
+    
+	//sti();
+return -1;
 }
 void get_command(uint8_t* filename, const uint8_t* command)
 {
@@ -348,7 +362,7 @@ void switch_process(int32_t term){
     //need to set stdin and stdout
     uint32_t stack = KERNEL_STACK_START;
     stack = stack - PROC_KERNEL_LEN * process;
-    tss.esp0 = stack - 4;
+    tss.esp0 = terminal_info.esp_locations[term];
     tss.ss0 = KERNEL_DS;
 	
     int out;

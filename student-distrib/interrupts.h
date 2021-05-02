@@ -35,7 +35,7 @@
 #define F5          0x3F
 #define F6          0x40
 
-#define SCHEDULING_COUNT  50
+#define SCHEDULING_COUNT  25
 
 #define NUM_COLS    80 //macros for RTC handler
 #define NUM_ROWS    25

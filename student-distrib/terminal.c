@@ -23,7 +23,8 @@ int32_t terminal_open(const uint8_t* filename){
 //read the provided number of bytes from the keyboard buffer into the provided terminal buffer
 //inputs: buf-- the provided terminal buffer to read the keyboard buffer into, nbytes -- the amount of bytes to read
 int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
-    terminal_read_flag = ENABLE; //enable flag, which means read function invoked
+    
+	terminal_read_flag = ENABLE; //enable flag, which means read function invoked
 
     if (nbytes <= BEGINNING_IDX){ //if incorrect input (negative bytes)
         terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] = BEGINNING_IDX; //reset the keyboard buffer
@@ -33,7 +34,6 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
         for (j = 0; j < BUFFER_SIZE; ++j){ //reset keyboard buffer
         terminal_info.keyboard_buffers[terminal_info.current_terminal][j] = NULLCHAR; //reset to nullcharacter
         }
-
 
         return 0;
     }
@@ -63,6 +63,7 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
     }
 
     terminal_read_flag = DISABLE; //disable the flag, exiting the read function
+	
     return 0;
 }
 
@@ -73,16 +74,16 @@ int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes){
 //inputs: buf -- the buffer from which to write to the screen, nbytes: how many bytes to write to the screen
 //output: how many characters written to screen
 int32_t terminal_write(int32_t fd, const uint8_t* buf, int32_t nbytes){
+	
 //cat doesn't work if we compare a max number of bytes
     if (nbytes <= BEGINNING_IDX){//|| nbytes > BUFFER_SIZE){ //if the number of bytes is negative or too big, return
-    return 0;
+	return 0;
     }
     int i = 0;
     for (i = 0; i < nbytes; i++){
         putc(buf[i]); //print character to screen
     }
     update_cursor(get_cursor_x(), get_cursor_y()); //update cursor after printing
-
     return nbytes;
 }
 
@@ -142,8 +143,6 @@ void save_terminal(uint32_t esp_location, uint32_t jump_location){
   //save current curors
   terminal_info.cursors[terminal_info.display_terminal][0] = get_cursor_x();
   terminal_info.cursors[terminal_info.display_terminal][1] = get_cursor_y();
-  terminal_info.esp_locations[terminal_info.display_terminal] = esp_location;
-  terminal_info.jump_locations[terminal_info.display_terminal] = jump_location;
 }
 
 
@@ -155,15 +154,16 @@ void load_terminal(uint32_t term){
   //swap the vid memory to the new terminal
   memcpy((char *)VIDEO, terminal_info.vid_mem_buffer[term], MEM_BUF_SIZE);
   //change current terminal to new terminal
-  terminal_info.current_terminal = term;
+  //terminal_info.current_terminal = term;
   terminal_info.display_terminal = term;
   set_cursor_terminal(term);
   if(terminal_info.active_terminals[term]){
-    switch_process(term); //switch to a new process
+    //switch_process(term); //switch to a new process
     //printf("The terminal shell previously launched\n");
   }else{
     //set active terminal flag
     terminal_info.active_terminals[term] = 1;
+terminal_info.current_terminal = term;
     //launch a new shell for the terminal
     launch_base_shell();
   }

@@ -227,8 +227,9 @@ void rtc_handler(uint32_t jump_location,uint32_t esp_location){
 
 void handle_possible_scheduling(uint32_t jump_location,uint32_t esp_location)
 {
+	cli();
     scheduling_count++;
-    if(scheduling_count == SCHEDULING_COUNT)
+    if(scheduling_count >= SCHEDULING_COUNT)
     {
        scheduling_count = 0;
     	terminal_info.esp_locations[terminal_info.current_terminal] = esp_location;
@@ -245,5 +246,6 @@ void handle_possible_scheduling(uint32_t jump_location,uint32_t esp_location)
        		switch_process(terminal_info.current_terminal);
 	}
     }
+	sti();
     
 }

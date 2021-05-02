@@ -3,16 +3,19 @@
 
 #include "interrupt_linkage.h"
 
+#define IF_BIT_MAP 0x200
+#define FLAGS_OFFSET 12
 
 .globl   keyboard_wrapper
 .align   4
  # linkage function between assembly and c interrupt handler, unsued for checkpoint 1
 keyboard_wrapper:
+    cli
     pushal
     pushfl
-    pushl %ds
-    pushl %fs
-    pushl %es
+    //pushl %ds
+    //pushl %fs
+    //pushl %es
     pushl %eax
     pushl %ebp
     pushl %edi
@@ -35,9 +38,9 @@ keyboard_return:
     popl %edi
     popl %ebp
     popl %eax
-    popl %es
-    popl %fs
-    popl %ds
+    //popl %es
+    //popl %fs
+    //popl %ds
     popfl
     popal
     sti
@@ -47,11 +50,12 @@ keyboard_return:
 .globl   rtc_wrapper
 .align   4
 rtc_wrapper:
+    cli
     pushal
     pushfl
-    pushl %ds
-    pushl %fs
-    pushl %es
+    //pushl %ds
+    //pushl %fs
+    //pushl %es
     pushl %eax
     pushl %ebp
     pushl %edi
@@ -75,9 +79,9 @@ rtc_return:
     popl %edi
     popl %ebp
     popl %eax
-    popl %es
-    popl %fs
-    popl %ds
+    //popl %es
+    //popl %fs
+    //popl %ds
     popfl
     popal
     sti
