@@ -27,6 +27,9 @@ extern void set_display(int term);
 //set the current process terminal
 extern void set_process(int term);
 
+//set the cursor for the process/display
+void set_cursor_terminal();
+
 //update the video_mem pointer
 extern void update_video_mem();
 

@@ -23,7 +23,9 @@ static char* buf2;
 //terminal display/process execution
 static int terminal_display;
 static int terminal_process;
-static int current_terminal;
+static int cursor_terminal;
+//1/0 variable identifying if the process is matching or not
+static int matching;
 //begin custom functions
 
 //set_buffers(char* b0, char* b1, char* b2)
@@ -59,6 +61,14 @@ void set_process(int term){
   //printf("p: %d\n", term);
 }
 
+void set_cursor_terminal(){
+  if(!(matching)){//if the process not displayed is writing, change cursor tp buffer
+    cursor_terminal = terminal_process;
+  }else{//else cursor for the display
+    cursor_terminal = terminal_display;
+  }
+}
+
 //update_video_mem()
 //function to set the video_mem pointer
 //inputs: none
@@ -68,8 +78,10 @@ void update_video_mem(){
   //if process matches display, write to display
   if(terminal_display == terminal_process){
     video_mem = (char *)VIDEO;
+    matching = 1;
   }else{
     //if process does not equal display, write to buffer of process
+    matching = 0;
     switch(terminal_process){
       case 0:
         video_mem = buf0;
@@ -82,13 +94,7 @@ void update_video_mem(){
         return;
     }
   }
-}
-//get_current_terminal sets current_terminal to hold the value of the current active terminal
-//input: term, the value of the current terminal
-//output: none
-//side effect: makes current_terminal hold the value of the current terminal
-void get_current_terminal(int term){
-    current_terminal = term;
+  set_cursor_terminal();
 }
 
 //update_cursor(int x, int y)
@@ -97,10 +103,9 @@ void get_current_terminal(int term){
 //output: none
 //side effect: changes cursor to point to new
 void update_cursor(int x, int y){
-    screen_x[current_terminal]  = x;
-    screen_y[current_terminal] = y; //set screen position
-
-    uint16_t pos = y * NUM_COLS + x; //linearized position
+    screen_x[cursor_terminal] = x;
+    screen_y[cursor_terminal] = y; //set screen position
+    uint16_t pos = screen_y[terminal_display] * NUM_COLS + screen_x[terminal_display]; //linearized position
     outb(VGA_CURSOR_MASK, VGA_PORT_1); //send relevant values to VGA registers
     outb((uint8_t)(pos & CURSOR_BITMASK), VGA_PORT_2);
     outb(VGA_MASK_2, VGA_PORT_1);
@@ -112,7 +117,7 @@ void update_cursor(int x, int y){
 //inputs: none, outputs: the 'y' location of the cursor
 //side effect: returns y coordinate of the cursor
 int get_cursor_y(){
-    return screen_y[current_terminal];
+    return screen_y[cursor_terminal];
 }
 
 //get_cursor_x
@@ -120,7 +125,7 @@ int get_cursor_y(){
 //inputs: none, outputs: the 'x' location of the cursor
 //side effect: returns x coordinate of the cursor
 int get_cursor_x(){
-    return screen_x[current_terminal];
+    return screen_x[cursor_terminal];
 }
 
 /* void clear(void);
@@ -307,8 +312,8 @@ while (i < NUM_COLS){ //for all the characters in the line, clear them, aka set 
 ++i;
 }
 update_cursor(ORIGIN_CURSOR, NUM_ROWS-1); //set cursor to the first character of the new last line
-screen_x[current_terminal] = ORIGIN_CURSOR;
-screen_y[current_terminal] = NUM_ROWS-1;
+screen_x[cursor_terminal] = ORIGIN_CURSOR;
+screen_y[cursor_terminal] = NUM_ROWS-1;
 }
 
 
@@ -320,25 +325,25 @@ screen_y[current_terminal] = NUM_ROWS-1;
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
     if(c == '\n') {
-        screen_y[current_terminal]++;
-        screen_x[current_terminal] = ORIGIN_CURSOR; //first position of newline
-		if (screen_y[current_terminal] >= NUM_ROWS){ //if leaving the screen, then implement scrolling
+        screen_y[cursor_terminal]++;
+        screen_x[cursor_terminal] = ORIGIN_CURSOR; //first position of newline
+		if (screen_y[cursor_terminal] >= NUM_ROWS){ //if leaving the screen, then implement scrolling
 			scrolling();
 		}
 
     }
 
 	else if(c == '\r')
-		screen_x[current_terminal] = ORIGIN_CURSOR;
+		screen_x[cursor_terminal] = ORIGIN_CURSOR;
 
 
 	else {
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y[current_terminal] + screen_x[current_terminal]) << 1)) = c;
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y[current_terminal] + screen_x[current_terminal]) << 1) + 1) = ATTRIB;
-        screen_x[current_terminal]++; //increment horiz position
-        screen_y[current_terminal] = (screen_y[current_terminal] + (screen_x[current_terminal] / NUM_COLS)); //if necessary new line
-	    screen_x[current_terminal] = screen_x[current_terminal] % NUM_COLS; //adjust overflow of horiz position
-		if (screen_y[current_terminal] >= NUM_ROWS){ //implement scrolling if necessary
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y[cursor_terminal] + screen_x[cursor_terminal]) << 1)) = c;
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y[cursor_terminal] + screen_x[cursor_terminal]) << 1) + 1) = ATTRIB;
+        screen_x[cursor_terminal]++; //increment horiz position
+        screen_y[cursor_terminal] = (screen_y[cursor_terminal] + (screen_x[cursor_terminal] / NUM_COLS)); //if necessary new line
+	    screen_x[cursor_terminal] = screen_x[cursor_terminal] % NUM_COLS; //adjust overflow of horiz position
+		if (screen_y[cursor_terminal] >= NUM_ROWS){ //implement scrolling if necessary
 			scrolling();
 		}
     }

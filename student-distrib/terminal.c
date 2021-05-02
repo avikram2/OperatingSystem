@@ -101,7 +101,6 @@ int32_t terminal_close(int32_t fd){
 void init_terminal(){
   //set current terminal to 0 upon boot
   terminal_info.current_terminal = 0;
-  get_current_terminal(0); //set current terminal value to 0
   //only first terminal active on boot
   terminal_info.active_terminals[0] = 1;
   terminal_info.active_terminals[1] = 0;
@@ -138,16 +137,13 @@ void save_terminal(){
 
 //load in the new terminal vid_mem and shell
 void load_terminal(uint32_t term){
-
-  get_current_terminal(term); //update the value of the current terminal before updating cursor
-
+  set_display(term);
   //change current cursors to the new terminal
-  update_cursor(terminal_info.cursors[term][0], terminal_info.cursors[term][1]);
+  //update_cursor(terminal_info.cursors[term][0], terminal_info.cursors[term][1]);
   //swap the vid memory to the new terminal
   memcpy((char *)VIDEO, terminal_info.vid_mem_buffer[term], MEM_BUF_SIZE);
   //change current terminal to new terminal
   terminal_info.current_terminal = term;
-  set_display(term);
   if(terminal_info.active_terminals[term]){
     switch_process(0); //switch to a new process
     //printf("The terminal shell previously launched\n");
