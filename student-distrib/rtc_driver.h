@@ -8,7 +8,6 @@
 
 #define MAX_RTC_DRIVERS 16
 #define MAX_RTC_FREQUENCY 512
-#define TEN_ZERO_TWENTY_FOUR_HZ_RATE  6
 #define TWO_HZ_RATE 15
 
 #include "lib.h"

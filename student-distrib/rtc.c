@@ -13,7 +13,7 @@ void init_rtc(){
     outb(REG_B, REG_SELECT);      //Set the index again (a read will reset the index to register D)
     outb(prev | 0x40, DATA_PORT); //update value from data port and send again
     
-    set_rtc_rate(TWO_HZ_RATE);      //Set the RTC interrupt rate to 1024Hz by default
+    set_rtc_rate(TEN_ZERO_TWENTY_FOUR_HZ_RATE);      //Set the RTC interrupt rate to 1024Hz by default
     
     enable_irq(RTC_LINE_IRQ); //enable RTC interrupts
 

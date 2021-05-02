@@ -11,11 +11,13 @@
 
 #ifndef ASM
 #define NUMBER_OF_FILE_DESCRIPTORS 8
-#define NUMBER_OF_PROCESSES 4
+#define NUMBER_OF_PROCESSES 6
 #define PROCESS_ONE_PCB 0x7FE000
 #define PROCESS_TWO_PCB 0x7FC000
 #define PROCESS_THREE_PCB 0x7FA000
 #define PROCESS_FOUR_PCB 0x7F8000
+#define PROCESS_FIVE_PCB 0x7F6000
+#define PROCESS_SIX_PCB 0x7F4000
 #define KERNEL_STACK_START 0x800000
 #define PROC_KERNEL_LEN 0x2000
 #define FILE_LOCATION  0x08048000
@@ -51,7 +53,7 @@ typedef struct pcb {
    uint32_t process_term;
 } pcb_t;
 
-
+uint32_t processes_status[NUMBER_OF_PROCESSES];
 
 //halt system call
 extern int32_t syscall_halt(uint8_t status);
@@ -89,6 +91,8 @@ extern void get_command(uint8_t* filename, const uint8_t* command);
 
 //program for switching to a new process
 extern void switch_process(int32_t pid);
+
+extern void launch_base_shell();
 #endif
 
 #endif

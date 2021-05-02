@@ -2,7 +2,7 @@
 #include "processes.h"
 int current_process = -1;
 
-pcb_t* processes[NUMBER_OF_PROCESSES] = {(pcb_t*)PROCESS_ONE_PCB,(pcb_t*)PROCESS_TWO_PCB,(pcb_t*)PROCESS_THREE_PCB,(pcb_t*)PROCESS_FOUR_PCB};
+pcb_t* processes[NUMBER_OF_PROCESSES] = {(pcb_t*)PROCESS_ONE_PCB,(pcb_t*)PROCESS_TWO_PCB,(pcb_t*)PROCESS_THREE_PCB,(pcb_t*)PROCESS_FOUR_PCB,(pcb_t*)PROCESS_FIVE_PCB,(pcb_t*)PROCESS_SIX_PCB};
 
 static fops_t stdin_ops = {std_open,std_close,terminal_read,std_write};
 static fops_t stdout_ops = {std_open,std_close,std_read,terminal_write};
@@ -29,13 +29,47 @@ int32_t syscall_execute(const uint8_t* command){
 	return -1;
     }
 
-    current_process++;
-    //only two processes allowed at a time
-    if(current_process < 0 || current_process >= NUMBER_OF_PROCESSES)
+    if(terminal_info.terminal_pid_lengths[terminal_info.current_terminal] >= MAX_TERMINAL_PROCESSES)
     {
-	current_process--;
         return -1;
     }
+
+    int old_process = current_process;
+    int found = 0;
+    int empty = 0;
+    for(i = 0;i<NUMBER_OF_PROCESSES;i++)
+    {
+        if(processes_status[i] == 0)
+ 	{
+		if(!found)
+		{
+			current_process = i;
+  			found = 1;
+		}
+		empty++;
+	}
+    }
+    int remaining_terminals = 0;
+    for(i=0;i<TERMINAL_NUMBER;i++)
+    {
+        if(terminal_info.active_terminals[i] == 0)
+	{
+		remaining_terminals++;
+	}
+    }
+    if(remaining_terminals >= empty)
+    {
+        current_process = old_process;
+	return -1;
+    }
+    if(!found)
+    {
+	//no empty processes
+        return -1;
+    }
+ 
+
+
     store_args(command);
 
     set_user_table(current_process);
@@ -44,13 +78,16 @@ int32_t syscall_execute(const uint8_t* command){
 
     if(!load_file(inode))
     {
-        current_process--;
+        current_process = old_process;
         set_user_table(current_process);
 
     flush_tlb();
 	return -1;
     }
 
+    terminal_info.terminal_pid_lengths[terminal_info.current_terminal]++;
+    terminal_info.terminal_pids[terminal_info.current_terminal][terminal_info.terminal_pid_lengths[terminal_info.current_terminal]-1] = current_process;
+    processes_status[current_process] = 1;
     //set fds to unused
     for(i = 0;i<NUMBER_OF_FILE_DESCRIPTORS;i++)
     {
@@ -96,6 +133,10 @@ int32_t syscall_halt(const uint8_t status){
     {
         return -1;
     }
+    if(terminal_info.terminal_pid_lengths[terminal_info.current_terminal] <= 0)
+    {
+        return -1;
+    }
     int i;
     for(i = 0;i<NUMBER_OF_FILE_DESCRIPTORS;i++)
     {
@@ -105,7 +146,15 @@ int32_t syscall_halt(const uint8_t status){
     		processes[current_process]->file_descriptors[1].fops_table->close(i);
 	}
     }
-    current_process--;
+    int old_process = current_process;
+    terminal_info.terminal_pid_lengths[terminal_info.current_terminal]--;
+    if(terminal_info.terminal_pid_lengths[terminal_info.current_terminal] == 0)
+    {
+	current_process = -1;
+    }else{
+    	current_process = terminal_info.terminal_pids[terminal_info.current_terminal][terminal_info.terminal_pid_lengths[terminal_info.current_terminal]-1];
+    }    
+    processes_status[old_process] = 0;
     set_user_table(current_process);
 
     flush_tlb();
@@ -123,7 +172,7 @@ int32_t syscall_halt(const uint8_t status){
 		"movl %3,%%eax  \n\t"
 		"jmp ireturn_return  \n\t"
 		: "=r" (i)
-                : "r" (processes[current_process+1]->parent_esp), "r" (processes[current_process+1]->parent_ebp), "r" (ret_status));
+                : "r" (processes[old_process]->parent_esp), "r" (processes[old_process]->parent_ebp), "r" (ret_status));
     return -1;
 }
 void get_command(uint8_t* filename, const uint8_t* command)
@@ -278,6 +327,50 @@ void store_args(const uint8_t* command)
 
 
 //code for switching between processes
-void switch_process(int32_t pid){
-  return;
+void switch_process(int32_t term){
+	if(term >= TERMINAL_NUMBER || term < 0)
+	{
+		return;
+	}	
+    if(terminal_info.terminal_pid_lengths[term] <= 0)
+    {
+        return;
+    } 
+    
+    int process = terminal_info.terminal_pids[term][terminal_info.terminal_pid_lengths[term]-1];
+    current_process = process;
+    set_user_table(process);
+
+    flush_tlb();
+
+    set_process(term);
+
+    //need to set stdin and stdout
+    uint32_t stack = KERNEL_STACK_START;
+    stack = stack - PROC_KERNEL_LEN * process;
+    tss.esp0 = stack - 4;
+    tss.ss0 = KERNEL_DS;
+	
+    int out;
+    asm volatile("movl %1,%%esp \n\t"
+			"jmp *%2 \n\t"
+			"int $0x80 \n\t"
+			:"=r" (out)
+			:"r" (terminal_info.esp_locations[term]), "r" (terminal_info.jump_locations[term])
+			);
+    return;
+}
+
+void launch_base_shell() {
+	 while(1)
+    {
+    int out;
+        uint8_t file[10] = "shell";
+	asm volatile("movl %1,%%ebx \n\t"
+			"movl $2,%%eax \n\t"
+			"int $0x80 \n\t"
+			:"=r" (out)
+			:"r" (&file)
+			);
+    }
 }

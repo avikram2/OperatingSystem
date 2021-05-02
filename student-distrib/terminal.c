@@ -101,10 +101,20 @@ int32_t terminal_close(int32_t fd){
 void init_terminal(){
   //set current terminal to 0 upon boot
   terminal_info.current_terminal = 0;
+  terminal_info.display_terminal = 0;
   //only first terminal active on boot
   terminal_info.active_terminals[0] = 1;
   terminal_info.active_terminals[1] = 0;
   terminal_info.active_terminals[2] = 0;
+  int i = 0;
+  for(i = 0;i<NUMBER_OF_PROCESSES;i++)
+  {
+    processes_status[i] = 0;
+  }
+  for(i = 0;i<TERMINAL_NUMBER;i++)
+  {
+	terminal_info.terminal_pid_lengths[i] = 0;
+  }
   set_buffers(terminal_info.vid_mem_buffer[0], terminal_info.vid_mem_buffer[1],terminal_info.vid_mem_buffer[2]);
   return;
 }
@@ -112,13 +122,13 @@ void init_terminal(){
 
 //terminal swqapping function
 //takes interger for terminal (0-2) and saves current while swapping to the next
-void terminal_swap(int32_t new_terminal){
-    if(new_terminal == terminal_info.current_terminal){
+void terminal_swap(int32_t new_terminal, uint32_t esp_location, uint32_t jump_location){
+    if(new_terminal == terminal_info.display_terminal){
       //printf("Already on this terminal\n");
       return;
     }
     //save the current contents of the terminal
-    save_terminal();
+    save_terminal(esp_location, jump_location);
     //load the new terminal
     load_terminal(new_terminal);
     return;
@@ -126,12 +136,14 @@ void terminal_swap(int32_t new_terminal){
 
 
 //save the terminal data before switching to a new terminal
-void save_terminal(){
+void save_terminal(uint32_t esp_location, uint32_t jump_location){
   // copy curent vid_mem to terminal structure
-  memcpy(terminal_info.vid_mem_buffer[terminal_info.current_terminal], (char *)VIDEO, MEM_BUF_SIZE);
+  memcpy(terminal_info.vid_mem_buffer[terminal_info.display_terminal], (char *)VIDEO, MEM_BUF_SIZE);
   //save current curors
-  terminal_info.cursors[terminal_info.current_terminal][0] = get_cursor_x();
-  terminal_info.cursors[terminal_info.current_terminal][1] = get_cursor_y();
+  terminal_info.cursors[terminal_info.display_terminal][0] = get_cursor_x();
+  terminal_info.cursors[terminal_info.display_terminal][1] = get_cursor_y();
+  terminal_info.esp_locations[terminal_info.display_terminal] = esp_location;
+  terminal_info.jump_locations[terminal_info.display_terminal] = jump_location;
 }
 
 
@@ -144,13 +156,15 @@ void load_terminal(uint32_t term){
   memcpy((char *)VIDEO, terminal_info.vid_mem_buffer[term], MEM_BUF_SIZE);
   //change current terminal to new terminal
   terminal_info.current_terminal = term;
+  terminal_info.display_terminal = term;
+  set_cursor_terminal(term);
   if(terminal_info.active_terminals[term]){
-    switch_process(0); //switch to a new process
+    switch_process(term); //switch to a new process
     //printf("The terminal shell previously launched\n");
   }else{
     //set active terminal flag
     terminal_info.active_terminals[term] = 1;
     //launch a new shell for the terminal
-    syscall_execute("shell");
+    launch_base_shell();
   }
 }

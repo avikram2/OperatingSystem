@@ -22,6 +22,7 @@
 
 #define NUM_CURSORS 2  //Number of cursors
 
+#define MAX_TERMINAL_PROCESSES 4
 #ifndef ASM
 
 uint8_t buffer[BUFFER_SIZE];
@@ -32,11 +33,16 @@ uint32_t terminal_read_flag; //flag to track if the terminal_read function has b
 
 typedef struct terminal_info {
     uint32_t current_terminal;
+    uint32_t display_terminal;
     uint32_t active_terminals[TERMINAL_NUMBER];
     uint8_t vid_mem_buffer[TERMINAL_NUMBER][MEM_BUF_SIZE];
     uint8_t cursors[TERMINAL_NUMBER][NUM_CURSORS];
     uint8_t keyboard_buffers[TERMINAL_NUMBER][BUFFER_SIZE];
     uint32_t keyboard_buffer_indexes[TERMINAL_NUMBER];
+    uint32_t terminal_pids[TERMINAL_NUMBER][MAX_TERMINAL_PROCESSES];
+    uint32_t terminal_pid_lengths[TERMINAL_NUMBER];
+    uint32_t esp_locations[TERMINAL_NUMBER];
+    uint32_t jump_locations[TERMINAL_NUMBER];
 } terminal_info_t;
 
 //terminal tracker structure for multiple terminals
@@ -55,13 +61,13 @@ extern int32_t terminal_read(int32_t fd, uint8_t* buf, int32_t nbytes);
 extern int32_t terminal_write(int32_t fd, const uint8_t* buf, int32_t nbytes);
 
 //swap the current terminal to new_terminal
-extern void terminal_swap(int32_t new_terminal);
+extern void terminal_swap(int32_t new_terminal, uint32_t esp_location, uint32_t jump_location);
 
 //initialize terminal structure variables
 extern void init_terminal();
 
 //save the current terminal data when switching terminals
-extern void save_terminal();
+extern void save_terminal(uint32_t esp_location, uint32_t jump_location);
 
 //load in the new terminal mem and/or launch new shell
 extern void load_terminal(uint32_t term);

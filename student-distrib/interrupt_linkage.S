@@ -8,20 +8,78 @@
 .align   4
  # linkage function between assembly and c interrupt handler, unsued for checkpoint 1
 keyboard_wrapper:
-    pushfl
     pushal
+    pushfl
+    pushl %ds
+    pushl %fs
+    pushl %es
+    pushl %eax
+    pushl %ebp
+    pushl %edi
+    pushl %esi
+    pushl %edx
+    pushl %ecx
+    pushl %ebx 
+//handler arguments
+    pushl %esp
+    pushl $keyboard_return
     call interrupt_keyboard_handler
-    popal
+    popl %edx
+    popl %edx
+
+keyboard_return:
+    popl %ebx
+    popl %ecx
+    popl %edx
+    popl %esi
+    popl %edi
+    popl %ebp
+    popl %eax
+    popl %es
+    popl %fs
+    popl %ds
     popfl
+    popal
+    sti
     iret
 
 
 .globl   rtc_wrapper
 .align   4
 rtc_wrapper:
-    pushfl
     pushal
+    pushfl
+    pushl %ds
+    pushl %fs
+    pushl %es
+    pushl %eax
+    pushl %ebp
+    pushl %edi
+    pushl %esi
+    pushl %edx
+    pushl %ecx
+    pushl %ebx
+
+//handler arguments
+    pushl %esp
+    pushl $rtc_return
     call rtc_handler
-    popal
+    popl %edx
+    popl %edx
+
+rtc_return:
+    popl %ebx
+    popl %ecx
+    popl %edx
+    popl %esi
+    popl %edi
+    popl %ebp
+    popl %eax
+    popl %es
+    popl %fs
+    popl %ds
     popfl
+    popal
+    sti
     iret
+

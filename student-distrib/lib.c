@@ -61,7 +61,7 @@ void set_process(int term){
   //printf("p: %d\n", term);
 }
 
-void set_cursor_terminal(){
+void set_cursor_terminal(int term){
   if(!(matching)){//if the process not displayed is writing, change cursor tp buffer
     cursor_terminal = terminal_process;
   }else{//else cursor for the display
@@ -94,7 +94,7 @@ void update_video_mem(){
         return;
     }
   }
-  set_cursor_terminal();
+  set_cursor_terminal(terminal_process);
 }
 
 //update_cursor(int x, int y)
@@ -344,6 +344,36 @@ void putc(uint8_t c) {
         screen_y[cursor_terminal] = (screen_y[cursor_terminal] + (screen_x[cursor_terminal] / NUM_COLS)); //if necessary new line
 	    screen_x[cursor_terminal] = screen_x[cursor_terminal] % NUM_COLS; //adjust overflow of horiz position
 		if (screen_y[cursor_terminal] >= NUM_ROWS){ //implement scrolling if necessary
+			scrolling();
+		}
+    }
+}
+
+/* void typec(uint8_t c);
+ * Inputs: uint_8* c = character to print
+ * Return Value: void
+ *  Function: Output a character to the console */
+void typec(uint8_t c) {
+    if(c == '\n') {
+        screen_y[terminal_display]++;
+        screen_x[terminal_display] = ORIGIN_CURSOR; //first position of newline
+		if (screen_y[terminal_display] >= NUM_ROWS){ //if leaving the screen, then implement scrolling
+			scrolling();
+		}
+
+    }
+
+	else if(c == '\r')
+		screen_x[terminal_display] = ORIGIN_CURSOR;
+
+
+	else {
+        *(uint8_t *)((char *)VIDEO + ((NUM_COLS * screen_y[terminal_display] + screen_x[terminal_display]) << 1)) = c;
+        *(uint8_t *)((char *)VIDEO + ((NUM_COLS * screen_y[terminal_display] + screen_x[terminal_display]) << 1) + 1) = ATTRIB;
+        screen_x[terminal_display]++; //increment horiz position
+        screen_y[terminal_display] = (screen_y[terminal_display] + (screen_x[terminal_display] / NUM_COLS)); //if necessary new line
+	    screen_x[terminal_display] = screen_x[terminal_display] % NUM_COLS; //adjust overflow of horiz position
+		if (screen_y[terminal_display] >= NUM_ROWS){ //implement scrolling if necessary
 			scrolling();
 		}
     }

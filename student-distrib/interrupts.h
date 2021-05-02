@@ -5,6 +5,7 @@
 #include "i8259.h"
 #include "rtc_driver.h"
 #include "terminal.h"
+#include "processes.h"
 
 #define SCAN_CODE_SIZE 0x35 //size of current array storing characters indexed by scancode
 #define DATA_PORT_KEYBOARD 0x60 //port to read data from PS2 device
@@ -34,6 +35,8 @@
 #define F5          0x3F
 #define F6          0x40
 
+#define SCHEDULING_COUNT  50
+
 #define NUM_COLS    80 //macros for RTC handler
 #define NUM_ROWS    25
 #define VIDEO       0xB8000
@@ -45,11 +48,12 @@
 
 
 //interrupt handler for the keyboard
-extern void interrupt_keyboard_handler();
+extern void interrupt_keyboard_handler(uint32_t jump_location,uint32_t esp_location);
 
 //rtc interrupt handler
-extern void rtc_handler();
+extern void rtc_handler(uint32_t jump_location,uint32_t esp_location);
 
+void handle_possible_scheduling(uint32_t jump_location,uint32_t esp_location);
 #endif
 
 #endif

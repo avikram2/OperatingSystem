@@ -28,7 +28,7 @@ extern void set_display(int term);
 extern void set_process(int term);
 
 //set the cursor for the process/display
-void set_cursor_terminal();
+void set_cursor_terminal(int term);
 
 //update the video_mem pointer
 extern void update_video_mem();
@@ -49,6 +49,7 @@ void scrolling(); //implements the scrolling feature when lines run out
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);
+void typec(uint8_t c);
 int32_t puts(int8_t *s);
 int8_t *itoa(uint32_t value, int8_t* buf, int32_t radix);
 int8_t *strrev(int8_t* s);

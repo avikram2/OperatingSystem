@@ -10,6 +10,7 @@
 #define REG_B           0x8B
 
 #define TWO_HZ_RATE 15
+#define TEN_ZERO_TWENTY_FOUR_HZ_RATE  6
 
 #define LOWER_4_BITS_MASK   0x0F
 #define UPPER_4_BITS_MASK   0xF0
