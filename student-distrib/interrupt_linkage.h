@@ -12,6 +12,8 @@ extern void keyboard_wrapper();
 
 extern void rtc_wrapper();
 
+extern void pit_wrapper();
+
 #endif //ASM
 
 #endif //interrupt_linkage

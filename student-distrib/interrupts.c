@@ -225,10 +225,12 @@ void rtc_handler(uint32_t jump_location,uint32_t esp_location){
 	sti();
 }
 
+//PIT interrupt handler
 void handle_possible_scheduling(uint32_t jump_location,uint32_t esp_location)
 {
 	cli();
     scheduling_count++;
+	send_eoi(PIT_IRQ_NUM);
     if(scheduling_count >= SCHEDULING_COUNT)
     {
        scheduling_count = 0;
@@ -249,3 +251,21 @@ void handle_possible_scheduling(uint32_t jump_location,uint32_t esp_location)
 	sti();
     
 }
+
+//function to initialize the PIT device
+void init_pit(){
+	//disable interrupts
+	cli();
+	outb(PIT_SQUAREWAVE_MODE, PIT_CMD); //CHANNEL0, SQUAREWAVE GENERATOR MODE (MODE 3)
+
+	//set PIT RELOAD COUNT
+
+	// Set low byte
+	outb(PIT_RELOAD_COUNT&PIT_UPPER_BITMASK, PIT_CH0DATA);		// Low byte
+	outb((PIT_RELOAD_COUNT&PIT_BITMASK)>>PIT_BITSHIFT, PIT_CH0DATA);	// High byte
+
+	enable_irq(PIT_IRQ_NUM); //enable interrupts on IRQ line 0 (timer chip)
+
+	sti();
+}
+

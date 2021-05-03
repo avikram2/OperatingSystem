@@ -156,6 +156,7 @@ void entry(unsigned long magic, unsigned long addr) {
     keyboard_init();
     init_rtc();
     init_terminal();
+    init_pit(); //init pit
 //init the RTC and enable RTC interrupts
     /* Enable interrupts */
     /* Do not enable the following until after you have set up your

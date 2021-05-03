@@ -35,7 +35,8 @@
 #define F5          0x3F
 #define F6          0x40
 
-#define SCHEDULING_COUNT  25
+#define SCHEDULING_COUNT  25 //in Hertz
+#define PIT_RELOAD_COUNT 1193186/SCHEDULING_COUNT //The oscillator used by the PIT chip runs at (roughly) 1.193182 MHz
 
 #define NUM_COLS    80 //macros for RTC handler
 #define NUM_ROWS    25
@@ -43,6 +44,27 @@
 #define REGISTER_C  0x0C
 #define RTC_PORT    0x70
 #define CMOS_PORT   0x71 //register A,B,C port in RTC
+
+
+#define PIT_IRQ_NUM 0
+
+/*
+I/O port     Usage
+0x40         Channel 0 data port (read/write)
+0x41         Channel 1 data port (read/write)
+0x42         Channel 2 data port (read/write)
+0x43         Mode/Command register (write only, a read is ignored)
+*/
+#define PIT_CH0DATA 0x40  //pit channel 0 data port
+#define PIT_CMD  0x43 //pit command register port
+
+#define PIT_SQUAREWAVE_MODE 0x36 //CHANNEL0, SQUAREWAVE GENERATOR MODE (MODE 3)
+
+#define PIT_UPPER_BITMASK 0xFF
+
+#define PIT_BITMASK 0xFF00
+
+#define PIT_BITSHIFT 8
 
 #ifndef ASM
 
@@ -53,7 +75,11 @@ extern void interrupt_keyboard_handler(uint32_t jump_location,uint32_t esp_locat
 //rtc interrupt handler
 extern void rtc_handler(uint32_t jump_location,uint32_t esp_location);
 
-void handle_possible_scheduling(uint32_t jump_location,uint32_t esp_location);
+//pit interrupt handler
+extern void handle_possible_scheduling(uint32_t jump_location,uint32_t esp_location);
+
+//pit initialization
+extern void init_pit();
 #endif
 
 #endif

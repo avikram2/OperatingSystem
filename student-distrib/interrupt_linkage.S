@@ -87,3 +87,22 @@ rtc_return:
     sti
     iret
 
+.globl   pit_wrapper
+.align   4
+pit_wrapper:
+    cli
+    pushal
+    pushfl
+    //handler arguments
+    pushl %esp
+    pushl $pit_return
+    call handle_possible_scheduling
+    popl %edx
+    popl %edx
+
+pit_return:
+    popfl
+    popal
+    sti
+    iret
+

@@ -33,10 +33,10 @@ void load_idt()
     set_exception_irq(20,virtualization_exception);
     set_exception_irq(21,control_protection_exception);
 
-    //set keyboard and rtc interrupts
+    //set PIT, keyboard and rtc interrupts
+    set_interrupt_irq(0x20, pit_wrapper);
     set_interrupt_irq(0x21, keyboard_wrapper);
     set_interrupt_irq(0x28, rtc_wrapper);
-    
     
     //set up skeleton system call support
     set_system_call(0x80, syscall_wrapper);    
