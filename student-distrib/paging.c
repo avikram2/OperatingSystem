@@ -59,6 +59,12 @@ void enable_paging()
 	loadPageDirectory(page_directory);
 	enablePaging();
 }
+
+/* set_user_video_mem(): function to map to user video mem
+*INPUTS: uint8_t** screen_start maps the address of the screen display start address to a page value
+*OUTPUTS: -1 for error
+*DESCRIPTION: Sets up accessible video memory for the user space
+*/
 uint32_t set_user_video_mem(uint8_t** screen_start)
 {
 	if(screen_start == 0 || *screen_start == 0)
@@ -73,8 +79,15 @@ uint32_t set_user_video_mem(uint8_t** screen_start)
 	uint32_t video_offset = VIDEO_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
 	
 	int j = (((uint32_t)*screen_start) - USER_MEM_START) >> PHYSICAL_ADDR_SHIFT;
-	user_page_table[j] = (video_offset) | U_MAP | R_MAP | P_MAP; // attributes: supervisor level, read/write, present.
+	user_page_table[j] = (video_offset) | U_MAP | R_MAP | P_MAP; 
+	return 0;
 }
+
+/* set_user_table(): setup the user table
+*INPUTS: uint32_t process, the current running process
+*OUTPUTS: NONE
+*DESCRIPTION: Sets the user table to present, writeable, and user accessible
+*/
 void set_user_table(uint32_t process)
 {
 	if(process < 0 || process >= NUMBER_OF_PROCESSES)
@@ -102,8 +115,11 @@ void set_user_table(uint32_t process)
 	loadPageDirectory(page_directory);
 }
 
-// Formats a page blank table
-// All indeces set to (supervisor, rw, not present)
+/* blank_table() : 
+*INPUTS: uint32_t* table, pointer to table to be blanked
+*OUTPUTS: NONE
+*DESCRIPTION: Helper function to blank a table, and set write permissions
+*/
 void blank_table(uint32_t* table){
 	int i;
 	for(i = 0; i < TABLE_SIZE; i++)
@@ -114,7 +130,12 @@ void blank_table(uint32_t* table){
 	
 }
 
-//TO DO: shift input to be usable
+/* remap_user() : 
+*INPUTS: uint32_t table_idx, idx of table in directory
+*		 uint32_t virtual_addr, new addr to put in idx
+*OUTPUTS: NONE
+*DESCRIPTION: Maps user table to a new idx
+*/
 void remap_user(uint32_t table_idx, uint32_t virtual_addr){
 	
 	//allign virtual address
