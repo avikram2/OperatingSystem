@@ -95,6 +95,8 @@ void update_video_mem(){
     }
   }
   set_cursor_terminal(terminal_process);
+  update_cursor(screen_x[cursor_terminal], screen_y[cursor_terminal]);
+  *(uint8_t *)(video_mem + ((NUM_COLS * screen_y[cursor_terminal] + screen_x[cursor_terminal]) << 1) + 1) = ATTRIB;
 }
 
 //update_cursor(int x, int y)
