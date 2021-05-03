@@ -33,7 +33,7 @@ static int matching;
 //inputs: 3 buffer addresses
 //output: none
 //side effect: initialize the 3 buffers for writing to when terminal not displayed
-void set_buffers(char* b0, char* b1, char* b2){
+void set_buffers(uint8_t* b0, uint8_t* b1, uint8_t* b2){
   buf0 = b0;
   buf1 = b1;
   buf2 = b2;

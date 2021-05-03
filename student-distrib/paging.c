@@ -7,8 +7,8 @@
 *OUTPUTS: NONE
 *DESCRIPTION: Created a page directory, and 2 page tables.
 *			 Then loads page directory, and enables paging afterwards
-*EFFECT: paging will be enabled, one 4MB page for 
-*		 the kernel code, and one 4KB page for video memory 
+*EFFECT: paging will be enabled, one 4MB page for
+*		 the kernel code, and one 4KB page for video memory
 *		 will be created
 
 *   This code uses a lot of comments starting with "Attributes: "
@@ -17,10 +17,10 @@
 */
 void enable_paging()
 {
-	
+
 	uint32_t kernel_offset = (KERNEL_PHYS_ADDR >> PHYSICAL_ADDR_SHIFT) << PHYSICAL_ADDR_SHIFT;
 	uint32_t video_offset = (VIDEO_PHYS_ADDR >> PHYSICAL_ADDR_SHIFT) << PHYSICAL_ADDR_SHIFT;
-	
+
 	int i;
 	for(i = 0; i < DIR_SIZE; i++)
 	{
@@ -41,11 +41,11 @@ void enable_paging()
 
 	// Attributes: 1 - 4MB page (S), 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
 	page_directory[1] = ((unsigned int)KERNEL_PHYS_ADDR) | S_MAP | R_MAP | P_MAP;
-	
-	
+
+
 	set_user_table(0);
-	
-	
+
+
 	//Set Video Memory
 	blank_table(first_page_table);
 
@@ -54,8 +54,8 @@ void enable_paging()
 
 	// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 1 - present (P)
 	page_directory[0] = ((unsigned int)first_page_table) | R_MAP | P_MAP;
-	
-	
+
+
 	loadPageDirectory(page_directory);
 	enablePaging();
 }
@@ -71,15 +71,15 @@ uint32_t set_user_video_mem(uint8_t** screen_start)
 	{
 		return -1;
 	}
-	if(*screen_start < USER_MEM_START || *screen_start >= USER_MEM_END)
+	if(*screen_start < (uint8_t*)USER_MEM_START || *screen_start >= (uint8_t*)USER_MEM_END)
 	{
 		return -1;
 	}
 
 	uint32_t video_offset = VIDEO_PHYS_ADDR << PHYSICAL_ADDR_SHIFT;
-	
+
 	int j = (((uint32_t)*screen_start) - USER_MEM_START) >> PHYSICAL_ADDR_SHIFT;
-	user_page_table[j] = (video_offset) | U_MAP | R_MAP | P_MAP; 
+	user_page_table[j] = (video_offset) | U_MAP | R_MAP | P_MAP;
 	return 0;
 }
 
@@ -97,7 +97,7 @@ void set_user_table(uint32_t process)
 	uint32_t user_pos = USER_ONE_PHYS_ADDR;
 	user_pos = user_pos + USER_PHYS_ADDR_LEN * process;
 	uint32_t user_offset = (user_pos >> PHYSICAL_ADDR_SHIFT) << PHYSICAL_ADDR_SHIFT;
-	
+
 	// initialize user table
 	blank_table(user_page_table);
 	unsigned int j;
@@ -115,7 +115,7 @@ void set_user_table(uint32_t process)
 	loadPageDirectory(page_directory);
 }
 
-/* blank_table() : 
+/* blank_table() :
 *INPUTS: uint32_t* table, pointer to table to be blanked
 *OUTPUTS: NONE
 *DESCRIPTION: Helper function to blank a table, and set write permissions
@@ -127,24 +127,24 @@ void blank_table(uint32_t* table){
 		// Attributes: 0 -  kernel-mode (U - supervisor mode), 1 - read/write (R), 0 - not present (P)
 		table[i] = R_MAP;
 	}
-	
+
 }
 
-/* remap_user() : 
+/* remap_user() :
 *INPUTS: uint32_t table_idx, idx of table in directory
 *		 uint32_t virtual_addr, new addr to put in idx
 *OUTPUTS: NONE
 *DESCRIPTION: Maps user table to a new idx
 */
 void remap_user(uint32_t table_idx, uint32_t virtual_addr){
-	
+
 	//allign virtual address
 	uint32_t virtual_offset = (virtual_addr >> PHYSICAL_ADDR_SHIFT) << PHYSICAL_ADDR_SHIFT;
-	
+
 	//Set user page
 	user_page_table[0] = virtual_offset | U_MAP | R_MAP | P_MAP;
 	page_directory[table_idx] = ((unsigned int)user_page_table) | U_MAP | R_MAP | P_MAP;
-	
+
 }
 
 

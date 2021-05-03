@@ -19,7 +19,7 @@
 
 //custom functions
 //set the vid memory buffers
-extern void set_buffers(char* b0, char* b1, char* b2);
+extern void set_buffers(uint8_t* b0, uint8_t* b1, uint8_t* b2);
 
 //set the current display terminal
 extern void set_display(int term);
