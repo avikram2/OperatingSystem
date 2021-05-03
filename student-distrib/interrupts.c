@@ -145,7 +145,7 @@ void interrupt_keyboard_handler(uint32_t jump_location,uint32_t esp_location){
   	}
 	}
 	else if(ctrl_flag&&(scancode==L_CODE)){ //Ctrl-L handle
-      clear(); //clear the screen
+      clear((int)(terminal_info.keyboard_buffer_indexes[terminal_info.current_terminal] > 72)); //clear the screen
 	  //update_cursor(ORIGIN_CURSOR,ORIGIN_CURSOR); //send the cursor back to the beginning of the screen
 	}
   else if(ctrl_flag&&(scancode==C_CODE)){
@@ -156,26 +156,26 @@ void interrupt_keyboard_handler(uint32_t jump_location,uint32_t esp_location){
   else {
       if (shift_flag) { //check for shift held down
         if (caps_flag) { //check for caps lock
-    		  if (terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal] <= (BUFFER_SIZE-1)){ //add to the buffer, keeping space for newline
+    		  if (terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal] <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
     			  terminal_info.keyboard_buffers[terminal_info.display_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal]] = scan_code_caps_shift[scancode-1];
     			  terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal]++;
             typec(scan_code_caps_shift[scancode-1]); //put character onto screen from the array
     		  }
         } else {  //only shift held
-    		   if (terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal] <= (BUFFER_SIZE-1)){ //add to the buffer, keeping space for newline
+    		   if (terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal] <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
     			  terminal_info.keyboard_buffers[terminal_info.display_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal]] = scan_code_shift[scancode-1];
     			  terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal]++;
             typec(scan_code_shift[scancode-1]); //put character onto screen from the array
 		        }
           }
       } else if(caps_flag){  //only caps held
-      		if (terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal] <= (BUFFER_SIZE-1)){ //add to the buffer, keeping space for newline
+      		if (terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal] <= (BUFFER_SIZE-2)){ //add to the buffer, keeping space for newline
       			  terminal_info.keyboard_buffers[terminal_info.display_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal]] = scan_code_caps[scancode-1];
       			  terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal]++;
               typec(scan_code_caps[scancode-1]); //put character onto screen from the array
       		  }
       } else {
-      		if (terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal] <= (BUFFER_SIZE-1)){ //add character to the buffer, keeping space for the last newline
+      		if (terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal] <= (BUFFER_SIZE-2)){ //add character to the buffer, keeping space for the last newline
       			terminal_info.keyboard_buffers[terminal_info.display_terminal][terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal]] = scan_code_default[scancode-1];
       			terminal_info.keyboard_buffer_indexes[terminal_info.display_terminal]++; //increment current index in buffer
             typec(scan_code_default[scancode-1]); //put character onto screen from the array
@@ -220,7 +220,7 @@ void rtc_handler(uint32_t jump_location,uint32_t esp_location){
     	inb(CMOS_PORT); // reading value from register C to ensure RTC interrupts happen again
 
     	send_eoi(RTC_IRQ_NUM); //send eoi to correct IRQ line
-	
+
 	handle_possible_scheduling(jump_location,esp_location);
 	sti();
 }
@@ -244,12 +244,12 @@ void handle_possible_scheduling(uint32_t jump_location,uint32_t esp_location)
 	if(term != terminal_info.current_terminal)
 	{
   		terminal_info.current_terminal = term;
-	
+
        		switch_process(terminal_info.current_terminal);
 	}
     }
 	sti();
-    
+
 }
 
 //function to initialize the PIT device
@@ -268,4 +268,3 @@ void init_pit(){
 
 	sti();
 }
-

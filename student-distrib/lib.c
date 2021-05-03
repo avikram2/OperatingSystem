@@ -134,14 +134,14 @@ int get_cursor_x(){
  * Inputs: void
  * Return Value: none
  * Function: Clears video memory */
-void clear(void) {
+void clear(int edge) {
     int32_t i;
     int x_curr = get_cursor_x();
     int y_curr = get_cursor_y();
-    for(i = 0; i < y_curr; i++){
+    for(i = 0; i < y_curr - edge; i++){
       scrolling();
     }
-    update_cursor(x_curr, ORIGIN_CURSOR);
+    update_cursor(x_curr, ORIGIN_CURSOR + edge);
     /*
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
         *(uint8_t *)(video_mem + (i << 1)) = ' ';

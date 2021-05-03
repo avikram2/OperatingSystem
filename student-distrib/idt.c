@@ -37,9 +37,9 @@ void load_idt()
     set_interrupt_irq(0x20, pit_wrapper);
     set_interrupt_irq(0x21, keyboard_wrapper);
     set_interrupt_irq(0x28, rtc_wrapper);
-    
+
     //set up skeleton system call support
-    set_system_call(0x80, syscall_wrapper);    
+    set_system_call(0x80, syscall_wrapper);
 }
 
 /* set_exception_irq
@@ -72,7 +72,7 @@ For Checkpoint 1, it is sufficient to acknowledge that a system call has occurre
 effect: prints system call to screen to acknowledge system call invoked
 */
 void system_call_skeleton(){
-    clear(); //clear screen
+    clear(0); //clear screen
     //system call executed
     printf("System Call"); //print to screen
 }

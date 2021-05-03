@@ -25,7 +25,7 @@ static inline void assertion_failure(){
 /* Checkpoint 1 tests */
 
 /* IDT Test - Example
- * 
+ *
  * Asserts that first 10 IDT entries are not NULL
  * Inputs: None
  * Outputs: PASS/FAIL
@@ -39,18 +39,18 @@ int idt_test(){
 	int i;
 	int result = PASS;
 	for (i = 0; i < 10; ++i){
-		if ((idt[i].offset_15_00 == NULL) && 
+		if ((idt[i].offset_15_00 == NULL) &&
 			(idt[i].offset_31_16 == NULL)){
 			assertion_failure();
 			result = FAIL;
 		}
 	}
-  
+
 	return result;
 }
 
 /* IDT Exceptions Test
- * 
+ *
  * Triggers an exception for user to verify
  * Inputs: None
  * Outputs: PASS
@@ -60,18 +60,18 @@ int idt_test(){
  */
 int idt_exceptions_test(){
 	TEST_HEADER;
-        
+
 	asm volatile("int $0");
-        
+
 	asm volatile("int $5");
-        
+
 	asm volatile("int $9");
 
 	return PASS;
 }
 
 // /* RTC Test
-//  * 
+//  *
 //  * Sets the RTC handler to the test handler
 //  * Inputs: None
 //  * Outputs: PASS
@@ -151,7 +151,7 @@ int rtc_test(){
 int terminal_driver_test(){
 	TEST_HEADER;
 	terminal_open(NULL); //open terminal
-	clear();
+	clear(0);
 	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
 	int8_t* string = "Hello, what is your name \n";
 	uint8_t *unsigned_str = (uint8_t*) (string);
@@ -174,7 +174,7 @@ int terminal_driver_test(){
 int echo_terminal_test(){
 	TEST_HEADER;
 	terminal_open(NULL);
-	clear();
+	clear(0);
 	update_cursor(ORIGIN_CURSOR, ORIGIN_CURSOR);
 	while (1){
 		uint8_t buffer_test[BUFFER_SIZE];
@@ -187,21 +187,21 @@ int echo_terminal_test(){
 
 int read_data_test(){
 	uint8_t buf[FS_BUF_LENGTH];
-	
+
 	//SET FILE NAME
 	uint8_t fname[MAX_NAME_LENGTH] = "frame1.txt";
 	dentry_t temp;
 	uint32_t file_len, bytes_read;
-	
+
 	read_dentry_by_name(fname, &temp);
 	inode_t* inode = (inode_t*)((uint32_t)file_sys + (temp.inode_idx + 1) * SIZE_BLOCK);
 	file_len = inode->length;
 	bytes_read = read_data(temp.inode_idx, 0, buf, file_len,SKIP_NULLS);
-	
-	
+
+
 	printf("file_read(%s)\n", fname); // testing file_read
-	
-	
+
+
 	//test read_dentry_by_name output
 	//test needs to get redefined to match entire dentry to requested dentry
 	printf("file name: ");
@@ -212,19 +212,19 @@ int read_data_test(){
 	printf("\n");
 	if(strncmp((char*)fname, (char*)temp.filename, MAX_NAME_LENGTH) != 0)
 		return FAIL;
-	
+
 	printf("read_dentry_by_name(): PASS\n");
-	
+
 	//test read_data
 	printf("file length: %d\n", bytes_read);
 	if(bytes_read == -1)
 		return FAIL;
-	
-	
+
+
 	//Uncomment below to print file data
 	printf("file data: \n");
 	printf("%s", (char*)buf);
-	
+
 	while(1);
 	return PASS;
 }
@@ -282,8 +282,8 @@ void launch_tests(){
 	//TEST_OUTPUT("page fault", page_fault_test());
 	//TEST_OUTPUT("video memory access", video_memory_access_test());
 	//TEST_OUTPUT("rtc_test", rtc_test());
-	
-	
+
+
 	/* Checkpoint 2 Test */
 	//TEST_OUTPUT("terminal_driver_test", terminal_driver_test());
 	//TEST_OUTPUT("echo_terminal_test", echo_terminal_test());
